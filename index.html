@@ -1529,6 +1529,7 @@ function render(){
   const all=document.getElementById('bodyALL');
   all.innerHTML='';
   BRANDS.forEach(b=>{
+    if(!data[b].length)return;
     all.appendChild(makeGrpRow(b));
     data[b].forEach((_,i)=>all.appendChild(makeRow(b,i,true)));
   });
