@@ -440,7 +440,8 @@ body:not(.admin) .admin-only{display:none !important}
 body:not(.admin) .col-del{display:none !important}
 body:not(.admin) .btn-del{display:none !important}
 body:not(.admin) .inp{pointer-events:none;background:transparent;border:1px solid transparent;cursor:default}
-body:not(.admin) .footer-note.edit-hint{display:none}
+body.admin-noutbuk .inp-naqt[data-brand="NOUTBUK"]{pointer-events:auto;cursor:pointer}
+body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
 .capture-wrap{position:fixed;left:-9999px;top:0;width:max-content;min-width:800px;background:#fff;font-family:'Inter',Arial,sans-serif}
 
 /* ── COMPARE (raqib narxlari) ───────────── */
@@ -582,7 +583,7 @@ body:not(.admin) .footer-note.edit-hint{display:none}
   .grp-xiaomi td{background:#FEE2E2!important;color:#B91C1C!important;border-left-color:#DC2626!important}
   .grp-honor td{background:#CCFBF1!important;color:#0F766E!important;border-left-color:#0D9488!important}
   .grp-poco td{background:#F3E8FF!important;color:#7E22CE!important;border-left-color:#9333EA!important}
-  .grp-apple td{background:#334155!important;color:#334155!important;border-left-color:#64748B!important}
+  .grp-apple td{background:#E2E8F0!important;color:#334155!important;border-left-color:#64748B!important}
   .grp-noutbuk td{background:#FEF3C7!important;color:#B45309!important;border-left-color:#D97706!important}
   .grp-planshet td{background:#CFFAFE!important;color:#0E7490!important;border-left-color:#0891B2!important}
 
@@ -1386,6 +1387,8 @@ const LOGO_B64 = "iVBORw0KGgoAAAANSUhEUgAABxIAAAKzCAYAAAA6Kki2AAAKN2lDQ1BzUkdCIE
 /* ================= BULUT SINXRONIZATSIYA (Firebase) ================= */
 /* PAROLNI SHU YERDAN O'ZGARTIRING */
 const ADMIN_PIN='5566';
+/* Faqat Noutbuk narxini o'zgartirish uchun cheklangan kod (parolni shu yerdan o'zgartiring) */
+const NOUTBUK_PIN='7788';
 
 const FB_CFG={
   apiKey:"AIzaSyBnUaWCMdY-1DSxcK5yzDxkBOppUYuYtvQ",
@@ -1483,12 +1486,14 @@ document.addEventListener('focusout',function(e){
 },true);
 
 /* ================= TAHRIRLASH REJIMI ================= */
-function isAdmin(){try{return localStorage.getItem('ssmart_admin')==='1'}catch(e){return false}}
+function adminMode(){try{return localStorage.getItem('ssmart_admin')||'0'}catch(e){return '0'}}
+function isAdmin(){return adminMode()==='1'||adminMode()==='2'}
 function applyAdmin(){
-  const a=isAdmin();
-  document.body.classList.toggle('admin',a);
+  const m=adminMode();
+  document.body.classList.toggle('admin',m==='1');
+  document.body.classList.toggle('admin-noutbuk',m==='2');
   const b=document.getElementById('lockBtn');
-  if(b)b.textContent=a?'\u{1F513} Tahrir: OCHIQ':'\u{1F512} Tahrirlash';
+  if(b)b.textContent=m==='1'?'\u{1F513} Tahrir: OCHIQ':m==='2'?'\u{1F513} Tahrir: Noutbuk':'\u{1F512} Tahrirlash';
 }
 function toggleAdmin(){
   if(isAdmin()){
@@ -1500,6 +1505,9 @@ function toggleAdmin(){
   if(p===ADMIN_PIN){
     try{localStorage.setItem('ssmart_admin','1')}catch(e){}
     applyAdmin();render();toast('\u{1F513} Tahrirlash ochildi');
+  }else if(p===NOUTBUK_PIN){
+    try{localStorage.setItem('ssmart_admin','2')}catch(e){}
+    applyAdmin();render();toast('\u{1F513} Faqat Noutbuk narxini tahrirlash ochildi');
   }else toast('\u2715 Parol xato');
 }
 
