@@ -134,6 +134,7 @@ body{
 .tab[data-brand="POCO"].active{color:#7E22CE;background:rgba(192,132,252,.16);border-color:rgba(192,132,252,.45);box-shadow:0 6px 18px -8px rgba(192,132,252,.8)}
 .tab[data-brand="APPLE"].active{color:#334155;background:rgba(226,232,240,.12);border-color:rgba(226,232,240,.32);box-shadow:0 6px 18px -8px rgba(226,232,240,.5)}
 .tab[data-brand="NOUTBUK"].active{color:#B45309;background:rgba(251,191,36,.16);border-color:rgba(251,191,36,.45);box-shadow:0 6px 18px -8px rgba(251,191,36,.8)}
+.tab[data-brand="PLANSHET"].active{color:#0E7490;background:rgba(34,211,238,.16);border-color:rgba(34,211,238,.45);box-shadow:0 6px 18px -8px rgba(34,211,238,.8)}
 .tab[data-brand="COMPARE"].active{color:#BE185D;background:rgba(244,114,182,.16);border-color:rgba(244,114,182,.45);box-shadow:0 6px 18px -8px rgba(244,114,182,.8)}
 
 /* ── TOOLBAR ────────────────────────────── */
@@ -207,6 +208,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .brand-pill.poco{background:rgba(192,132,252,.14);color:#7E22CE;border-color:rgba(192,132,252,.32)}
 .brand-pill.apple{background:rgba(226,232,240,.10);color:#334155;border-color:rgba(226,232,240,.24)}
 .brand-pill.noutbuk{background:rgba(251,191,36,.14);color:#B45309;border-color:rgba(251,191,36,.32)}
+.brand-pill.planshet{background:rgba(34,211,238,.14);color:#0E7490;border-color:rgba(34,211,238,.32)}
 .brand-hd-note{
   font-size:11px;color:var(--muted);margin-left:auto;font-weight:600;letter-spacing:.6px;
   background:rgba(13,148,136,.05);border:1px solid var(--line-soft);padding:5px 12px;border-radius:999px;
@@ -249,6 +251,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .grp-poco td{background:linear-gradient(90deg,rgba(192,132,252,.16),transparent 70%);color:#7E22CE;border-left-color:#7E22CE}
 .grp-apple td{background:linear-gradient(90deg,rgba(226,232,240,.12),transparent 70%);color:#334155;border-left-color:#334155}
 .grp-noutbuk td{background:linear-gradient(90deg,rgba(251,191,36,.16),transparent 70%);color:#B45309;border-left-color:#B45309}
+.grp-planshet td{background:linear-gradient(90deg,rgba(34,211,238,.16),transparent 70%);color:#0E7490;border-left-color:#0E7490}
 
 .inp{
   background:transparent;border:none;font-family:inherit;font-size:13px;text-align:inherit;
@@ -545,6 +548,7 @@ body:not(.admin) .footer-note.edit-hint{display:none}
   .brand-pill.poco{background:#F3E8FF!important;color:#7E22CE!important;border-color:#7E22CE!important}
   .brand-pill.apple{background:#14201B!important;color:#334155!important;border-color:#334155!important}
   .brand-pill.noutbuk{background:#FEF3C7!important;color:#B45309!important;border-color:#FCD34D!important}
+  .brand-pill.planshet{background:#CFFAFE!important;color:#0E7490!important;border-color:#22D3EE!important}
   .brand-hd-note{background:#FEF3C7!important;border:.7pt solid #FCD34D!important;color:#92400E!important;font-size:7pt!important;padding:2pt 8pt!important}
 
   /* Jadval — qolgan balandlikni to'ldiradi */
@@ -580,6 +584,7 @@ body:not(.admin) .footer-note.edit-hint{display:none}
   .grp-poco td{background:#F3E8FF!important;color:#7E22CE!important;border-left-color:#9333EA!important}
   .grp-apple td{background:#334155!important;color:#334155!important;border-left-color:#64748B!important}
   .grp-noutbuk td{background:#FEF3C7!important;color:#B45309!important;border-left-color:#D97706!important}
+  .grp-planshet td{background:#CFFAFE!important;color:#0E7490!important;border-left-color:#0891B2!important}
 
   /* Kataklar */
   .inp{
@@ -675,6 +680,7 @@ body.bayram .tbtn-bayram{background:#06202B!important;color:#E4B65C!important;bo
   <button class="tab" data-brand="POCO">Poco</button>
   <button class="tab" data-brand="APPLE">Apple</button>
   <button class="tab" data-brand="NOUTBUK">Noutbuk</button>
+  <button class="tab" data-brand="PLANSHET">Planshet</button>
 </div>
 
 <div class="toolbar">
@@ -1143,6 +1149,11 @@ body.bayram .tbtn-bayram{background:#06202B!important;color:#E4B65C!important;bo
     <td class="td-m12">1 963 333</td>
     <td class="col-del"><span class="row-tools"><button class="btn-mv" onclick="moveRow('NOUTBUK',5,-1)" title="Yuqoriga">▲</button><button class="btn-mv" onclick="moveRow('NOUTBUK',5,1)" title="Pastga">▼</button><button class="btn-del" onclick="delRow('NOUTBUK',5)">✕</button></span></td></tr></tbody></table>
   </div>
+  <div class="section" id="sec-PLANSHET">
+    <div class="brand-hd"><span class="brand-pill planshet">Planshet</span><span class="brand-hd-note">1 Yil Kafolat</span></div>
+    <table class="price-tbl"><thead><tr><th>Model</th><th>Naqt narxi</th><th>6 oylik / oy</th><th>12 oylik / oy</th><th class="col-del"></th></tr></thead>
+    <tbody id="bodyPLANSHET"></tbody></table>
+  </div>
 
 <div class="footer">
   <div class="footer-note edit-hint">Narxni bosib o'zgartiring</div>
@@ -1154,7 +1165,7 @@ body.bayram .tbtn-bayram{background:#06202B!important;color:#E4B65C!important;bo
   <div class="modal">
     <h3>Yangi model qo'shish</h3>
     <div class="frow"><label>Brend</label>
-      <select id="newBrand"><option value="SAMSUNG">Samsung</option><option value="XIAOMI">Xiaomi</option><option value="HONOR">Honor</option><option value="POCO">Poco</option><option value="APPLE">Apple</option><option value="NOUTBUK">Noutbuk</option></select></div>
+      <select id="newBrand"><option value="SAMSUNG">Samsung</option><option value="XIAOMI">Xiaomi</option><option value="HONOR">Honor</option><option value="POCO">Poco</option><option value="APPLE">Apple</option><option value="NOUTBUK">Noutbuk</option><option value="PLANSHET">Planshet</option></select></div>
     <div class="frow"><label>Model nomi</label><input id="newModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
     <div class="frow"><label>Naqt narxi (so'm)</label><input id="newPrice" type="number" placeholder="Masalan: 6500000"></div>
     <div class="modal-btns">
@@ -1195,6 +1206,7 @@ body.bayram .tbtn-bayram{background:#06202B!important;color:#E4B65C!important;bo
         <option value="POCO">Poco</option>
         <option value="APPLE">Apple</option>
         <option value="NOUTBUK">Noutbuk</option>
+        <option value="PLANSHET">Planshet</option>
       </select>
     </div>
     <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12.5px;color:#334155;cursor:pointer">
@@ -1254,7 +1266,7 @@ REDMI NOTE 15 PRO 8/256GB 3 540 000"></textarea>
       Qo'lda yozsangiz, har bir qatorni shu tartibda kiriting: <b>Model&nbsp;&nbsp;[Tab]&nbsp;&nbsp;Narx</b>
     </div>
     <div class="frow" style="margin-bottom:10px"><label>Qaysi brendga qo'shilsin</label>
-      <select id="pasteBrand"><option value="SAMSUNG">Samsung</option><option value="XIAOMI">Xiaomi</option><option value="HONOR">Honor</option><option value="POCO">Poco</option><option value="APPLE">Apple</option><option value="NOUTBUK">Noutbuk</option></select></div>
+      <select id="pasteBrand"><option value="SAMSUNG">Samsung</option><option value="XIAOMI">Xiaomi</option><option value="HONOR">Honor</option><option value="POCO">Poco</option><option value="APPLE">Apple</option><option value="NOUTBUK">Noutbuk</option><option value="PLANSHET">Planshet</option></select></div>
     <textarea class="paste-area" id="pasteArea" placeholder="Galaxy A56 8/256GB	5200000
 Redmi 14C 6/128GB	2150000
 iPhone 16e 128GB	9800000" oninput="previewPaste()"></textarea>
@@ -1281,6 +1293,7 @@ iPhone 16e 128GB	9800000" oninput="previewPaste()"></textarea>
     <button class="png-btn" onclick="doPng('POCO')">Poco <span id="cnt-p">3 ta</span></button>
     <button class="png-btn" onclick="doPng('APPLE')">Apple <span id="cnt-a">7 ta</span></button>
     <button class="png-btn" onclick="doPng('NOUTBUK')">Noutbuk <span id="cnt-n">6 ta</span></button>
+    <button class="png-btn" onclick="doPng('PLANSHET')">Planshet <span id="cnt-pl">0 ta</span></button>
     <button class="png-cancel" onclick="closePng()">Bekor qilish</button>
   </div>
 </div>
@@ -1308,11 +1321,11 @@ const K6 = 1.35;
 const K12 = 1.55;
 let KURS = 12300;
 
-let ALLDATA={"QARSHI":{"SAMSUNG":[["Samsung Gusto 3 ver",1476000,"120"],["Samsung Galaxy A07 6/128GB",1750000,"142",[{"shop":"Original","price":1770000,"img":""}]],["Samsung Galaxy M17e 6/128GB",2091000,"170",[{"shop":"Original","price":2045000,"img":""}]],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195",[{"shop":"Original","price":2420000,"img":""}]],["Samsung Galaxy A17 6/128GB",2405000,"196",[{"shop":"Original","price":2410000,"img":""}]],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy A37 SM-A376E/DS 256GB",1,"0"],["Samsung Galaxy A57 8/256GB",5175000,"425",[{"shop":"Original","price":5175000,"img":""}]],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050",[{"shop":"Original","price":13420000,"img":""}]],["7TECH connect U7 8/256GB",2,"300"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215",[{"shop":"Original","price":2650000,"img":""}]],["Redmi Note15 Pro 8/256GB",3430000,"279",[{"shop":"Original","price":4030000,"img":""}]],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384",[{"shop":"Original","price":4760000,"img":""}]],["Redmi Note15 Pro+12/512GB",5462000,"444",[{"shop":"Original","price":5490000,"img":""}]]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232",[{"shop":"Original","price":2930000,"img":""}]],["HONOR X8D 8/128GB",3400000,"330",[{"shop":"Original","price":3595000,"img":""}]],["HONOR X8D 8/256GB",4250000,"346",[{"shop":"Original","price":4360000,"img":""}]],["HONOR 600 Lite 8/256GB",4350000,"354",[{"shop":"Original","price":4455000,"img":""}]],["HONOR X9D 8/256GB",4750000,"386",[{"shop":"Original","price":4880000,"img":""}]],["HONOR X9D 12/256GB",5250000,"427",[{"shop":"Original","price":5370000,"img":""}]],["HONOR 600 5G 8/256GB",6210000,"505",[{"shop":"Original","price":6345000,"img":""}]],["HONOR 600 5G 8/512GB",6700000,"545",[{"shop":"Original","price":6835000,"img":""}]]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251",[{"shop":"Original","price":3095000,"img":""}]],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["IPhone 13 128gb",1,"500"],["IPhone 14 /128gb",2,"580"],["Iphone 15 128GB",7995000,"670",[{"shop":"Original","price":7986000,"img":""}]],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1360",[{"shop":"Original","price":17182000,"img":""}]],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1480",[{"shop":"Original","price":18210500,"img":""}]],["Apple WATCH 11",3,"355"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Apple MacBook Air M2 8/256GB",14500000,"1180"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"]]},"QAMASHI":{"SAMSUNG":[["Samsung Galaxy A07 6/128GB",1750000,"142"],["Samsung Galaxy A17 6/128GB",2405000,"196"],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195"],["Samsung Galaxy M17e 6/128GB",2091000,"170"],["Samsung Galaxy A57 8/256GB",5175000,"425"],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050"],["Samsung Gusto 3 ver",1476000,"120"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215"],["Redmi Note15 Pro 8/256GB",3430000,"279"],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384"],["Redmi Note15 Pro+12/512GB",5462000,"444"]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232"],["HONOR X8D 8/128GB",3400000,"330"],["HONOR X8D 8/256GB",4250000,"346"],["HONOR X9D 8/256GB",4750000,"386"],["HONOR X9D 12/256GB",5250000,"427"],["HONOR 600 Lite 8/256GB",4350000,"354"],["HONOR 600 5G 8/256GB",6210000,"505"],["HONOR 600 5G 8/512GB",6700000,"545"]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251"],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["Iphone 15 128GB",7995000,"650"],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1407"],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1530"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"],["Apple MacBook Air M2 8/256GB",14500000,"1180"]]}};
+let ALLDATA={"QARSHI":{"SAMSUNG":[["Samsung Gusto 3 ver",1476000,"120"],["Samsung Galaxy A07 6/128GB",1750000,"142",[{"shop":"Original","price":1770000,"img":""}]],["Samsung Galaxy M17e 6/128GB",2091000,"170",[{"shop":"Original","price":2045000,"img":""}]],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195",[{"shop":"Original","price":2420000,"img":""}]],["Samsung Galaxy A17 6/128GB",2405000,"196",[{"shop":"Original","price":2410000,"img":""}]],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy A37 SM-A376E/DS 256GB",1,"0"],["Samsung Galaxy A57 8/256GB",5175000,"425",[{"shop":"Original","price":5175000,"img":""}]],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050",[{"shop":"Original","price":13420000,"img":""}]],["7TECH connect U7 8/256GB",2,"300"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215",[{"shop":"Original","price":2650000,"img":""}]],["Redmi Note15 Pro 8/256GB",3430000,"279",[{"shop":"Original","price":4030000,"img":""}]],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384",[{"shop":"Original","price":4760000,"img":""}]],["Redmi Note15 Pro+12/512GB",5462000,"444",[{"shop":"Original","price":5490000,"img":""}]]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232",[{"shop":"Original","price":2930000,"img":""}]],["HONOR X8D 8/128GB",3400000,"330",[{"shop":"Original","price":3595000,"img":""}]],["HONOR X8D 8/256GB",4250000,"346",[{"shop":"Original","price":4360000,"img":""}]],["HONOR 600 Lite 8/256GB",4350000,"354",[{"shop":"Original","price":4455000,"img":""}]],["HONOR X9D 8/256GB",4750000,"386",[{"shop":"Original","price":4880000,"img":""}]],["HONOR X9D 12/256GB",5250000,"427",[{"shop":"Original","price":5370000,"img":""}]],["HONOR 600 5G 8/256GB",6210000,"505",[{"shop":"Original","price":6345000,"img":""}]],["HONOR 600 5G 8/512GB",6700000,"545",[{"shop":"Original","price":6835000,"img":""}]]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251",[{"shop":"Original","price":3095000,"img":""}]],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["IPhone 13 128gb",1,"500"],["IPhone 14 /128gb",2,"580"],["Iphone 15 128GB",7995000,"670",[{"shop":"Original","price":7986000,"img":""}]],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1360",[{"shop":"Original","price":17182000,"img":""}]],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1480",[{"shop":"Original","price":18210500,"img":""}]],["Apple WATCH 11",3,"355"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Apple MacBook Air M2 8/256GB",14500000,"1180"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"]],"PLANSHET":[]},"QAMASHI":{"SAMSUNG":[["Samsung Galaxy A07 6/128GB",1750000,"142"],["Samsung Galaxy A17 6/128GB",2405000,"196"],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195"],["Samsung Galaxy M17e 6/128GB",2091000,"170"],["Samsung Galaxy A57 8/256GB",5175000,"425"],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050"],["Samsung Gusto 3 ver",1476000,"120"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215"],["Redmi Note15 Pro 8/256GB",3430000,"279"],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384"],["Redmi Note15 Pro+12/512GB",5462000,"444"]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232"],["HONOR X8D 8/128GB",3400000,"330"],["HONOR X8D 8/256GB",4250000,"346"],["HONOR X9D 8/256GB",4750000,"386"],["HONOR X9D 12/256GB",5250000,"427"],["HONOR 600 Lite 8/256GB",4350000,"354"],["HONOR 600 5G 8/256GB",6210000,"505"],["HONOR 600 5G 8/512GB",6700000,"545"]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251"],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["Iphone 15 128GB",7995000,"650"],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1407"],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1530"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"],["Apple MacBook Air M2 8/256GB",14500000,"1180"]],"PLANSHET":[]}};
 const FILIALS={QARSHI:'Qarshi',QAMASHI:'Qamashi'};
 let FILIAL='QARSHI';
 let data=ALLDATA[FILIAL];
-const BRANDS=['SAMSUNG','XIAOMI','HONOR','POCO','APPLE','NOUTBUK'];
+const BRANDS=['SAMSUNG','XIAOMI','HONOR','POCO','APPLE','NOUTBUK','PLANSHET'];
 
 /* ===== AVTOMATIK SAQLASH ===== */
 const LS_KEY='ssmart_narx_v1';
@@ -1490,9 +1503,9 @@ function toggleAdmin(){
   }else toast('\u2715 Parol xato');
 }
 
-const brandColor={SAMSUNG:'#2563EB',XIAOMI:'#DC2626',HONOR:'#0F766E',POCO:'#7E22CE',APPLE:'#64748B',NOUTBUK:'#B45309'};
-const brandBgClass={SAMSUNG:'grp-samsung',XIAOMI:'grp-xiaomi',HONOR:'grp-honor',POCO:'grp-poco',APPLE:'grp-apple',NOUTBUK:'grp-noutbuk'};
-const brandLabel={SAMSUNG:'Samsung',XIAOMI:'Xiaomi',HONOR:'Honor',POCO:'Poco',APPLE:'Apple',NOUTBUK:'Noutbuk'};
+const brandColor={SAMSUNG:'#2563EB',XIAOMI:'#DC2626',HONOR:'#0F766E',POCO:'#7E22CE',APPLE:'#64748B',NOUTBUK:'#B45309',PLANSHET:'#0E7490'};
+const brandBgClass={SAMSUNG:'grp-samsung',XIAOMI:'grp-xiaomi',HONOR:'grp-honor',POCO:'grp-poco',APPLE:'grp-apple',NOUTBUK:'grp-noutbuk',PLANSHET:'grp-planshet'};
+const brandLabel={SAMSUNG:'Samsung',XIAOMI:'Xiaomi',HONOR:'Honor',POCO:'Poco',APPLE:'Apple',NOUTBUK:'Noutbuk',PLANSHET:'Planshet'};
 
 function fmt(n){return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')}
 function m6(p){return Math.round(p*K6/6)}
@@ -1502,8 +1515,8 @@ function makeRow(brand,idx,forAll){
   const [model,price,usd]=data[brand][idx];
   const tr=document.createElement('tr');
   tr.dataset.brand=brand;tr.dataset.idx=idx;tr.dataset.model=model.toLowerCase();
-  // NOUTBUK bo'limida USD ustuni yo'q; ALL jadvalida ustunlar mos kelishi uchun bo'sh katak
-  const usdTd=brand==='NOUTBUK'
+  // NOUTBUK va PLANSHET bo'limida USD ustuni yo'q; ALL jadvalida ustunlar mos kelishi uchun bo'sh katak
+  const usdTd=(brand==='NOUTBUK'||brand==='PLANSHET')
     ?(forAll?'<td></td>':'')
     :`<td class="td-usd-wrap"><input class="inp inp-usd" value="${usd||''}" placeholder="0" data-field="usd" data-brand="${brand}" data-idx="${idx}" style="text-align:right"></td>`;
   tr.innerHTML=`<td><input class="inp inp-model" value="${model}" data-field="model" data-brand="${brand}" data-idx="${idx}"></td>
@@ -1616,6 +1629,7 @@ function updateCnt(){
   document.getElementById('cnt-p').textContent=data.POCO.length+' ta';
   document.getElementById('cnt-a').textContent=data.APPLE.length+' ta';
   document.getElementById('cnt-n').textContent=data.NOUTBUK.length+' ta';
+  document.getElementById('cnt-pl').textContent=data.PLANSHET.length+' ta';
 }
 function openAdd(){document.getElementById('addModal').classList.add('open')}
 function closeAdd(){document.getElementById('addModal').classList.remove('open')}
@@ -2129,8 +2143,8 @@ function doPng(brand){
   closePng();
   toast('⏳ PNG tayyorlanmoqda...');
   const brands=brand==='ALL'?BRANDS:[brand];
-  // NOUTBUK bo'limida USD ustuni chiqmaydi
-  const showUsd=!(brands.length===1&&brands[0]==='NOUTBUK');
+  // NOUTBUK va PLANSHET bo'limida USD ustuni chiqmaydi
+  const showUsd=!(brands.length===1&&(brands[0]==='NOUTBUK'||brands[0]==='PLANSHET'));
   const colCount=showUsd?5:4;
   const d=new Date();
   const dateStr=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
@@ -2144,7 +2158,7 @@ function doPng(brand){
     rows+=`<tr><td colspan="${colCount}" style="background:linear-gradient(90deg,${tint(col,.10)},rgba(0,0,0,0) 72%);padding:10px 18px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;color:${col};border-left:4px solid ${col};border-bottom:1px solid #E3ECE7;text-transform:uppercase;white-space:nowrap">${brandLabel[b]}&nbsp;&nbsp;<span style="font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#8DA198">${data[b].length} ta model</span></td></tr>`;
     data[b].forEach(([model,price,usd],ri)=>{
       const rowBg=ri%2===0?'#FFFFFF':(BAYRAM?'#FAF7EF':'#F3F9F6');
-      const usdCell=(showUsd&&b!=='NOUTBUK'&&usd)?('$'+usd):'';
+      const usdCell=(showUsd&&b!=='NOUTBUK'&&b!=='PLANSHET'&&usd)?('$'+usd):'';
       rows+=`<tr style="background:${rowBg}">
         <td style="padding:10px 18px;color:#14201B;font-weight:600;font-size:13px;white-space:nowrap;border-bottom:1px solid #E3ECE7">${model}</td>
         <td style="padding:10px 18px;color:#B45309;font-weight:800;font-size:14.5px;${num}">${fmt(price)}</td>
