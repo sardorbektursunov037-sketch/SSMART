@@ -2156,14 +2156,13 @@ function doPng(brand){
   const colCount=showUsd?5:4;
   const d=new Date();
   const dateStr=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
-  const hx=c=>parseInt(c,16);
-  const tint=(col,a)=>`rgba(${hx(col.slice(1,3))},${hx(col.slice(3,5))},${hx(col.slice(5,7))},${a})`;
   const num='text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;border-bottom:1px solid #E3ECE7';
+  const brandBgSolid={SAMSUNG:'#DBEAFE',XIAOMI:'#FEE2E2',HONOR:'#CCFBF1',POCO:'#F3E8FF',APPLE:'#E2E8F0',NOUTBUK:'#FEF3C7',PLANSHET:'#CFFAFE'};
   let rows='';
   brands.forEach(b=>{
     if(!data[b].length)return;
     const col=brandColor[b];
-    rows+=`<tr><td colspan="${colCount}" style="background:linear-gradient(90deg,${tint(col,.10)},rgba(0,0,0,0) 72%);padding:10px 18px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;color:${col};border-left:4px solid ${col};border-bottom:1px solid #E3ECE7;text-transform:uppercase;white-space:nowrap">${brandLabel[b]}&nbsp;&nbsp;<span style="font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#8DA198">${data[b].length} ta model</span></td></tr>`;
+    rows+=`<tr><td colspan="${colCount}" style="background:${brandBgSolid[b]};padding:10px 18px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;color:${col};border-left:4px solid ${col};border-bottom:1px solid #E3ECE7;text-transform:uppercase;white-space:nowrap">${brandLabel[b]}&nbsp;&nbsp;<span style="font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#8DA198">${data[b].length} ta model</span></td></tr>`;
     data[b].forEach(([model,price,usd],ri)=>{
       const rowBg=ri%2===0?'#FFFFFF':(BAYRAM?'#FAF7EF':'#F3F9F6');
       const usdCell=(showUsd&&b!=='NOUTBUK'&&b!=='PLANSHET'&&usd)?('$'+usd):'';
