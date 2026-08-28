@@ -1329,6 +1329,8 @@ const FILIALS={QARSHI:'Qarshi',QAMASHI:'Qamashi'};
 let FILIAL='QARSHI';
 let data=ALLDATA[FILIAL];
 const BRANDS=['SAMSUNG','XIAOMI','HONOR','POCO','APPLE','NOUTBUK','PLANSHET'];
+const PHONE_BRANDS=BRANDS.filter(b=>b!=='NOUTBUK'&&b!=='PLANSHET');
+const OTHER_BRANDS=BRANDS.filter(b=>b==='NOUTBUK'||b==='PLANSHET');
 
 /* ===== AVTOMATIK SAQLASH ===== */
 const LS_KEY='ssmart_narx_v1';
@@ -2150,9 +2152,9 @@ function toggleBayram(){
 function openPng(){updateCnt();document.getElementById('pngModal').classList.add('open')}
 function closePng(){document.getElementById('pngModal').classList.remove('open')}
 function buildSnapshotHtml(brand){
-  const brands=brand==='ALL'?BRANDS:[brand];
+  const brands=Array.isArray(brand)?brand:(brand==='ALL'?BRANDS:[brand]);
   // NOUTBUK va PLANSHET bo'limida USD ustuni chiqmaydi
-  const showUsd=!(brands.length===1&&(brands[0]==='NOUTBUK'||brands[0]==='PLANSHET'));
+  const showUsd=brands.some(b=>b!=='NOUTBUK'&&b!=='PLANSHET');
   const colCount=showUsd?5:4;
   const d=new Date();
   const dateStr=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
@@ -2228,10 +2230,8 @@ function buildSnapshotHtml(brand){
   </div>`;
   return {html:htmlSnap,dateStr,showUsd};
 }
-function doPng(brand){
-  closePng();
-  toast('⏳ PNG tayyorlanmoqda...');
-  const {html:htmlSnap,dateStr}=buildSnapshotHtml(brand);
+function downloadSnapshot(brandOrList,filenameKey){
+  const {html:htmlSnap,dateStr}=buildSnapshotHtml(brandOrList);
   const wrap=document.getElementById('captureWrap');
   wrap.innerHTML=htmlSnap;
   const SCALE=3;
@@ -2240,7 +2240,7 @@ function doPng(brand){
       canvas.toBlob(blob=>{
         const a=document.createElement('a');
         a.href=URL.createObjectURL(blob);
-        a.download='ssmart_' + (brand==='ALL'?'barchasi':brand.toLowerCase())+'_'+dateStr.replace(/\./g,'-')+'.png';
+        a.download='ssmart_'+filenameKey+'_'+dateStr.replace(/\./g,'-')+'.png';
         document.body.appendChild(a);a.click();document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
         wrap.innerHTML='';
@@ -2248,6 +2248,21 @@ function doPng(brand){
       },'image/png');
     });
   },300);
+}
+function doPng(brand){
+  closePng();
+  if(brand==='ALL'){
+    const hasPhones=PHONE_BRANDS.some(b=>data[b].length);
+    const hasOthers=OTHER_BRANDS.some(b=>data[b].length);
+    if(!hasPhones&&!hasOthers){toast('⚠ Ro’yxat bo’sh');return}
+    toast('⏳ PNG tayyorlanmoqda...');
+    // 1-list: faqat telefonlar, 2-list: Noutbuk/Planshet — alohida-alohida yuklab olinadi
+    if(hasPhones)downloadSnapshot(PHONE_BRANDS,'telefonlar');
+    if(hasOthers)setTimeout(()=>downloadSnapshot(OTHER_BRANDS,'noutbuk-planshet'),hasPhones?900:0);
+    return;
+  }
+  toast('⏳ PNG tayyorlanmoqda...');
+  downloadSnapshot(brand,brand.toLowerCase());
 }
 /* ================= TELEGRAMGA YUBORISH ================= */
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
@@ -2291,11 +2306,10 @@ function buildTgCaption(extra){
   return {caption:prefix+TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES.map(e=>({...e,offset:e.offset+prefix.length}))};
 }
 /* Telegramga faqat telefon brendlari yuboriladi — Noutbuk va Planshet chiqarilmaydi */
-const TG_BRANDS=BRANDS.filter(b=>b!=='NOUTBUK'&&b!=='PLANSHET');
 async function prepareTelegramImages(){
   const wrap=document.getElementById('captureWrap');
   const images=[];
-  for(const b of TG_BRANDS){
+  for(const b of PHONE_BRANDS){
     if(!data[b].length)continue;
     const {html:htmlSnap}=buildSnapshotHtml(b);
     wrap.innerHTML=htmlSnap;
