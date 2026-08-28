@@ -2254,15 +2254,42 @@ function doPng(brand){
 const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
 const TG_CHAT_ID='-5218610696';
 /* Har yuborishda rasmlar tagiga qo'shiladigan doimiy matn (shu yerdan tahrirlanadi) */
-const TG_DEFAULT_CAPTION=`Narxlari soatiga kuniga o'zgarishi mumkin ❗️❗️
+/* Diqqat: matnni o'zgartirsangiz, pastdagi TG_DEFAULT_ENTITIES'dagi offset/length'lar ham mos kelmay qoladi
+   (animatsion emoji va havolalar noto'g'ri joyga tushadi) — shuning uchun matnni tahrirlashdan saqlaning,
+   yangi variant kerak bo'lsa qaytadan "ss" guruhiga yuborib, entity'larni qaytadan olib berish kerak bo'ladi. */
+const TG_DEFAULT_CAPTION=`Narxlari soatiga kuniga o’zgarishi mumkin ‼️
 
-✅ Sifatli va ishonchli
-🏷 Hamyonbop narx
-📞 Batafsil ma'lumot uchun murojaat qiling. +998948080055
+✔️ Sifatli va ishonchli
+☄️ Hamyonbop narx
+📞 Batafsil ma’lumot uchun murojaat qiling.+998948080055
 
-📍 Manzillarimiz:
-• Qarshi, Yoshlar markazi
-• Qamashi, Amir Temur ko'chasi (sobiq Lelin)`;
+📌 Manzillarimiz:
+ • Qarshi, Yoshlar markazi
+ • Qamashi, Amir Temur ko‘chasi (sobiq Lelin)
+
+
+Instagram 🌐 | Telegram ✅ | Youtube 📹 | Ssmart group 📱`;
+const TG_DEFAULT_ENTITIES=[
+  {offset:42,length:2,type:'custom_emoji',custom_emoji_id:'5440660757194744323'},
+  {offset:46,length:2,type:'custom_emoji',custom_emoji_id:'5206607081334906820'},
+  {offset:70,length:2,type:'custom_emoji',custom_emoji_id:'5224607267797606837'},
+  {offset:88,length:2,type:'custom_emoji',custom_emoji_id:'5453965363286925977'},
+  {offset:131,length:13,type:'phone_number'},
+  {offset:146,length:2,type:'custom_emoji',custom_emoji_id:'5397782960512444700'},
+  {offset:239,length:9,type:'text_link',url:'https://www.instagram.com/ssmart_karshi?igsh=MWJidGY5a2JpY2pybw=='},
+  {offset:249,length:2,type:'custom_emoji',custom_emoji_id:'5339466285409377607'},
+  {offset:254,length:8,type:'text_link',url:'https://t.me/ssmart_karshi'},
+  {offset:263,length:1,type:'custom_emoji',custom_emoji_id:'5335018876839141938'},
+  {offset:267,length:7,type:'text_link',url:'http://www.youtube.com/@ssmart_karshi'},
+  {offset:275,length:2,type:'custom_emoji',custom_emoji_id:'5334885900356688822'},
+  {offset:280,length:12,type:'text_link',url:'https://t.me/ssmart_group'},
+  {offset:293,length:2,type:'custom_emoji',custom_emoji_id:'5332524123610430820'}
+];
+function buildTgCaption(extra){
+  if(!extra)return {caption:TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES};
+  const prefix=extra+'\n\n';
+  return {caption:prefix+TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES.map(e=>({...e,offset:e.offset+prefix.length}))};
+}
 async function prepareTelegramImages(){
   const wrap=document.getElementById('captureWrap');
   const images=[];
@@ -2279,11 +2306,13 @@ async function prepareTelegramImages(){
   if(!images.length)throw new Error('Yuborish uchun model topilmadi');
   return images;
 }
-async function sendToTelegram(images,caption){
+async function sendToTelegram(images,caption,entities){
+  const entitiesJson=entities&&entities.length?JSON.stringify(entities):null;
   if(images.length===1){
     const fd=new FormData();
     fd.append('chat_id',TG_CHAT_ID);
     if(caption)fd.append('caption',caption);
+    if(entitiesJson)fd.append('caption_entities',entitiesJson);
     fd.append('photo',images[0].blob,images[0].name);
     const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
     const j=await res.json();
@@ -2294,7 +2323,7 @@ async function sendToTelegram(images,caption){
   fd.append('chat_id',TG_CHAT_ID);
   const media=images.map((img,i)=>{
     const item={type:'photo',media:`attach://file${i}`};
-    if(i===0&&caption)item.caption=caption;
+    if(i===0&&caption){item.caption=caption;if(entities&&entities.length)item.caption_entities=entities;}
     return item;
   });
   fd.append('media',JSON.stringify(media));
@@ -2308,14 +2337,14 @@ async function onTelegramBtnClick(){
   const btn=document.getElementById('tgBtn');
   const captionEl=document.getElementById('tgCaption');
   const extra=captionEl?captionEl.value.trim():'';
-  const caption=extra?extra+'\n\n'+TG_DEFAULT_CAPTION:TG_DEFAULT_CAPTION;
+  const {caption,entities}=buildTgCaption(extra);
   const prevText=btn.textContent;
   btn.disabled=true;
   btn.textContent='⏳ Tayyorlanmoqda...';
   try{
     const images=await prepareTelegramImages();
     btn.textContent='📤 Yuborilmoqda...';
-    await sendToTelegram(images,caption);
+    await sendToTelegram(images,caption,entities);
     toast('✓ Telegramga yuborildi');
   }catch(e){
     console.error(e);
