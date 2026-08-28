@@ -2290,10 +2290,12 @@ function buildTgCaption(extra){
   const prefix=extra+'\n\n';
   return {caption:prefix+TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES.map(e=>({...e,offset:e.offset+prefix.length}))};
 }
+/* Telegramga faqat telefon brendlari yuboriladi — Noutbuk va Planshet chiqarilmaydi */
+const TG_BRANDS=BRANDS.filter(b=>b!=='NOUTBUK'&&b!=='PLANSHET');
 async function prepareTelegramImages(){
   const wrap=document.getElementById('captureWrap');
   const images=[];
-  for(const b of BRANDS){
+  for(const b of TG_BRANDS){
     if(!data[b].length)continue;
     const {html:htmlSnap}=buildSnapshotHtml(b);
     wrap.innerHTML=htmlSnap;
