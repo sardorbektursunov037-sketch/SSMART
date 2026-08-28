@@ -696,6 +696,8 @@ body.bayram .tbtn-bayram{background:#06202B!important;color:#E4B65C!important;bo
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
   <button class="tbtn tbtn-save admin-only" onclick="saveHTML()">⬇ HTML saqlash</button>
+  <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
+  <button class="tbtn tbtn-kurs admin-only" id="tgBtn" onclick="onTelegramBtnClick()">📤 Telegramga yuborish</button>
   <button class="tbtn tbtn-clear admin-only" onclick="openClearAll()">🗑 Hammasini o'chirish</button>
   <button class="tbtn admin-only" onclick="resetSaved()" title="Fayldagi asl narxlarga qaytarish">↺ Asl holat</button>
   <button class="tbtn tbtn-lock" id="lockBtn" onclick="toggleAdmin()">🔒 Tahrirlash</button>
@@ -2147,9 +2149,7 @@ function toggleBayram(){
 }
 function openPng(){updateCnt();document.getElementById('pngModal').classList.add('open')}
 function closePng(){document.getElementById('pngModal').classList.remove('open')}
-function doPng(brand){
-  closePng();
-  toast('⏳ PNG tayyorlanmoqda...');
+function buildSnapshotHtml(brand){
   const brands=brand==='ALL'?BRANDS:[brand];
   // NOUTBUK va PLANSHET bo'limida USD ustuni chiqmaydi
   const showUsd=!(brands.length===1&&(brands[0]==='NOUTBUK'||brands[0]==='PLANSHET'));
@@ -2226,6 +2226,12 @@ function doPng(brand){
       <span style="font-size:11px;color:${BAYRAM?'#E4B65C':'#5EEAD4'};font-weight:800;letter-spacing:1px">${BAYRAM?'MUSTAQILLIK 35 YIL · BAYRAMINGIZ MUBORAK':'1 YIL KAFOLAT'}</span>
     </div>
   </div>`;
+  return {html:htmlSnap,dateStr,showUsd};
+}
+function doPng(brand){
+  closePng();
+  toast('⏳ PNG tayyorlanmoqda...');
+  const {html:htmlSnap,dateStr}=buildSnapshotHtml(brand);
   const wrap=document.getElementById('captureWrap');
   wrap.innerHTML=htmlSnap;
   const SCALE=3;
@@ -2242,6 +2248,45 @@ function doPng(brand){
       },'image/png');
     });
   },300);
+}
+/* ================= TELEGRAMGA YUBORISH (hozircha faqat UI) ================= */
+function prepareTelegramPng(brand){
+  return new Promise((resolve,reject)=>{
+    const {html:htmlSnap}=buildSnapshotHtml(brand);
+    const wrap=document.getElementById('captureWrap');
+    wrap.innerHTML=htmlSnap;
+    setTimeout(()=>{
+      html2canvas(wrap.firstChild,{scale:2,useCORS:true,backgroundColor:null,logging:false,imageTimeout:0}).then(canvas=>{
+        canvas.toBlob(blob=>{
+          wrap.innerHTML='';
+          if(blob)resolve(blob);else reject(new Error('PNG blob yaratilmadi'));
+        },'image/png');
+      }).catch(err=>{wrap.innerHTML='';reject(err)});
+    },300);
+  });
+}
+async function sendToTelegram(blob,caption){
+  // TODO: Telegram Bot API keyin ulanadi
+}
+async function onTelegramBtnClick(){
+  const btn=document.getElementById('tgBtn');
+  const captionEl=document.getElementById('tgCaption');
+  const caption=captionEl?captionEl.value.trim():'';
+  const prevText=btn.textContent;
+  btn.disabled=true;
+  btn.textContent='⏳ Tayyorlanmoqda...';
+  try{
+    const blob=await prepareTelegramPng('ALL');
+    console.log('Telegramga yuborish uchun PNG blob tayyor:',blob);
+    window.open(URL.createObjectURL(blob),'_blank');
+    await sendToTelegram(blob,caption);
+  }catch(e){
+    console.error(e);
+    toast('✕ PNG tayyorlashda xatolik');
+  }finally{
+    btn.disabled=false;
+    btn.textContent=prevText;
+  }
 }
 document.querySelectorAll('.tab').forEach(tab=>{
   tab.addEventListener('click',()=>{
