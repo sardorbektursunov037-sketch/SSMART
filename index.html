@@ -2253,27 +2253,53 @@ function doPng(brand){
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
 const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
 const TG_CHAT_ID='-5218610696';
-function prepareTelegramPng(brand){
-  return new Promise((resolve,reject)=>{
-    const {html:htmlSnap}=buildSnapshotHtml(brand);
-    const wrap=document.getElementById('captureWrap');
+/* Har yuborishda rasmlar tagiga qo'shiladigan doimiy matn (shu yerdan tahrirlanadi) */
+const TG_DEFAULT_CAPTION=`Narxlari soatiga kuniga o'zgarishi mumkin ❗️❗️
+
+✅ Sifatli va ishonchli
+🏷 Hamyonbop narx
+📞 Batafsil ma'lumot uchun murojaat qiling. +998948080055
+
+📍 Manzillarimiz:
+• Qarshi, Yoshlar markazi
+• Qamashi, Amir Temur ko'chasi (sobiq Lelin)`;
+async function prepareTelegramImages(){
+  const wrap=document.getElementById('captureWrap');
+  const images=[];
+  for(const b of BRANDS){
+    if(!data[b].length)continue;
+    const {html:htmlSnap}=buildSnapshotHtml(b);
     wrap.innerHTML=htmlSnap;
-    setTimeout(()=>{
-      html2canvas(wrap.firstChild,{scale:2,useCORS:true,backgroundColor:null,logging:false,imageTimeout:0}).then(canvas=>{
-        canvas.toBlob(blob=>{
-          wrap.innerHTML='';
-          if(blob)resolve(blob);else reject(new Error('PNG blob yaratilmadi'));
-        },'image/png');
-      }).catch(err=>{wrap.innerHTML='';reject(err)});
-    },300);
-  });
+    await new Promise(r=>setTimeout(r,300));
+    const canvas=await html2canvas(wrap.firstChild,{scale:2,useCORS:true,backgroundColor:null,logging:false,imageTimeout:0});
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    wrap.innerHTML='';
+    if(blob)images.push({name:b.toLowerCase()+'.png',blob});
+  }
+  if(!images.length)throw new Error('Yuborish uchun model topilmadi');
+  return images;
 }
-async function sendToTelegram(blob,caption){
+async function sendToTelegram(images,caption){
+  if(images.length===1){
+    const fd=new FormData();
+    fd.append('chat_id',TG_CHAT_ID);
+    if(caption)fd.append('caption',caption);
+    fd.append('photo',images[0].blob,images[0].name);
+    const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+    const j=await res.json();
+    if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
+    return j;
+  }
   const fd=new FormData();
   fd.append('chat_id',TG_CHAT_ID);
-  if(caption)fd.append('caption',caption);
-  fd.append('photo',blob,'narxlar.png');
-  const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+  const media=images.map((img,i)=>{
+    const item={type:'photo',media:`attach://file${i}`};
+    if(i===0&&caption)item.caption=caption;
+    return item;
+  });
+  fd.append('media',JSON.stringify(media));
+  images.forEach((img,i)=>fd.append(`file${i}`,img.blob,img.name));
+  const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMediaGroup`,{method:'POST',body:fd});
   const j=await res.json();
   if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
   return j;
@@ -2281,14 +2307,15 @@ async function sendToTelegram(blob,caption){
 async function onTelegramBtnClick(){
   const btn=document.getElementById('tgBtn');
   const captionEl=document.getElementById('tgCaption');
-  const caption=captionEl?captionEl.value.trim():'';
+  const extra=captionEl?captionEl.value.trim():'';
+  const caption=extra?extra+'\n\n'+TG_DEFAULT_CAPTION:TG_DEFAULT_CAPTION;
   const prevText=btn.textContent;
   btn.disabled=true;
   btn.textContent='⏳ Tayyorlanmoqda...';
   try{
-    const blob=await prepareTelegramPng('ALL');
+    const images=await prepareTelegramImages();
     btn.textContent='📤 Yuborilmoqda...';
-    await sendToTelegram(blob,caption);
+    await sendToTelegram(images,caption);
     toast('✓ Telegramga yuborildi');
   }catch(e){
     console.error(e);
