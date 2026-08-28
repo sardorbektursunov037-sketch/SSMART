@@ -2249,7 +2249,10 @@ function doPng(brand){
     });
   },300);
 }
-/* ================= TELEGRAMGA YUBORISH (hozircha faqat UI) ================= */
+/* ================= TELEGRAMGA YUBORISH ================= */
+/* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
+const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
+const TG_CHAT_ID='-5218610696';
 function prepareTelegramPng(brand){
   return new Promise((resolve,reject)=>{
     const {html:htmlSnap}=buildSnapshotHtml(brand);
@@ -2266,7 +2269,14 @@ function prepareTelegramPng(brand){
   });
 }
 async function sendToTelegram(blob,caption){
-  // TODO: Telegram Bot API keyin ulanadi
+  const fd=new FormData();
+  fd.append('chat_id',TG_CHAT_ID);
+  if(caption)fd.append('caption',caption);
+  fd.append('photo',blob,'narxlar.png');
+  const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+  const j=await res.json();
+  if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
+  return j;
 }
 async function onTelegramBtnClick(){
   const btn=document.getElementById('tgBtn');
@@ -2277,12 +2287,12 @@ async function onTelegramBtnClick(){
   btn.textContent='⏳ Tayyorlanmoqda...';
   try{
     const blob=await prepareTelegramPng('ALL');
-    console.log('Telegramga yuborish uchun PNG blob tayyor:',blob);
-    window.open(URL.createObjectURL(blob),'_blank');
+    btn.textContent='📤 Yuborilmoqda...';
     await sendToTelegram(blob,caption);
+    toast('✓ Telegramga yuborildi');
   }catch(e){
     console.error(e);
-    toast('✕ PNG tayyorlashda xatolik');
+    toast('✕ Telegramga yuborishda xatolik');
   }finally{
     btn.disabled=false;
     btn.textContent=prevText;
