@@ -46,17 +46,23 @@
   --sky:#0369A1;
   --pink:#BE185D;
   --red:#DC2626;
+  --violet:#6366F1;
   --r-lg:18px;
   --r-md:12px;
   --r-sm:9px;
   --shadow:0 18px 45px -18px rgba(23,54,44,.18);
+  --grad-cta:linear-gradient(135deg,#0D9488,#0EA5E9 55%,#6366F1);
+  --grad-head:linear-gradient(120deg,#FFFFFF 0%,#E9F7F3 20%,#E1EFFE 42%,#EFE3FB 66%,#FBF1D8 100%);
+  --grad-stripe:linear-gradient(90deg,#6366F1,#14B8A6,#2DD4BF,#FBBF24,#F59E0B);
+  --grad-thead:linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 ::selection{background:rgba(20,184,166,.25);color:#0B3B31}
 body{
   background:
-    radial-gradient(1100px 600px at 12% -8%, rgba(20,184,166,.10), transparent 60%),
-    radial-gradient(900px 520px at 92% 0%, rgba(245,158,11,.07), transparent 62%),
+    radial-gradient(1100px 600px at 12% -8%, rgba(20,184,166,.12), transparent 60%),
+    radial-gradient(900px 520px at 92% 0%, rgba(245,158,11,.08), transparent 62%),
+    radial-gradient(850px 520px at 50% 105%, rgba(99,102,241,.07), transparent 60%),
     var(--bg);
   background-attachment:fixed;
   font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
@@ -73,7 +79,7 @@ body{
 /* ── HEADER ─────────────────────────────── */
 .header{
   position:relative;overflow:hidden;
-  background:linear-gradient(115deg,#FFFFFF 0%,#EAF6F1 42%,#DDF0E8 78%,#FBF1D8 100%);
+  background:var(--grad-head);
   border-bottom:1px solid #E5ECE8;
   padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:18px;
   box-shadow:0 10px 40px -18px rgba(23,54,44,.22);
@@ -84,9 +90,9 @@ body{
   pointer-events:none;
 }
 .header::after{
-  content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
-  background:linear-gradient(90deg,#14B8A6,#2DD4BF,#FBBF24,#F59E0B);
-  opacity:.9;
+  content:'';position:absolute;left:0;right:0;bottom:0;height:3px;
+  background:var(--grad-stripe);
+  opacity:.95;
 }
 .logo-img{height:48px;object-fit:contain;position:relative;filter:drop-shadow(0 2px 8px rgba(23,54,44,.22))}
 .header>div{position:relative;text-align:right}
@@ -144,7 +150,7 @@ body{
 .filial-lbl{font-size:10.5px;font-weight:800;letter-spacing:2px;color:#7A8C84}
 .fbtn{padding:8px 18px;border-radius:999px;border:1.5px solid #D8E2DC;background:rgba(148,163,184,.06);color:#64748B;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .16s}
 .fbtn:hover{color:#334155;border-color:#B4C5BB}
-.fbtn.active{color:#fff;background:linear-gradient(135deg,#0D9488,#059669);border-color:transparent;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
+.fbtn.active{color:#fff;background:var(--grad-cta);border-color:transparent;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
 @media(max-width:720px){.filial-bar{padding:10px 12px 0}}
 .row-tools{display:inline-flex;align-items:center;gap:4px}
 .btn-mv{width:22px;height:22px;padding:0;border-radius:6px;border:1px solid #D8E2DC;background:rgba(148,163,184,.08);color:#64748B;font-size:9px;cursor:pointer;font-family:inherit;line-height:1;transition:all .14s}
@@ -173,7 +179,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
   cursor:pointer;border:1.5px solid;transition:all .16s ease;letter-spacing:.3px;
 }
 .tbtn:active{transform:translateY(1px)}
-.tbtn-add{background:linear-gradient(135deg,#0D9488,#059669);border-color:transparent;color:#fff;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
+.tbtn-add{background:var(--grad-cta);border-color:transparent;color:#fff;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
 .tbtn-add:hover{filter:brightness(1.12);box-shadow:0 10px 26px -8px rgba(20,184,166,1)}
 .tbtn-png{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.5);color:var(--gold)}
 .tbtn-png:hover{background:rgba(251,191,36,.16)}
@@ -221,7 +227,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
   border-radius:var(--r-lg);overflow:hidden;
   box-shadow:var(--shadow);border:1px solid var(--line);
 }
-.price-tbl thead tr{background:linear-gradient(90deg,#06302B,#0A4A3F 55%,#0E5A4C)}
+.price-tbl thead tr{background:var(--grad-thead)}
 .price-tbl th{
   padding:12px 16px;font-size:10.5px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;
   color:rgba(255,255,255,.86);text-align:right;white-space:nowrap;border:none;
@@ -297,7 +303,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 }
 .cmp-img-card:hover .cmp-img-remove{display:flex}
 .cmp-img-add-btn{
-  padding:9px 18px;background:linear-gradient(135deg,#0D9488,#059669);border:none;border-radius:999px;
+  padding:9px 18px;background:var(--grad-cta);border:none;border-radius:999px;
   color:#fff;font-weight:700;cursor:pointer;font-size:12px;transition:all .16s;font-family:inherit;
   box-shadow:0 8px 22px -10px rgba(20,184,166,.95);
 }
@@ -329,7 +335,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .cmp-text-edit textarea:focus{border-color:var(--brand);background:#F0FDF9}
 .cmp-text-buttons{display:flex;gap:9px;margin-top:13px}
 .cmp-save-btn,.cmp-cancel-btn{flex:1;padding:11px;border:none;border-radius:var(--r-md);font-weight:700;cursor:pointer;font-size:12.5px;transition:all .16s;font-family:inherit}
-.cmp-save-btn{background:linear-gradient(135deg,#0D9488,#059669);color:#fff}
+.cmp-save-btn{background:var(--grad-cta);color:#fff}
 .cmp-save-btn:hover{filter:brightness(1.12)}
 .cmp-cancel-btn{background:#E7EEEA;color:#334155}
 .cmp-cancel-btn:hover{background:#DCE6E0}
@@ -338,10 +344,10 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .model-list-section{margin-top:26px;padding:20px;background:rgba(255,255,255,1);border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:var(--shadow)}
 .model-list-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .model-list-title{font-size:14px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px;letter-spacing:.3px}
-.model-list-add-btn{padding:9px 18px;background:linear-gradient(135deg,#0D9488,#059669);border:none;border-radius:999px;color:#fff;font-weight:700;cursor:pointer;font-size:12px;transition:all .16s;font-family:inherit;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
+.model-list-add-btn{padding:9px 18px;background:var(--grad-cta);border:none;border-radius:999px;color:#fff;font-weight:700;cursor:pointer;font-size:12px;transition:all .16s;font-family:inherit;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
 .model-list-add-btn:hover{filter:brightness(1.12)}
 .model-list-table{width:100%;border-collapse:separate;border-spacing:0;margin-top:8px;background:var(--surface);border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
-.model-list-table thead tr{background:linear-gradient(90deg,#06302B,#0A4A3F)}
+.model-list-table thead tr{background:var(--grad-thead)}
 .model-list-table th{padding:11px 15px;font-size:10.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.86);text-align:left;border:none}
 .model-list-table th.col-del{text-align:center;width:52px}
 .model-list-table tbody tr{border-bottom:1px solid var(--line-soft);transition:background .14s}
@@ -375,7 +381,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 }
 .frow input:focus,.frow select:focus,.frow textarea:focus{border-color:var(--brand);background:var(--surface-3);box-shadow:0 0 0 4px rgba(20,184,166,.14)}
 .modal-btns{display:flex;gap:10px;margin-top:20px}
-.mbtn-ok{flex:1;padding:12px;background:linear-gradient(135deg,#0D9488,#059669);border:none;color:#fff;border-radius:var(--r-md);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;box-shadow:0 10px 26px -12px rgba(20,184,166,1)}
+.mbtn-ok{flex:1;padding:12px;background:var(--grad-cta);border:none;color:#fff;border-radius:var(--r-md);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .16s;box-shadow:0 10px 26px -12px rgba(20,184,166,1)}
 .mbtn-ok:hover{filter:brightness(1.12)}
 .mbtn-no{flex:1;padding:12px;background:#E7EEEA;border:none;color:#64748B;border-radius:var(--r-md);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .16s}
 .mbtn-no:hover{background:#DCE6E0;color:#cbd5e1}
@@ -421,7 +427,7 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 /* ── TOAST ──────────────────────────────── */
 .toast{
   position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);
-  background:linear-gradient(135deg,#0D9488,#059669);color:#fff;padding:12px 26px;border-radius:999px;
+  background:var(--grad-cta);color:#fff;padding:12px 26px;border-radius:999px;
   font-size:13px;font-weight:700;opacity:0;transition:all .24s cubic-bezier(.2,.9,.3,1.2);z-index:500;
   pointer-events:none;white-space:nowrap;box-shadow:0 16px 40px -14px rgba(20,184,166,1);
   border:1px solid rgba(255,255,255,.16);
@@ -510,14 +516,14 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
 
   /* Sarlavha */
   .header{
-    background:linear-gradient(115deg,#06302B 0%,#0A4A3F 45%,#0E5A4C 78%,#8A5A06 100%)!important;
+    background:linear-gradient(115deg,#06302B 0%,#0A4A3F 38%,#0E5A4C 60%,#3730A3 84%,#8A5A06 100%)!important;
     border-bottom:none!important;border-radius:5pt 5pt 0 0!important;
     padding:6pt 12pt!important;box-shadow:none!important;flex:0 0 auto!important;
     display:flex!important;align-items:center;justify-content:space-between;
   }
   .header::before{display:none!important}
   .header::after{display:block!important;height:2.5pt!important;
-    background:linear-gradient(90deg,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)!important}
+    background:var(--grad-stripe)!important}
   .logo-img{height:32px!important;filter:none!important}
   .date-tag{
     background:rgba(255,255,255,.2)!important;border:.7pt solid rgba(255,255,255,.5)!important;
@@ -557,7 +563,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
     border-collapse:collapse!important;margin-top:0!important;
     table-layout:fixed!important;
   }
-  .price-tbl thead tr{background:linear-gradient(90deg,#0A4A3F,#0E5A4C 60%,#127663)!important}
+  .price-tbl thead tr{background:var(--grad-thead)!important}
   .price-tbl th{
     color:#fff!important;font-size:7pt!important;padding:3.5pt 6pt!important;
     letter-spacing:.6pt!important;border:none!important;
@@ -2175,14 +2181,14 @@ function buildSnapshotHtml(brand){
   });
   const th='padding:11px 18px;font-size:10.5px;font-weight:800;letter-spacing:1.8px;white-space:nowrap;border-bottom:1px solid '+(BAYRAM?'#174A4A':'#1D5A4C');
   const flagBar='<div style="height:5px;display:flex;width:100%"><div style="flex:1;background:#0099B5"></div><div style="width:3px;background:#CE1126"></div><div style="flex:.5;background:#F6EFDD"></div><div style="width:3px;background:#CE1126"></div><div style="flex:1;background:#1EB53A"></div></div>';
-  const headNormal=`<div style="background:linear-gradient(115deg,#FFFFFF 0%,#EAF6F1 45%,#DDF0E8 80%,#FBF1D8 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+  const headNormal=`<div style="background:linear-gradient(120deg,#FFFFFF 0%,#E9F7F3 20%,#E1EFFE 42%,#EFE3FB 66%,#FBF1D8 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
       <img src="data:image/png;base64,${LOGO_B64}" style="height:44px;width:auto;object-fit:contain;display:block">
       <div style="text-align:right">
         <div style="background:#D97706;color:#FFFFFF;font-size:12.5px;font-weight:800;padding:5px 15px;border-radius:20px;display:inline-block;margin-bottom:5px;letter-spacing:1.2px">${dateStr}</div>
         <div style="font-size:10px;color:#5C7268;letter-spacing:2.5px;font-weight:600">${FILIALS[FILIAL].toUpperCase()} \u00b7 1 YIL KAFOLAT</div>
       </div>
     </div>
-    <div style="height:3px;background:linear-gradient(90deg,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)"></div>`;
+    <div style="height:3px;background:linear-gradient(90deg,#6366F1,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)"></div>`;
   const headBayram=`<div style="position:relative;background:linear-gradient(112deg,#06202B 0%,#0A2E37 54%,#0C3A38 100%);padding:26px 28px;overflow:hidden">
       <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
         <div>
@@ -2210,7 +2216,7 @@ function buildSnapshotHtml(brand){
   const htmlSnap=`<div style="display:inline-block;min-width:${showUsd?820:760}px;background:#FFFFFF;font-family:'Inter',Arial,sans-serif">
     ${headBlock}
     <table style="width:100%;border-collapse:collapse">
-      <thead><tr style="background:${BAYRAM?'#06202B':'#0A241F'}">
+      <thead><tr style="background:${BAYRAM?'#06202B':'linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%)'}">
         <th style="${th};color:#DCE9E4;text-align:left">MODEL</th>
         <th style="${th};color:#FCD34D;text-align:right">NAQT NARXI</th>
         ${showUsd?`<th style="${th};color:#6EE7B7;text-align:right">USD</th>`:''}
@@ -2219,7 +2225,7 @@ function buildSnapshotHtml(brand){
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    <div style="background:${BAYRAM?'#06202B':'#0A241F'};padding:13px 24px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid ${BAYRAM?'#174A4A':'#1D5A4C'}">
+    <div style="background:${BAYRAM?'#06202B':'linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%)'};padding:13px 24px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid ${BAYRAM?'#174A4A':'#1D5A4C'}">
       <span style="font-size:11px;color:${BAYRAM?'#9FBEB8':'#B9CCC5'};font-weight:600">${FILIALS[FILIAL]} · t.me/ssmart_uz</span>
       <span style="font-size:11px;color:${BAYRAM?'#E4B65C':'#5EEAD4'};font-weight:800;letter-spacing:1px">${BAYRAM?'MUSTAQILLIK 35 YIL · BAYRAMINGIZ MUBORAK':'1 YIL KAFOLAT'}</span>
     </div>
