@@ -2400,6 +2400,8 @@ loadSaved();
 syncFilialUI();
 document.getElementById('kursDisp').textContent=fmt(KURS);
 applyBayram();
+/* TV kanallardagi kabi — sahifa ochiq turganda oddiy va 35 yillik ko'rinish o'zi almashib turadi */
+setInterval(function(){BAYRAM=!BAYRAM;applyBayram()},6000);
 render();
 initCloud();
 </script>
