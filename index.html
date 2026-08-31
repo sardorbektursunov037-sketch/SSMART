@@ -181,16 +181,16 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .tbtn:active{transform:translateY(1px)}
 .tbtn-add{background:var(--grad-cta);border-color:transparent;color:#fff;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
 .tbtn-add:hover{filter:brightness(1.12);box-shadow:0 10px 26px -8px rgba(20,184,166,1)}
-.tbtn-png{background:rgba(251,191,36,.06);border-color:rgba(251,191,36,.5);color:var(--gold)}
-.tbtn-png:hover{background:rgba(251,191,36,.16)}
-.tbtn-save{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.5);color:var(--green)}
-.tbtn-save:hover{background:rgba(52,211,153,.16)}
-.tbtn-kurs{background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.5);color:var(--sky)}
-.tbtn-kurs:hover{background:rgba(56,189,248,.16)}
-.tbtn-clear{background:rgba(248,113,113,.06);border-color:rgba(248,113,113,.5);color:var(--red)}
-.tbtn-clear:hover{background:rgba(248,113,113,.16)}
-.tbtn-paste{background:rgba(20,184,166,.06);border-color:rgba(20,184,166,.5);color:#0F766E}
-.tbtn-paste:hover{background:rgba(20,184,166,.16)}
+.tbtn-png{background:linear-gradient(135deg,#FBBF24,#D97706);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(217,119,6,.9)}
+.tbtn-png:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(217,119,6,1)}
+.tbtn-save{background:linear-gradient(135deg,#34D399,#047857);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(4,120,87,.9)}
+.tbtn-save:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(4,120,87,1)}
+.tbtn-kurs{background:linear-gradient(135deg,#38BDF8,#0369A1);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(3,105,161,.9)}
+.tbtn-kurs:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(3,105,161,1)}
+.tbtn-clear{background:linear-gradient(135deg,#FB7185,#DC2626);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(220,38,38,.9)}
+.tbtn-clear:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(220,38,38,1)}
+.tbtn-paste{background:linear-gradient(135deg,#2DD4BF,#0F766E);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(15,118,110,.9)}
+.tbtn-paste:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(15,118,110,1)}
 .cnt-lbl{
   font-size:11.5px;color:var(--muted);font-weight:600;margin-left:auto;
   background:rgba(13,148,136,.05);border:1px solid var(--line-soft);
@@ -436,9 +436,11 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 
 /* ── FOOTER ─────────────────────────────── */
 .footer{
+  position:relative;
   background:rgba(255,255,255,.88);border-top:1px solid var(--line-soft);padding:14px 28px;
   display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;
 }
+.footer::before{content:'';position:absolute;left:0;right:0;top:-2px;height:2px;background:var(--grad-stripe);opacity:.7}
 .footer-note{font-size:11px;color:var(--dim);letter-spacing:.5px}
 
 /* CLIENT / ADMIN MODE */
