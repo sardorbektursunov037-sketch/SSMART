@@ -1565,6 +1565,7 @@ function bindInputs(){
         data[brand][idx][2]=v;this.value=v;
         document.querySelectorAll(`.inp[data-field="usd"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>e.value=v);
       }else{
+        const oldPrice=data[brand][idx][1];
         const v=parseInt(this.value.replace(/\D/g,''))||0;
         data[brand][idx][1]=v;this.value=fmt(v);
         const usdVal=v?String(Math.round(v/KURS)):'';
@@ -1576,6 +1577,7 @@ function bindInputs(){
         });
         document.querySelectorAll(`.inp[data-field="naqt"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>e.value=fmt(v));
         document.querySelectorAll(`.inp[data-field="usd"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>e.value=usdVal);
+        notifyPriceChange(brand,data[brand][idx][0],oldPrice,v);
       }
       autoSave();
       toast('✓ Saqlandi');
@@ -2111,6 +2113,7 @@ function confirmAdd(){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelector('.tab[data-brand="'+brand+'"]').classList.add('active');
   document.getElementById('sec-'+brand).classList.add('active');
+  notifyNewModel(brand,model,price);
   toast('✓ Qo\u2019shildi');
 }
 function saveHTML(){
@@ -2297,6 +2300,30 @@ function buildTgCaption(extra){
   if(!extra)return {caption:TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES};
   const prefix=extra+'\n\n';
   return {caption:prefix+TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES.map(e=>({...e,offset:e.offset+prefix.length}))};
+}
+/* Yangi model qo'shilganda / narx o'zgarganda "ss" guruhiga avtomatik matnli xabar (premium animatsion belgi bilan) */
+async function tgNotify(text,emojiOffset,emojiId){
+  try{
+    const fd=new FormData();
+    fd.append('chat_id',TG_CHAT_ID);
+    fd.append('text',text);
+    fd.append('entities',JSON.stringify([{offset:emojiOffset,length:2,type:'custom_emoji',custom_emoji_id:emojiId}]));
+    await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,{method:'POST',body:fd});
+  }catch(e){console.error(e)}
+}
+function notifyPriceChange(brand,model,oldPrice,newPrice){
+  if(!oldPrice||oldPrice===newPrice)return;
+  const up=newPrice>oldPrice;
+  const head=(up?'Narxi ko’tarildi':'Narxi tushdi')+' — ';
+  const emoji=up?'🔼':'🔽';
+  const emojiId=up?'5449683594425410231':'5447183459602669338';
+  const text=head+emoji+'\n\n'+brandLabel[brand]+' — '+model+'\n'+fmt(oldPrice)+" so'm → "+fmt(newPrice)+" so'm";
+  tgNotify(text,head.length,emojiId);
+}
+function notifyNewModel(brand,model,price){
+  const head='Yangi model — ';
+  const text=head+'🆕'+'\n\n'+brandLabel[brand]+' — '+model+'\n'+fmt(price)+" so'm";
+  tgNotify(text,head.length,'5382357040008021292');
 }
 /* Telegramga faqat telefon brendlari yuboriladi — Noutbuk va Planshet chiqarilmaydi */
 async function prepareTelegramImages(){
