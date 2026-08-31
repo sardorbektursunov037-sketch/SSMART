@@ -1450,7 +1450,7 @@ function forcePush(){
   if(!db)return;
   db.collection(CLOUD_COL).doc(CLOUD_DOC).set({
     payload:snapshotPayload(), ts:Date.now()
-  }).catch(function(err){cloudStatus('\u2601 saqlanmadi','bad');console.warn(err)});
+  },{merge:true}).catch(function(err){cloudStatus('\u2601 saqlanmadi','bad');console.warn(err)});
 }
 
 function pushCloud(){
