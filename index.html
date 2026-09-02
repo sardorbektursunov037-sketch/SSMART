@@ -676,7 +676,6 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn tbtn-save admin-only" onclick="saveHTML()">⬇ HTML saqlash</button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
   <button class="tbtn tbtn-kurs admin-only" id="tgBtn" onclick="onTelegramBtnClick()">📤 Telegramga yuborish</button>
-  <button class="tbtn tbtn-kurs admin-only" id="tgCacheBtn" onclick="updateTgCache()">🤖 Bot rasmlarini yangilash</button>
   <button class="tbtn tbtn-clear admin-only" onclick="openClearAll()">🗑 Hammasini o'chirish</button>
   <button class="tbtn admin-only" onclick="resetSaved()" title="Fayldagi asl narxlarga qaytarish">↺ Asl holat</button>
   <button class="tbtn tbtn-lock" id="lockBtn" onclick="toggleAdmin()">🔒 Tahrirlash</button>
@@ -1383,7 +1382,7 @@ const FB_CFG={
 };
 const CLOUD_COL='ssmart', CLOUD_DOC='narx_v1';
 
-let db=null, applyingRemote=false, cloudTimer=null, pendingRemote=null;
+let db=null, applyingRemote=false, cloudTimer=null, pendingRemote=null, tgCacheTimer=null, tgCacheRunning=false;
 
 function cloudStatus(txt,cls){
   const el=document.getElementById('cloudInfo');
@@ -1426,6 +1425,10 @@ function pushCloud(){
   if(!isAdmin())return;
   clearTimeout(cloudTimer);
   cloudTimer=setTimeout(forcePush,700);
+  /* Narx/model o'zgarganda bot rasmlarini ham avtomatik yangilaymiz
+     (tez-tez tahrirlashda ortiqcha yuklanmasin deb, oxirgi o'zgarishdan keyin kutib turadi) */
+  clearTimeout(tgCacheTimer);
+  tgCacheTimer=setTimeout(updateTgCache,6000);
 }
 
 function applyRemote(o){
@@ -2204,6 +2207,9 @@ function doPng(brand){
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
 const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
 const TG_CHAT_ID='-5218610696';
+/* Bot-kesh rasmlarini (avtomatik yangilanadigan) hech qanday guruh/kanalga chiqmasdan,
+   faqat file_id olish uchun shaxsiy (admin) chatga yuboramiz — mijozlarga ko'rinmaydi */
+const TG_CACHE_CHAT_ID='6703011624';
 /* Har yuborishda rasmlar tagiga qo'shiladigan doimiy matn (shu yerdan tahrirlanadi) */
 /* Diqqat: matnni o'zgartirsangiz, pastdagi TG_DEFAULT_ENTITIES'dagi offset/length'lar ham mos kelmay qoladi
    (animatsion emoji va havolalar noto'g'ri joyga tushadi) — shuning uchun matnni tahrirlashdan saqlaning,
@@ -2333,15 +2339,13 @@ async function onTelegramBtnClick(){
 /* Bot ("samsung", "noutbuk" va h.k. deb yozganda avtomatik javob berishi) uchun
    har brend rasmini alohida yuborib, Telegram qaytargan file_id'larni bulutga saqlaydi */
 async function updateTgCache(){
-  const btn=document.getElementById('tgCacheBtn');
-  const prevText=btn.textContent;
-  btn.disabled=true;
+  if(tgCacheRunning)return;
+  tgCacheRunning=true;
   const wrap=document.getElementById('captureWrap');
   const cache={};
   try{
     for(const b of BRANDS){
       if(!data[b].length)continue;
-      btn.textContent='⏳ '+brandLabel[b]+'...';
       const {html:htmlSnap}=buildSnapshotHtml(b);
       wrap.innerHTML=htmlSnap;
       await new Promise(r=>setTimeout(r,300));
@@ -2350,7 +2354,7 @@ async function updateTgCache(){
       wrap.innerHTML='';
       if(!blob)continue;
       const fd=new FormData();
-      fd.append('chat_id',TG_CHAT_ID);
+      fd.append('chat_id',TG_CACHE_CHAT_ID);
       fd.append('photo',blob,b.toLowerCase()+'.png');
       const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
       const j=await res.json();
@@ -2361,13 +2365,10 @@ async function updateTgCache(){
     }
     if(!Object.keys(cache).length)throw new Error('Hech qanday rasm tayyorlanmadi');
     if(db)await db.collection(CLOUD_COL).doc(CLOUD_DOC).set({tgCache:cache,tgCacheTs:Date.now()},{merge:true});
-    toast('✓ Bot uchun rasmlar yangilandi');
   }catch(e){
     console.error(e);
-    toast('✕ Xatolik yuz berdi');
   }finally{
-    btn.disabled=false;
-    btn.textContent=prevText;
+    tgCacheRunning=false;
   }
 }
 document.querySelectorAll('.tab').forEach(tab=>{
