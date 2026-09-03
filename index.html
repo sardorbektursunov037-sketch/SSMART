@@ -187,8 +187,6 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .tbtn-add:hover{filter:brightness(1.12);box-shadow:0 10px 26px -8px rgba(20,184,166,1)}
 .tbtn-png{background:linear-gradient(135deg,#FBBF24,#D97706);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(217,119,6,.9)}
 .tbtn-png:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(217,119,6,1)}
-.tbtn-save{background:linear-gradient(135deg,#34D399,#047857);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(4,120,87,.9)}
-.tbtn-save:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(4,120,87,1)}
 .tbtn-kurs{background:linear-gradient(135deg,#38BDF8,#0369A1);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(3,105,161,.9)}
 .tbtn-kurs:hover{filter:brightness(1.1);box-shadow:0 10px 24px -8px rgba(3,105,161,1)}
 .tbtn-clear{background:linear-gradient(135deg,#FB7185,#DC2626);border-color:transparent;color:#fff;box-shadow:0 8px 20px -10px rgba(220,38,38,.9)}
@@ -673,7 +671,6 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn tbtn-png" onclick="openPng()">📷 PNG yuklab olish</button>
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
-  <button class="tbtn tbtn-save admin-only" onclick="saveHTML()">⬇ HTML saqlash</button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
   <button class="tbtn tbtn-kurs admin-only" id="tgBtn" onclick="onTelegramBtnClick()">📤 Telegramga yuborish</button>
   <button class="tbtn tbtn-clear admin-only" onclick="openClearAll()">🗑 Hammasini o'chirish</button>
@@ -2102,16 +2099,6 @@ function confirmAdd(){
   document.getElementById('sec-'+brand).classList.add('active');
   notifyNewModel(brand,model,price);
   toast('✓ Qo\u2019shildi');
-}
-function saveHTML(){
-  const src=document.documentElement.outerHTML;
-  const updated=src.replace(/let ALLDATA=\{[\s\S]*?\};/,'let ALLDATA='+JSON.stringify(ALLDATA)+';');
-  const blob=new Blob([updated],{type:'text/html;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  const d=new Date();
-  a.download='ssmart_narx_'+String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+ '.'+d.getFullYear()+'.html';
-  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
-  toast('✓ HTML saqlandi!');
 }
 function openPng(){updateCnt();document.getElementById('pngModal').classList.add('open')}
 function closePng(){document.getElementById('pngModal').classList.remove('open')}
