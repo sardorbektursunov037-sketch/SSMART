@@ -435,6 +435,24 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .paste-count{font-size:12px;color:var(--green);font-weight:700;margin-top:9px}
 .paste-err{font-size:12px;color:var(--red);font-weight:600;margin-top:9px}
 
+/* ── BANNER ─────────────────────────────── */
+.banner-box{width:520px}
+.banner-img-drop{
+  border:1.5px dashed var(--line);border-radius:var(--r-md);padding:16px;text-align:center;
+  cursor:pointer;background:var(--surface-2);transition:all .16s;
+}
+.banner-img-drop:hover{border-color:var(--brand);background:#F0FDF9}
+.banner-img-drop img{max-width:100%;max-height:180px;display:block;margin:0 auto;border-radius:8px}
+.banner-img-drop .ph{color:var(--dim);font-size:12.5px}
+.banner-img-remove{margin-top:8px;font-size:11.5px;color:var(--red);background:none;border:none;cursor:pointer;font-weight:700;font-family:inherit}
+.banner-muddat{display:flex;gap:9px}
+.banner-muddat label{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:var(--r-md);
+  border:1.5px solid var(--line);cursor:pointer;font-size:12.5px;font-weight:700;color:var(--muted);transition:all .14s;
+}
+.banner-muddat input{display:none}
+.banner-muddat label:has(input:checked){background:var(--grad-cta);border-color:transparent;color:#fff}
+
 /* ── TOAST ──────────────────────────────── */
 .toast{
   position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);
@@ -669,6 +687,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn admin-only" onclick="sortByName()">🔤 Nom bo'yicha saralash</button>
   <button class="tbtn admin-only" onclick="sortByPrice()">💰 Narx bo'yicha saralash</button>
   <button class="tbtn tbtn-png" onclick="openPng()">📷 PNG yuklab olish</button>
+  <button class="tbtn tbtn-paste admin-only" onclick="openBanner()">🖼 Banner yaratish</button>
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
@@ -1162,6 +1181,40 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
     <div class="modal-btns">
       <button class="mbtn-ok" onclick="confirmKurs()">Saqlash</button>
       <button class="mbtn-no" onclick="closeKurs()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER MODAL -->
+<div class="modal-bg" id="bannerModal">
+  <div class="modal banner-box">
+    <h3>🖼 Banner yaratish</h3>
+    <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
+      <select id="bnModelSel" onchange="onBannerModelPick()"><option value="">— ro'yxatdan tanlang —</option></select>
+    </div>
+    <div class="frow"><label>Model nomi</label><input id="bnModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
+    <div class="frow"><label>Naqt narxi (so'm)</label><input id="bnPrice" type="number" placeholder="Masalan: 6500000"></div>
+    <div class="frow"><label>To'lov muddati</label>
+      <div class="banner-muddat">
+        <label><input type="radio" name="bnMuddat" value="0" checked><span>Faqat naqt</span></label>
+        <label><input type="radio" name="bnMuddat" value="6"><span>6 oylik</span></label>
+        <label><input type="radio" name="bnMuddat" value="12"><span>12 oylik</span></label>
+      </div>
+    </div>
+    <div class="frow"><label>Rasm</label>
+      <div class="banner-img-drop" id="bnImgDrop" onclick="document.getElementById('bnImgFile').click()">
+        <span class="ph" id="bnImgPh">📷 Rasm tanlash uchun bosing</span>
+        <img id="bnImgPreview" style="display:none">
+      </div>
+      <input type="file" id="bnImgFile" accept="image/*" style="display:none" onchange="onBannerImgFile(this)">
+      <button type="button" class="banner-img-remove" id="bnImgRemoveBtn" style="display:none" onclick="removeBannerImg(event)">✕ Rasmni olib tashlash</button>
+    </div>
+    <div class="frow"><label>Xarakteristika (ixtiyoriy)</label>
+      <textarea id="bnSpecs" rows="4" placeholder="Masalan:&#10;Ekran: 6.7 AMOLED 120Hz&#10;Protsessor: Snapdragon 7 Gen 3&#10;Kamera: 50MP + 8MP&#10;Batareya: 5000 mAh"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="mbtn-ok" onclick="downloadBanner()">⬇ Banner yasash</button>
+      <button class="mbtn-no" onclick="closeBanner()">Bekor</button>
     </div>
   </div>
 </div>
@@ -2190,6 +2243,131 @@ function doPng(brand){
   toast('⏳ PNG tayyorlanmoqda...');
   downloadSnapshot(brand,brand.toLowerCase());
 }
+/* ================= BANNER YARATISH ================= */
+let bannerImgData=null;
+function populateBannerModelSelect(){
+  const sel=document.getElementById('bnModelSel');
+  sel.innerHTML='<option value="">— ro\'yxatdan tanlang —</option>';
+  BRANDS.forEach(b=>{
+    if(!data[b].length)return;
+    const og=document.createElement('optgroup');
+    og.label=brandLabel[b];
+    data[b].forEach((row,idx)=>{
+      const opt=document.createElement('option');
+      opt.value=b+'|'+idx;
+      opt.textContent=row[0];
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+}
+function openBanner(){
+  populateBannerModelSelect();
+  document.getElementById('bnModelSel').value='';
+  document.getElementById('bnModel').value='';
+  document.getElementById('bnPrice').value='';
+  document.getElementById('bnSpecs').value='';
+  const r0=document.querySelector('input[name="bnMuddat"][value="0"]');
+  if(r0)r0.checked=true;
+  removeBannerImg();
+  document.getElementById('bannerModal').classList.add('open');
+}
+function closeBanner(){document.getElementById('bannerModal').classList.remove('open')}
+function onBannerModelPick(){
+  const v=document.getElementById('bnModelSel').value;
+  if(!v)return;
+  const [b,idx]=v.split('|');
+  const row=data[b][+idx];
+  if(!row)return;
+  document.getElementById('bnModel').value=row[0];
+  document.getElementById('bnPrice').value=row[1];
+}
+function onBannerImgFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    bannerImgData=e.target.result;
+    const img=document.getElementById('bnImgPreview');
+    img.src=bannerImgData;img.style.display='block';
+    document.getElementById('bnImgPh').style.display='none';
+    document.getElementById('bnImgRemoveBtn').style.display='inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeBannerImg(e){
+  if(e)e.stopPropagation();
+  bannerImgData=null;
+  const img=document.getElementById('bnImgPreview');
+  img.src='';img.style.display='none';
+  document.getElementById('bnImgPh').style.display='';
+  document.getElementById('bnImgRemoveBtn').style.display='none';
+  document.getElementById('bnImgFile').value='';
+}
+function buildBannerHtml(){
+  const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const model=escHtml(document.getElementById('bnModel').value.trim()||'Model nomi');
+  const price=+document.getElementById('bnPrice').value||0;
+  const muddatEl=document.querySelector('input[name="bnMuddat"]:checked');
+  const muddat=muddatEl?muddatEl.value:'0';
+  const specs=document.getElementById('bnSpecs').value.trim();
+  const specsLines=specs?specs.split('\n').map(s=>escHtml(s.trim())).filter(Boolean):[];
+  let muddatBlock='';
+  if(muddat==='6'){
+    muddatBlock=`<div style="margin-top:12px;background:rgba(56,189,248,.12);border:1.5px solid rgba(56,189,248,.4);border-radius:12px;padding:10px 18px;display:inline-block">
+      <span style="font-size:13px;color:#0369A1;font-weight:800;letter-spacing:.4px">6 OYGA — ${fmt(m6(price))} so'm/oy</span>
+    </div>`;
+  }else if(muddat==='12'){
+    muddatBlock=`<div style="margin-top:12px;background:rgba(52,211,153,.12);border:1.5px solid rgba(52,211,153,.4);border-radius:12px;padding:10px 18px;display:inline-block">
+      <span style="font-size:13px;color:#047857;font-weight:800;letter-spacing:.4px">12 OYGA — ${fmt(m12(price))} so'm/oy</span>
+    </div>`;
+  }
+  const specsBlock=specsLines.length?`<div style="margin-top:20px;text-align:left;background:#F8FAF9;border:1px solid #E3ECE7;border-radius:12px;padding:6px 18px">
+    ${specsLines.map(l=>`<div style="font-size:13px;color:#334155;padding:8px 0;border-bottom:1px solid #EEF3F0">${l}</div>`).join('')}
+  </div>`:'';
+  const imgBlock=bannerImgData?`<img src="${bannerImgData}" style="max-width:100%;max-height:360px;object-fit:contain;display:block;margin:0 auto">`:'';
+  return `<div style="display:inline-block;width:640px;background:#FFFFFF;font-family:'Inter',Arial,sans-serif">
+    <div style="background:linear-gradient(120deg,#FFFFFF 0%,#E9F7F3 20%,#E1EFFE 42%,#EFE3FB 66%,#FBF1D8 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
+      <img src="data:image/png;base64,${LOGO_B64}" style="height:38px;width:auto;object-fit:contain;display:block">
+      <div style="font-size:10px;color:#5C7268;letter-spacing:2.5px;font-weight:700">YANGI TAKLIF</div>
+    </div>
+    <div style="height:3px;background:linear-gradient(90deg,#6366F1,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)"></div>
+    <div style="padding:28px 24px;text-align:center">
+      ${imgBlock}
+      <div style="margin-top:18px;font-size:21px;font-weight:800;color:#14201B">${model}</div>
+      <div style="margin-top:8px;font-size:32px;font-weight:800;color:#B45309">${fmt(price)} so'm</div>
+      ${muddatBlock}
+      ${specsBlock}
+    </div>
+    <div style="background:linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%);padding:13px 24px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:11px;color:#B9CCC5;font-weight:600">${FILIALS[FILIAL]} · t.me/ssmart_uz</span>
+      <span style="font-size:11px;color:#5EEAD4;font-weight:800;letter-spacing:1px">1 YIL KAFOLAT</span>
+    </div>
+  </div>`;
+}
+function downloadBanner(){
+  const model=document.getElementById('bnModel').value.trim();
+  if(!model){toast('⚠ Model nomini kiriting');return}
+  const html=buildBannerHtml();
+  const wrap=document.getElementById('captureWrap');
+  wrap.innerHTML=html;
+  toast('⏳ Banner tayyorlanmoqda...');
+  setTimeout(()=>{
+    html2canvas(wrap.firstChild,{scale:3,useCORS:true,backgroundColor:'#FFFFFF',logging:false,imageTimeout:0}).then(canvas=>{
+      canvas.toBlob(blob=>{
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);
+        const d=new Date();
+        a.download='ssmart_banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.png';
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+        wrap.innerHTML='';
+        closeBanner();
+        toast('✓ Banner saqlandi!');
+      },'image/png');
+    });
+  },300);
+}
 /* ================= TELEGRAMGA YUBORISH ================= */
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
 const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
@@ -2387,6 +2565,7 @@ document.getElementById('copyModal').addEventListener('click',function(e){if(e.t
 document.getElementById('pngModal').addEventListener('click',function(e){if(e.target===this)closePng()});
 document.getElementById('clearAllModal').addEventListener('click',function(e){if(e.target===this)closeClearAll()});
 document.getElementById('kursModal').addEventListener('click',function(e){if(e.target===this)closeKurs()});
+document.getElementById('bannerModal').addEventListener('click',function(e){if(e.target===this)closeBanner()});
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
 const d=new Date();
 document.getElementById('dateDisp').textContent=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
