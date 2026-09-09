@@ -257,6 +257,10 @@ body.admin .tbtn-lock{background:rgba(52,211,153,.10);border-color:rgba(52,211,1
 .price-tbl tbody tr:last-child td{border-bottom:none}
 .price-tbl td:first-child{text-align:left}
 .price-tbl td.col-del{text-align:center}
+/* Narxi hali kiritilmagan model — mijozga ko'rinmaydi, adminga esa ajratib ko'rsatiladi */
+body:not(.admin) tr[data-nopricing]{display:none!important}
+body.admin tr[data-nopricing] td:first-child{border-left:3px dashed #F59E0B}
+body.admin tr[data-nopricing]{background:rgba(251,191,36,.05)}
 
 .grp-row td{
   padding:11px 16px;font-size:12.5px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;
@@ -543,7 +547,8 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   /* Keraksiz elementlar */
   .tabs,.toolbar,.filial-bar,.modal-bg,.png-modal,.paste-modal,#plModal,#copyModal,.toast,.capture-wrap,
   .cmp-img-section,.cmp-text-section,.model-list-section,
-  .col-del,.btn-del,.btn-mv,.row-tools,.admin-only,.tbtn,.search-box,.cnt-lbl,.cloud-info,.save-info{display:none!important}
+  .col-del,.btn-del,.btn-mv,.row-tools,.admin-only,.tbtn,.search-box,.cnt-lbl,.cloud-info,.save-info,
+  tr[data-nopricing]{display:none!important}
 
   /* Sarlavha */
   .header{
@@ -1559,15 +1564,16 @@ function makeRow(brand,idx,forAll){
   const [model,price,usd]=data[brand][idx];
   const tr=document.createElement('tr');
   tr.dataset.brand=brand;tr.dataset.idx=idx;tr.dataset.model=model.toLowerCase();
+  if(!price)tr.dataset.nopricing='1';
   // NOUTBUK va PLANSHET bo'limida USD ustuni yo'q; ALL jadvalida ustunlar mos kelishi uchun bo'sh katak
   const usdTd=(brand==='NOUTBUK'||brand==='PLANSHET')
     ?(forAll?'<td></td>':'')
     :`<td class="td-usd-wrap"><input class="inp inp-usd" value="${usd||''}" placeholder="0" data-field="usd" data-brand="${brand}" data-idx="${idx}" style="text-align:right"></td>`;
   tr.innerHTML=`<td><input class="inp inp-model" value="${model}" data-field="model" data-brand="${brand}" data-idx="${idx}"></td>
-    <td><input class="inp inp-naqt" value="${fmt(price)}" data-field="naqt" data-brand="${brand}" data-idx="${idx}" style="text-align:right"></td>
+    <td><input class="inp inp-naqt" value="${price?fmt(price):''}" placeholder="${price?'':'Narx kiriting'}" data-field="naqt" data-brand="${brand}" data-idx="${idx}" style="text-align:right"></td>
     ${usdTd}
-    <td class="td-m6">${fmt(m6(price))}</td>
-    <td class="td-m12">${fmt(m12(price))}</td>
+    <td class="td-m6">${price?fmt(m6(price)):'—'}</td>
+    <td class="td-m12">${price?fmt(m12(price)):'—'}</td>
     <td class="col-del"><span class="row-tools"><button class="btn-mv" onclick="moveRow('${brand}',${idx},-1)" title="Yuqoriga">▲</button><button class="btn-mv" onclick="moveRow('${brand}',${idx},1)" title="Pastga">▼</button><button class="btn-del" onclick="delRow('${brand}',${idx})">✕</button></span></td>`;
   return tr;
 }
@@ -1606,15 +1612,16 @@ function bindInputs(){
       }else{
         const oldPrice=data[brand][idx][1];
         const v=parseInt(this.value.replace(/\D/g,''))||0;
-        data[brand][idx][1]=v;this.value=fmt(v);
+        data[brand][idx][1]=v;
         const usdVal=v?String(Math.round(v/KURS)):'';
         data[brand][idx][2]=usdVal;
         document.querySelectorAll(`tr[data-brand="${brand}"][data-idx="${idx}"]`).forEach(tr=>{
-          const tds=tr.querySelectorAll('td');
-          if(tds[3])tds[3].textContent=fmt(m6(v));
-          if(tds[4])tds[4].textContent=fmt(m12(v));
+          if(v)delete tr.dataset.nopricing;else tr.dataset.nopricing='1';
+          const m6td=tr.querySelector('.td-m6'),m12td=tr.querySelector('.td-m12');
+          if(m6td)m6td.textContent=v?fmt(m6(v)):'—';
+          if(m12td)m12td.textContent=v?fmt(m12(v)):'—';
         });
-        document.querySelectorAll(`.inp[data-field="naqt"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>e.value=fmt(v));
+        document.querySelectorAll(`.inp[data-field="naqt"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>{e.value=v?fmt(v):'';e.placeholder=v?'':'Narx kiriting';});
         document.querySelectorAll(`.inp[data-field="usd"][data-brand="${brand}"][data-idx="${idx}"]`).forEach(e=>e.value=usdVal);
         notifyPriceChange(brand,data[brand][idx][0],oldPrice,v);
       }
@@ -1665,17 +1672,18 @@ function confirmClearAll(){
   document.getElementById('searchInp').value='';
   toast('✓ Hammasi o\u2019chirildi');
 }
+function pricedCount(arr){return arr.filter(r=>r[1]).length}
 function updateCnt(){
-  const t=Object.values(data).reduce((a,b)=>a+b.length,0);
+  const t=Object.values(data).reduce((a,b)=>a+pricedCount(b),0);
   document.getElementById('cntLbl').textContent='Jami '+t+' ta model';
   document.getElementById('cnt-all').textContent=t+' ta';
-  document.getElementById('cnt-s').textContent=data.SAMSUNG.length+' ta';
-  document.getElementById('cnt-x').textContent=data.XIAOMI.length+' ta';
-  document.getElementById('cnt-h').textContent=data.HONOR.length+' ta';
-  document.getElementById('cnt-p').textContent=data.POCO.length+' ta';
-  document.getElementById('cnt-a').textContent=data.APPLE.length+' ta';
-  document.getElementById('cnt-n').textContent=data.NOUTBUK.length+' ta';
-  document.getElementById('cnt-pl').textContent=data.PLANSHET.length+' ta';
+  document.getElementById('cnt-s').textContent=pricedCount(data.SAMSUNG)+' ta';
+  document.getElementById('cnt-x').textContent=pricedCount(data.XIAOMI)+' ta';
+  document.getElementById('cnt-h').textContent=pricedCount(data.HONOR)+' ta';
+  document.getElementById('cnt-p').textContent=pricedCount(data.POCO)+' ta';
+  document.getElementById('cnt-a').textContent=pricedCount(data.APPLE)+' ta';
+  document.getElementById('cnt-n').textContent=pricedCount(data.NOUTBUK)+' ta';
+  document.getElementById('cnt-pl').textContent=pricedCount(data.PLANSHET)+' ta';
 }
 function openAdd(){document.getElementById('addModal').classList.add('open')}
 function closeAdd(){document.getElementById('addModal').classList.remove('open')}
@@ -1747,13 +1755,14 @@ function buildTextList(){
   let cnt=0;
   if(scope==='ALL'){
     BRANDS.forEach(b=>{
-      if(!data[b].length)return;
+      const priced=data[b].filter(r=>r[1]);
+      if(!priced.length)return;
       out.push('\u25b6 '+brandLabel[b].toUpperCase());
-      data[b].forEach(r=>{out.push(line(r));cnt++});
+      priced.forEach(r=>{out.push(line(r));cnt++});
       out.push('');
     });
   }else if(data[scope]){
-    data[scope].forEach(r=>{out.push(line(r));cnt++});
+    data[scope].filter(r=>r[1]).forEach(r=>{out.push(line(r));cnt++});
   }
   return {text:out.join('\n').trim(),count:cnt};
 }
@@ -2142,16 +2151,15 @@ function confirmAdd(){
   const model=document.getElementById('newModel').value.trim();
   const price=parseInt(document.getElementById('newPrice').value)||0;
   if(!model){alert('Model nomini kiriting!');return}
-  if(!price){alert('Narxni kiriting!');return}
-  data[brand].push([model,price,String(Math.round(price/KURS))]);closeAdd();
+  data[brand].push([model,price,price?String(Math.round(price/KURS)):'']);closeAdd();
   document.getElementById('newModel').value='';document.getElementById('newPrice').value='';
   render();
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelector('.tab[data-brand="'+brand+'"]').classList.add('active');
   document.getElementById('sec-'+brand).classList.add('active');
-  notifyNewModel(brand,model,price);
-  toast('✓ Qo\u2019shildi');
+  if(price)notifyNewModel(brand,model,price);
+  toast(price?'✓ Qo\u2019shildi':'✓ Qo\u2019shildi (narx keyinroq kiritilsin)');
 }
 function openPng(){updateCnt();document.getElementById('pngModal').classList.add('open')}
 function closePng(){document.getElementById('pngModal').classList.remove('open')}
@@ -2166,10 +2174,11 @@ function buildSnapshotHtml(brand){
   const brandBgSolid={SAMSUNG:'#DBEAFE',XIAOMI:'#FEE2E2',HONOR:'#CCFBF1',POCO:'#F3E8FF',APPLE:'#E2E8F0',NOUTBUK:'#FEF3C7',PLANSHET:'#CFFAFE'};
   let rows='';
   brands.forEach(b=>{
-    if(!data[b].length)return;
+    const priced=data[b].filter(r=>r[1]);
+    if(!priced.length)return;
     const col=brandColor[b];
-    rows+=`<tr><td colspan="${colCount}" style="background:${brandBgSolid[b]};padding:10px 18px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;color:${col};border-left:4px solid ${col};border-bottom:1px solid #E3ECE7;text-transform:uppercase;white-space:nowrap">${brandLabel[b]}&nbsp;&nbsp;<span style="font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#8DA198">${data[b].length} ta model</span></td></tr>`;
-    data[b].forEach(([model,price,usd],ri)=>{
+    rows+=`<tr><td colspan="${colCount}" style="background:${brandBgSolid[b]};padding:10px 18px;font-weight:800;font-size:12.5px;letter-spacing:2.5px;color:${col};border-left:4px solid ${col};border-bottom:1px solid #E3ECE7;text-transform:uppercase;white-space:nowrap">${brandLabel[b]}&nbsp;&nbsp;<span style="font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#8DA198">${priced.length} ta model</span></td></tr>`;
+    priced.forEach(([model,price,usd],ri)=>{
       const rowBg=ri%2===0?'#FFFFFF':'#F3F9F6';
       const usdCell=(showUsd&&b!=='NOUTBUK'&&b!=='PLANSHET'&&usd)?('$'+usd):'';
       rows+=`<tr style="background:${rowBg}">
@@ -2423,7 +2432,9 @@ async function tgNotify(text,emojiOffset,emojiId){
   }catch(e){console.error(e)}
 }
 function notifyPriceChange(brand,model,oldPrice,newPrice){
-  if(!oldPrice||oldPrice===newPrice)return;
+  if(oldPrice===newPrice)return;
+  if(!oldPrice){if(newPrice)notifyNewModel(brand,model,newPrice);return}
+  if(!newPrice)return;
   const up=newPrice>oldPrice;
   const head=(up?'Narxi ko’tarildi':'Narxi tushdi')+' — ';
   const emoji=up?'🔼':'🔽';
