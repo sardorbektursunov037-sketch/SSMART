@@ -1198,6 +1198,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <select id="bnModelSel" onchange="onBannerModelPick()"><option value="">— ro'yxatdan tanlang —</option></select>
     </div>
     <div class="frow"><label>Model nomi</label><input id="bnModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
+    <div class="frow"><label>Shior (ixtiyoriy)</label><input id="bnTagline" type="text" placeholder="Masalan: Zamonaviy dizayn — yuqori imkoniyatlar"></div>
     <div class="frow"><label>Naqt narxi (so'm)</label><input id="bnPrice" type="number" placeholder="Masalan: 6500000"></div>
     <div class="frow"><label>To'lov muddati</label>
       <div class="banner-muddat">
@@ -1215,7 +1216,8 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <button type="button" class="banner-img-remove" id="bnImgRemoveBtn" style="display:none" onclick="removeBannerImg(event)">✕ Rasmni olib tashlash</button>
     </div>
     <div class="frow"><label>Xarakteristika (ixtiyoriy)</label>
-      <textarea id="bnSpecs" rows="4" placeholder="Masalan:&#10;Ekran: 6.7 AMOLED 120Hz&#10;Protsessor: Snapdragon 7 Gen 3&#10;Kamera: 50MP + 8MP&#10;Batareya: 5000 mAh"></textarea>
+      <textarea id="bnSpecs" rows="5" placeholder="Har birini alohida qatorga yozing:&#10;Operativ xotira: 6 GB&#10;Xotira: 128 GB&#10;Kamera: 50 MP&#10;Batareya: 6000 mAh&#10;Ekran: 6.78 HD+"></textarea>
+      <p style="font-size:11px;color:#8DA198;margin-top:5px;line-height:1.5">Har bir qator alohida rasmcha (ikonka) bilan chiqadi — xotira, kamera, batareya, ekran, protsessor kabi so'zlarni ishlatsangiz mos belgi avtomatik tanlanadi.</p>
     </div>
     <div class="modal-btns">
       <button class="mbtn-ok" onclick="downloadBanner()">⬇ Banner yasash</button>
@@ -2274,6 +2276,7 @@ function openBanner(){
   populateBannerModelSelect();
   document.getElementById('bnModelSel').value='';
   document.getElementById('bnModel').value='';
+  document.getElementById('bnTagline').value='';
   document.getElementById('bnPrice').value='';
   document.getElementById('bnSpecs').value='';
   const r0=document.querySelector('input[name="bnMuddat"][value="0"]');
@@ -2313,44 +2316,83 @@ function removeBannerImg(e){
   document.getElementById('bnImgRemoveBtn').style.display='none';
   document.getElementById('bnImgFile').value='';
 }
+function bannerSpecIcon(line){
+  const t=line.toLowerCase();
+  if(t.indexOf('ram')!==-1||t.indexOf('operativ')!==-1)return '🧠';
+  if(t.indexOf('xotira')!==-1||t.indexOf('storage')!==-1||t.indexOf('rom')!==-1)return '💾';
+  if(t.indexOf('kamera')!==-1||t.indexOf('camera')!==-1||t.indexOf('mp')!==-1)return '📷';
+  if(t.indexOf('batare')!==-1||t.indexOf('mah')!==-1)return '🔋';
+  if(t.indexOf('ekran')!==-1||t.indexOf('display')!==-1||t.indexOf('dyuym')!==-1||t.indexOf('"')!==-1)return '📱';
+  if(t.indexOf('protsessor')!==-1||t.indexOf('chipset')!==-1||t.indexOf('cpu')!==-1)return '⚙️';
+  if(t.indexOf('nfc')!==-1)return '📶';
+  return '✔️';
+}
 function buildBannerHtml(){
   const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const model=escHtml(document.getElementById('bnModel').value.trim()||'Model nomi');
+  const tagline=escHtml(document.getElementById('bnTagline').value.trim());
   const price=+document.getElementById('bnPrice').value||0;
   const muddatEl=document.querySelector('input[name="bnMuddat"]:checked');
   const muddat=muddatEl?muddatEl.value:'0';
   const specs=document.getElementById('bnSpecs').value.trim();
   const specsLines=specs?specs.split('\n').map(s=>escHtml(s.trim())).filter(Boolean):[];
-  let muddatBlock='';
-  if(muddat==='6'){
-    muddatBlock=`<div style="margin-top:12px;background:rgba(56,189,248,.12);border:1.5px solid rgba(56,189,248,.4);border-radius:12px;padding:10px 18px;display:inline-block">
-      <span style="font-size:13px;color:#0369A1;font-weight:800;letter-spacing:.4px">6 OYGA — ${fmt(m6(price))} so'm/oy</span>
+
+  const specsGrid=specsLines.length?`<div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;text-align:left">
+    ${specsLines.map(l=>`<div style="flex:1 1 45%;min-width:180px;display:flex;align-items:center;gap:10px;background:#F8FAF9;border:1px solid #E3ECE7;border-radius:12px;padding:10px 14px;box-sizing:border-box">
+      <span style="font-size:20px;line-height:1">${bannerSpecIcon(l)}</span>
+      <span style="font-size:12.5px;color:#334155;font-weight:600">${l}</span>
+    </div>`).join('')}
+  </div>`:'';
+
+  let priceBlock;
+  if(muddat==='0'||!price){
+    priceBlock=`<div style="margin-top:22px;background:#14201B;border-radius:14px;padding:14px 20px;text-align:center">
+      <div style="font-size:11px;color:#E4B65C;font-weight:800;letter-spacing:1.5px">🪙 NAQTGA</div>
+      <div style="font-size:24px;color:#fff;font-weight:800;margin-top:3px">${fmt(price)} so'm</div>
     </div>`;
-  }else if(muddat==='12'){
-    muddatBlock=`<div style="margin-top:12px;background:rgba(52,211,153,.12);border:1.5px solid rgba(52,211,153,.4);border-radius:12px;padding:10px 18px;display:inline-block">
-      <span style="font-size:13px;color:#047857;font-weight:800;letter-spacing:.4px">12 OYGA — ${fmt(m12(price))} so'm/oy</span>
+  }else{
+    const monthly=muddat==='6'?m6(price):m12(price);
+    priceBlock=`<div style="margin-top:22px;display:flex;gap:10px">
+      <div style="flex:1;background:#14201B;border-radius:14px;padding:14px 12px;text-align:center">
+        <div style="font-size:10.5px;color:#E4B65C;font-weight:800;letter-spacing:1.2px">🪙 NAQTGA</div>
+        <div style="font-size:19px;color:#fff;font-weight:800;margin-top:3px">${fmt(price)} so'm</div>
+      </div>
+      <div style="flex:1;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:14px;padding:14px 12px;text-align:center">
+        <div style="font-size:10.5px;color:#E0F2FE;font-weight:800;letter-spacing:1.2px">📅 MUDDATLI TO'LOV</div>
+        <div style="font-size:16px;color:#fff;font-weight:800;margin-top:3px">${fmt(monthly)} so'm/oy · ${muddat} oy</div>
+      </div>
     </div>`;
   }
-  const specsBlock=specsLines.length?`<div style="margin-top:20px;text-align:left;background:#F8FAF9;border:1px solid #E3ECE7;border-radius:12px;padding:6px 18px">
-    ${specsLines.map(l=>`<div style="font-size:13px;color:#334155;padding:8px 0;border-bottom:1px solid #EEF3F0">${l}</div>`).join('')}
-  </div>`:'';
-  const imgBlock=bannerImgData?`<img src="${bannerImgData}" style="max-width:100%;max-height:360px;object-fit:contain;display:block;margin:0 auto">`:'';
+
+  const imgBlock=bannerImgData
+    ?`<img src="${bannerImgData}" style="max-width:100%;max-height:320px;object-fit:contain;display:block;margin:0 auto">`
+    :`<div style="height:220px;display:flex;align-items:center;justify-content:center;color:#B4C5BB;font-size:13px;background:#F3F7F5;border-radius:16px">Rasm qo'shilmagan</div>`;
+
+  const taglineBlock=tagline?`<div style="margin-top:6px;font-size:13px;color:#5C7268;font-weight:600">${tagline}</div>`:'';
+
   return `<div style="display:inline-block;width:640px;background:#FFFFFF;font-family:'Inter',Arial,sans-serif">
     <div style="background:linear-gradient(120deg,#FFFFFF 0%,#E9F7F3 20%,#E1EFFE 42%,#EFE3FB 66%,#FBF1D8 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
-      <img src="data:image/png;base64,${LOGO_B64}" style="height:38px;width:auto;object-fit:contain;display:block">
-      <div style="font-size:10px;color:#5C7268;letter-spacing:2.5px;font-weight:700">YANGI TAKLIF</div>
+      <img src="data:image/png;base64,${LOGO_B64}" style="height:36px;width:auto;object-fit:contain;display:block">
+      <div style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.6px;padding:6px 14px;border-radius:999px;white-space:nowrap">SIFATLI VA ISHONCHLI</div>
     </div>
     <div style="height:3px;background:linear-gradient(90deg,#6366F1,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)"></div>
-    <div style="padding:28px 24px;text-align:center">
-      ${imgBlock}
-      <div style="margin-top:18px;font-size:21px;font-weight:800;color:#14201B">${model}</div>
-      <div style="margin-top:8px;font-size:32px;font-weight:800;color:#B45309">${fmt(price)} so'm</div>
-      ${muddatBlock}
-      ${specsBlock}
+    <div style="padding:26px 24px 30px;text-align:center">
+      <div style="font-size:24px;font-weight:800;color:#14201B;letter-spacing:.3px">${model}</div>
+      ${taglineBlock}
+      <div style="margin-top:18px">${imgBlock}</div>
+      ${specsGrid}
+      ${priceBlock}
     </div>
-    <div style="background:linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%);padding:13px 24px;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:11px;color:#B9CCC5;font-weight:600">${FILIALS[FILIAL]} · t.me/ssmart_uz</span>
-      <span style="font-size:11px;color:#5EEAD4;font-weight:800;letter-spacing:1px">1 YIL KAFOLAT</span>
+    <div style="background:linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%);padding:14px 24px">
+      <div style="display:flex;justify-content:center;gap:22px;margin-bottom:10px">
+        <span style="font-size:11px;color:#B9CCC5;font-weight:700">🛡 Sifat kafolati</span>
+        <span style="font-size:11px;color:#B9CCC5;font-weight:700">✅ Ishonchli</span>
+        <span style="font-size:11px;color:#B9CCC5;font-weight:700">💳 Qulay narx</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:11px;color:#B9CCC5;font-weight:600">${FILIALS[FILIAL]} · t.me/ssmart_uz</span>
+        <span style="font-size:11px;color:#5EEAD4;font-weight:800;letter-spacing:1px">1 YIL KAFOLAT</span>
+      </div>
     </div>
   </div>`;
 }
