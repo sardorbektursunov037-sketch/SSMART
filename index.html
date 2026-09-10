@@ -1219,8 +1219,9 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <textarea id="bnSpecs" rows="5" placeholder="Har birini alohida qatorga yozing:&#10;Operativ xotira: 6 GB&#10;Xotira: 128 GB&#10;Kamera: 50 MP&#10;Batareya: 6000 mAh&#10;Ekran: 6.78 HD+"></textarea>
       <p style="font-size:11px;color:#8DA198;margin-top:5px;line-height:1.5">Har bir qator alohida rasmcha (ikonka) bilan chiqadi — xotira, kamera, batareya, ekran, protsessor kabi so'zlarni ishlatsangiz mos belgi avtomatik tanlanadi.</p>
     </div>
-    <div class="modal-btns">
-      <button class="mbtn-ok" onclick="downloadBanner()">⬇ Banner yasash</button>
+    <div class="modal-btns" style="flex-wrap:wrap">
+      <button class="mbtn-ok" id="bnSendBtn" onclick="sendBannerToTelegram()" style="flex:1 1 100%">📤 Telegramga yuborish</button>
+      <button class="mbtn-ok" onclick="downloadBanner()" style="background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ Kompyuterga yuklash</button>
       <button class="mbtn-no" onclick="closeBanner()">Bekor</button>
     </div>
   </div>
@@ -2396,28 +2397,41 @@ function buildBannerHtml(){
     </div>
   </div>`;
 }
-function downloadBanner(){
-  const model=document.getElementById('bnModel').value.trim();
-  if(!model){toast('⚠ Model nomini kiriting');return}
+async function renderBannerCanvas(){
   const html=buildBannerHtml();
   const wrap=document.getElementById('captureWrap');
   wrap.innerHTML=html;
+  await new Promise(r=>setTimeout(r,80));
+  const imgs=wrap.querySelectorAll('img');
+  await Promise.all(Array.from(imgs).map(img=>{
+    if(img.complete)return img.decode?img.decode().catch(()=>{}):Promise.resolve();
+    return new Promise(res=>{img.onload=res;img.onerror=res;});
+  }));
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
+  const canvas=await html2canvas(wrap.firstChild,{scale:3,useCORS:true,backgroundColor:'#FFFFFF',logging:false,imageTimeout:0});
+  wrap.innerHTML='';
+  return canvas;
+}
+async function downloadBanner(){
+  const model=document.getElementById('bnModel').value.trim();
+  if(!model){toast('⚠ Model nomini kiriting');return}
   toast('⏳ Banner tayyorlanmoqda...');
-  setTimeout(()=>{
-    html2canvas(wrap.firstChild,{scale:3,useCORS:true,backgroundColor:'#FFFFFF',logging:false,imageTimeout:0}).then(canvas=>{
-      canvas.toBlob(blob=>{
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        const d=new Date();
-        a.download='ssmart_banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.png';
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
-        wrap.innerHTML='';
-        closeBanner();
-        toast('✓ Banner saqlandi!');
-      },'image/png');
-    });
-  },300);
+  try{
+    const canvas=await renderBannerCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Banner tayyorlanmadi');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const d=new Date();
+    a.download='ssmart_banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    closeBanner();
+    toast('✓ Banner saqlandi!');
+  }catch(e){
+    console.error(e);
+    toast('✕ Banner yaratishda xatolik');
+  }
 }
 /* ================= TELEGRAMGA YUBORISH ================= */
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
@@ -2552,6 +2566,32 @@ async function onTelegramBtnClick(){
   }finally{
     btn.disabled=false;
     btn.textContent=prevText;
+  }
+}
+async function sendBannerToTelegram(){
+  const model=document.getElementById('bnModel').value.trim();
+  if(!model){toast('⚠ Model nomini kiriting');return}
+  const btn=document.getElementById('bnSendBtn');
+  const prevText=btn?btn.textContent:null;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Tayyorlanmoqda...';}
+  try{
+    const canvas=await renderBannerCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Banner tayyorlanmadi');
+    if(btn)btn.textContent='📤 Yuborilmoqda...';
+    const fd=new FormData();
+    fd.append('chat_id',TG_CHAT_ID);
+    fd.append('photo',blob,'banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'.png');
+    const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+    const j=await res.json();
+    if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
+    closeBanner();
+    toast('✓ Banner Telegramga yuborildi');
+  }catch(e){
+    console.error(e);
+    toast('✕ Telegramga yuborishda xatolik');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=prevText;}
   }
 }
 /* Bot ("samsung", "noutbuk" va h.k. deb yozganda avtomatik javob berishi) uchun
