@@ -1700,9 +1700,7 @@ function confirmKurs(){
   const v=parseInt(document.getElementById('newKurs').value)||0;
   if(!v){alert('Kursni kiriting!');return}
   KURS=v;
-  BRANDS.forEach(b=>{
-    data[b].forEach(row=>{row[2]=row[1]?String(Math.round(row[1]/KURS)):''});
-  });
+/* Diqqat: mavjud mahsulotlarning $ narxi bu yerda qayta hisoblanmaydi -- kurs faqat keyingi yangi/tahrirlangan (UZS) narxlar uchun ishlatiladi */
   document.getElementById('kursDisp').textContent=fmt(KURS);
   closeKurs();
   render();
