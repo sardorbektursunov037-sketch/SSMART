@@ -1236,6 +1236,17 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <select id="stModelSel" onchange="onSaleTagModelPick()"><option value="">— ro'yxatdan tanlang —</option></select>
     </div>
     <div class="frow"><label>Model nomi (bo'sh qoldirsangiz, chop etilgach qo'lda yoziladi)</label><input id="stModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
+    <div class="frow"><label>Rasm (ixtiyoriy)</label>
+      <div class="banner-img-drop" id="stImgDrop" onclick="document.getElementById('stImgFile').click()">
+        <span class="ph" id="stImgPh">📷 Rasm tanlash uchun bosing</span>
+        <img id="stImgPreview" style="display:none">
+      </div>
+      <input type="file" id="stImgFile" accept="image/*" style="display:none" onchange="onSaleTagImgFile(this)">
+      <button type="button" class="banner-img-remove" id="stImgRemoveBtn" style="display:none" onclick="removeSaleTagImg(event)">✕ Rasmni olib tashlash</button>
+    </div>
+    <div class="frow"><label>Qisqacha ma'lumot (ixtiyoriy)</label>
+      <textarea id="stSpecs" rows="3" placeholder="Har birini alohida qatorga yozing:&#10;Xotira: 128 GB&#10;Kamera: 50 MP&#10;Batareya: 6000 mAh"></textarea>
+    </div>
     <div class="frow"><label>Eski narx (ixtiyoriy, ustidan chiziladi)</label><input id="stOldPrice" type="number" placeholder="Masalan: 1999000"></div>
     <div class="frow"><label>Yangi narx (so'm)</label><input id="stNewPrice" type="number" placeholder="Masalan: 999000"></div>
     <div class="frow"><label>Oylik to'lov ko'rsatilsinmi</label>
@@ -2281,6 +2292,7 @@ function doPng(brand){
 }
 /* ================= BANNER YARATISH ================= */
 let bannerImgData=null;
+let saleImgData=null;
 function populateModelSelect(selId){
   const sel=document.getElementById(selId);
   sel.innerHTML='<option value="">— ro\'yxatdan tanlang —</option>';
@@ -2625,8 +2637,10 @@ function openSaleTag(){
   document.getElementById('stModel').value='';
   document.getElementById('stOldPrice').value='';
   document.getElementById('stNewPrice').value='';
+  document.getElementById('stSpecs').value='';
   const r12=document.querySelector('input[name="stMuddat"][value="12"]');
   if(r12)r12.checked=true;
+  removeSaleTagImg();
   document.getElementById('saleModal').classList.add('open');
 }
 function closeSaleTag(){document.getElementById('saleModal').classList.remove('open')}
@@ -2638,6 +2652,28 @@ function onSaleTagModelPick(){
   if(!row)return;
   document.getElementById('stModel').value=row[0];
   document.getElementById('stNewPrice').value=row[1];
+}
+function onSaleTagImgFile(input){
+  const file=input.files&&input.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    saleImgData=e.target.result;
+    const img=document.getElementById('stImgPreview');
+    img.src=saleImgData;img.style.display='block';
+    document.getElementById('stImgPh').style.display='none';
+    document.getElementById('stImgRemoveBtn').style.display='inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+function removeSaleTagImg(e){
+  if(e)e.stopPropagation();
+  saleImgData=null;
+  const img=document.getElementById('stImgPreview');
+  img.src='';img.style.display='none';
+  document.getElementById('stImgPh').style.display='';
+  document.getElementById('stImgRemoveBtn').style.display='none';
+  document.getElementById('stImgFile').value='';
 }
 function buildSaleTagHtml(){
   const model=escHtml(document.getElementById('stModel').value.trim());
@@ -2652,6 +2688,21 @@ function buildSaleTagHtml(){
   const modelBlock=model
     ?`<div style="font-size:25px;color:#fff;font-weight:800;line-height:1.2">${model}</div>`
     :`<div style="font-size:14px;color:#C7D2FE;font-weight:600">(chop etilgach qo'lda yoziladi)</div>`;
+  const imgBlock=saleImgData
+    ?`<div style="margin-top:18px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 14px 32px -12px rgba(0,0,0,.4)">
+        <img src="${saleImgData}" style="max-width:100%;max-height:220px;object-fit:contain;display:block;margin:0 auto">
+      </div>`
+    :'';
+  const specsRaw=document.getElementById('stSpecs').value.trim();
+  const specsLines=specsRaw?specsRaw.split('\n').map(s=>escHtml(s.trim())).filter(Boolean):[];
+  const specsBlock=specsLines.length
+    ?`<div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+        ${specsLines.map(l=>`<div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:7px 14px">
+          <span style="font-size:14px">${bannerSpecIcon(l)}</span>
+          <span style="font-size:12px;color:#fff;font-weight:700">${l}</span>
+        </div>`).join('')}
+      </div>`
+    :'';
   const oldPriceBlock=oldPrice?`<div style="font-size:17px;color:#9CA3AF;text-decoration:line-through;font-weight:700">${fmt(oldPrice)} so'm</div>`:'';
   const priceCard=newPrice
     ?`<div style="margin-top:22px;background:#fff;border-radius:20px;padding:26px 24px 24px;text-align:center;box-shadow:0 18px 42px -14px rgba(0,0,0,.5)">
@@ -2682,6 +2733,8 @@ function buildSaleTagHtml(){
       <div style="font-size:11px;color:#C7D2FE;letter-spacing:3px;font-weight:800">MODEL</div>
       <div style="margin-top:6px">${modelBlock}</div>
     </div>
+    ${imgBlock}
+    ${specsBlock}
     ${priceCard}
     ${installmentBlock}
     <div style="margin-top:24px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
