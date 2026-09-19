@@ -693,6 +693,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn admin-only" onclick="sortByPrice()">💰 Narx bo'yicha saralash</button>
   <button class="tbtn tbtn-png" onclick="openPng()">📷 PNG yuklab olish</button>
   <button class="tbtn tbtn-paste admin-only" onclick="openBanner()">🖼 Banner yaratish</button>
+  <button class="tbtn tbtn-paste admin-only" onclick="openSaleTag()">🏷️ Aksiya yorlig'i</button>
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
@@ -1223,6 +1224,31 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <button class="mbtn-ok" id="bnSendBtn" onclick="sendBannerToTelegram()" style="flex:1 1 100%">📤 Telegramga yuborish</button>
       <button class="mbtn-ok" onclick="downloadBanner()" style="background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ Kompyuterga yuklash</button>
       <button class="mbtn-no" onclick="closeBanner()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- AKSIYA (SALE TAG) MODAL -->
+<div class="modal-bg" id="saleModal">
+  <div class="modal banner-box">
+    <h3>🏷️ Aksiya narx yorlig'i</h3>
+    <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
+      <select id="stModelSel" onchange="onSaleTagModelPick()"><option value="">— ro'yxatdan tanlang —</option></select>
+    </div>
+    <div class="frow"><label>Model nomi (bo'sh qoldirsangiz, chop etilgach qo'lda yoziladi)</label><input id="stModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
+    <div class="frow"><label>Eski narx (ixtiyoriy, ustidan chiziladi)</label><input id="stOldPrice" type="number" placeholder="Masalan: 1999000"></div>
+    <div class="frow"><label>Yangi narx (so'm)</label><input id="stNewPrice" type="number" placeholder="Masalan: 999000"></div>
+    <div class="frow"><label>Oylik to'lov ko'rsatilsinmi</label>
+      <div class="banner-muddat">
+        <label><input type="radio" name="stMuddat" value="0"><span>Faqat naqt</span></label>
+        <label><input type="radio" name="stMuddat" value="6"><span>6 oylik</span></label>
+        <label><input type="radio" name="stMuddat" value="12" checked><span>12 oylik</span></label>
+      </div>
+    </div>
+    <div class="modal-btns" style="flex-wrap:wrap">
+      <button class="mbtn-ok" id="stSendBtn" onclick="sendSaleTagToTelegram()" style="flex:1 1 100%">📤 Telegramga yuborish</button>
+      <button class="mbtn-ok" onclick="downloadSaleTag()" style="background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ Chop etish uchun yuklab olish</button>
+      <button class="mbtn-no" onclick="closeSaleTag()">Bekor</button>
     </div>
   </div>
 </div>
@@ -2255,8 +2281,8 @@ function doPng(brand){
 }
 /* ================= BANNER YARATISH ================= */
 let bannerImgData=null;
-function populateBannerModelSelect(){
-  const sel=document.getElementById('bnModelSel');
+function populateModelSelect(selId){
+  const sel=document.getElementById(selId);
   sel.innerHTML='<option value="">— ro\'yxatdan tanlang —</option>';
   BRANDS.forEach(b=>{
     if(!data[b].length)return;
@@ -2272,7 +2298,7 @@ function populateBannerModelSelect(){
   });
 }
 function openBanner(){
-  populateBannerModelSelect();
+  populateModelSelect('bnModelSel');
   document.getElementById('bnModelSel').value='';
   document.getElementById('bnModel').value='';
   document.getElementById('bnTagline').value='';
@@ -2326,8 +2352,8 @@ function bannerSpecIcon(line){
   if(t.indexOf('nfc')!==-1)return '📶';
   return '✔️';
 }
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function buildBannerHtml(){
-  const escHtml=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const model=escHtml(document.getElementById('bnModel').value.trim()||'Model nomi');
   const tagline=escHtml(document.getElementById('bnTagline').value.trim());
   const price=+document.getElementById('bnPrice').value||0;
@@ -2592,6 +2618,141 @@ async function sendBannerToTelegram(){
     if(btn){btn.disabled=false;btn.textContent=prevText;}
   }
 }
+/* ================= AKSIYA (CHOP ETISH UCHUN) YORLIG'I ================= */
+function openSaleTag(){
+  populateModelSelect('stModelSel');
+  document.getElementById('stModelSel').value='';
+  document.getElementById('stModel').value='';
+  document.getElementById('stOldPrice').value='';
+  document.getElementById('stNewPrice').value='';
+  const r12=document.querySelector('input[name="stMuddat"][value="12"]');
+  if(r12)r12.checked=true;
+  document.getElementById('saleModal').classList.add('open');
+}
+function closeSaleTag(){document.getElementById('saleModal').classList.remove('open')}
+function onSaleTagModelPick(){
+  const v=document.getElementById('stModelSel').value;
+  if(!v)return;
+  const [b,idx]=v.split('|');
+  const row=data[b][+idx];
+  if(!row)return;
+  document.getElementById('stModel').value=row[0];
+  document.getElementById('stNewPrice').value=row[1];
+}
+function buildSaleTagHtml(){
+  const model=escHtml(document.getElementById('stModel').value.trim());
+  const oldPrice=+document.getElementById('stOldPrice').value||0;
+  const newPrice=+document.getElementById('stNewPrice').value||0;
+  const muddatEl=document.querySelector('input[name="stMuddat"]:checked');
+  const muddat=muddatEl?muddatEl.value:'0';
+  let burstLabel,burstValue,burstUnit;
+  if(muddat==='0'||!newPrice){
+    burstLabel='NARXI';
+    burstValue=fmt(newPrice);
+    burstUnit="so'm";
+  }else{
+    const monthly=muddat==='6'?m6(newPrice):m12(newPrice);
+    burstLabel=muddat+' OYGA';
+    burstValue=fmt(monthly);
+    burstUnit="so'm/oy";
+  }
+  const priceRows=(oldPrice?`<div style="font-size:15px;color:#C7D2FE;text-decoration:line-through;font-weight:700">Eski narx: ${fmt(oldPrice)} so'm</div>`:'')
+    +(newPrice?`<div style="font-size:21px;color:#FDE047;font-weight:800;margin-top:${oldPrice?'4px':'0'}">Yangi narx: ${fmt(newPrice)} so'm</div>`:'');
+  const modelBlock=model
+    ?`<div style="font-size:21px;color:#111827;font-weight:800">${model}</div>`
+    :`<div style="font-size:13px;color:#9CA3AF;font-weight:600">(chop etilgach qo'lda yoziladi)</div>`;
+  return `<div style="display:inline-block;width:640px;box-sizing:border-box;padding:30px 28px 36px;font-family:'Inter',Arial,sans-serif;position:relative;
+    background:linear-gradient(135deg,#5B21B6 0%,#4C1D95 28%,#1E3A8A 62%,#1D4ED8 100%)">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="background:#fff;border-radius:10px;padding:6px 14px;display:inline-block">
+        <img src="data:image/png;base64,${LOGO_B64}" style="height:24px;width:auto;display:block">
+      </div>
+      <div style="background:linear-gradient(135deg,#FDE047,#F59E0B);color:#78350F;font-size:12px;font-weight:800;letter-spacing:1px;padding:8px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)">🔥 AKSIYA!</div>
+    </div>
+    <div style="display:flex;justify-content:center;margin-top:26px">
+      <div style="width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FEF08A,#FACC15 55%,#EAB308 100%);box-shadow:0 14px 34px -10px rgba(0,0,0,.5),0 0 0 8px rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+        <div style="font-size:16px;color:#78350F;font-weight:800;letter-spacing:1.5px">${burstLabel}</div>
+        <div style="font-size:44px;color:#1E1B0E;font-weight:800;line-height:1.05;margin-top:2px">${burstValue}</div>
+        <div style="font-size:13px;color:#78350F;font-weight:700;margin-top:2px">${burstUnit}</div>
+      </div>
+    </div>
+    <div style="margin-top:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:14px 18px;text-align:center">
+      ${priceRows||'<div style="font-size:14px;color:#C7D2FE;font-weight:700">Narxni kiriting</div>'}
+    </div>
+    <div style="margin-top:18px;background:#fff;border-radius:12px;padding:16px 18px;text-align:center">
+      <div style="font-size:10.5px;color:#6B7280;letter-spacing:2px;font-weight:800;margin-bottom:6px">MODEL NOMI</div>
+      ${modelBlock}
+    </div>
+    <div style="margin-top:22px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+      <span style="font-size:12.5px;color:#E0E7FF;font-weight:700">📞 +998 94 808 00 55</span>
+      <span style="font-size:12.5px;color:#E0E7FF;font-weight:700">📷 @ssmart_karshi</span>
+    </div>
+  </div>`;
+}
+async function renderSaleTagCanvas(){
+  const html=buildSaleTagHtml();
+  const wrap=document.getElementById('captureWrap');
+  wrap.innerHTML=html;
+  await new Promise(r=>setTimeout(r,80));
+  const imgs=wrap.querySelectorAll('img');
+  await Promise.all(Array.from(imgs).map(img=>{
+    if(img.complete)return img.decode?img.decode().catch(()=>{}):Promise.resolve();
+    return new Promise(res=>{img.onload=res;img.onerror=res;});
+  }));
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
+  const canvas=await html2canvas(wrap.firstChild,{scale:3,useCORS:true,backgroundColor:'#4C1D95',logging:false,imageTimeout:0});
+  wrap.innerHTML='';
+  return canvas;
+}
+async function downloadSaleTag(){
+  const newPrice=+document.getElementById('stNewPrice').value||0;
+  if(!newPrice){toast('⚠ Yangi narxni kiriting');return}
+  toast('⏳ Yorliq tayyorlanmoqda...');
+  try{
+    const canvas=await renderSaleTagCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Yorliq tayyorlanmadi');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const model=document.getElementById('stModel').value.trim()||'model';
+    const d=new Date();
+    a.download='ssmart_aksiya_'+model.replace(/[^a-z0-9]+/gi,'_')+'_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    closeSaleTag();
+    toast('✓ Yorliq saqlandi!');
+  }catch(e){
+    console.error(e);
+    toast('✕ Yorliq yaratishda xatolik');
+  }
+}
+async function sendSaleTagToTelegram(){
+  const newPrice=+document.getElementById('stNewPrice').value||0;
+  if(!newPrice){toast('⚠ Yangi narxni kiriting');return}
+  const btn=document.getElementById('stSendBtn');
+  const prevText=btn?btn.textContent:null;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Tayyorlanmoqda...';}
+  try{
+    const canvas=await renderSaleTagCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Yorliq tayyorlanmadi');
+    if(btn)btn.textContent='📤 Yuborilmoqda...';
+    const model=document.getElementById('stModel').value.trim()||'model';
+    const fd=new FormData();
+    fd.append('chat_id',TG_CHAT_ID);
+    fd.append('photo',blob,'aksiya_'+model.replace(/[^a-z0-9]+/gi,'_')+'.png');
+    const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
+    const j=await res.json();
+    if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
+    closeSaleTag();
+    toast('✓ Yorliq Telegramga yuborildi');
+  }catch(e){
+    console.error(e);
+    toast('✕ Telegramga yuborishda xatolik');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=prevText;}
+  }
+}
 /* Bot ("samsung", "noutbuk" va h.k. deb yozganda avtomatik javob berishi) uchun
    har brend rasmini alohida yuborib, Telegram qaytargan file_id'larni bulutga saqlaydi */
 async function updateTgCache(){
@@ -2657,6 +2818,7 @@ document.getElementById('pngModal').addEventListener('click',function(e){if(e.ta
 document.getElementById('clearAllModal').addEventListener('click',function(e){if(e.target===this)closeClearAll()});
 document.getElementById('kursModal').addEventListener('click',function(e){if(e.target===this)closeKurs()});
 document.getElementById('bannerModal').addEventListener('click',function(e){if(e.target===this)closeBanner()});
+document.getElementById('saleModal').addEventListener('click',function(e){if(e.target===this)closeSaleTag()});
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
 const d=new Date();
 document.getElementById('dateDisp').textContent=String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
