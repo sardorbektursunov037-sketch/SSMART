@@ -2645,45 +2645,46 @@ function buildSaleTagHtml(){
   const newPrice=+document.getElementById('stNewPrice').value||0;
   const muddatEl=document.querySelector('input[name="stMuddat"]:checked');
   const muddat=muddatEl?muddatEl.value:'0';
-  let burstLabel,burstValue,burstUnit;
-  if(muddat==='0'||!newPrice){
-    burstLabel='NARXI';
-    burstValue=fmt(newPrice);
-    burstUnit="so'm";
-  }else{
-    const monthly=muddat==='6'?m6(newPrice):m12(newPrice);
-    burstLabel=muddat+' OYGA';
-    burstValue=fmt(monthly);
-    burstUnit="so'm/oy";
-  }
-  const priceRows=(oldPrice?`<div style="font-size:15px;color:#C7D2FE;text-decoration:line-through;font-weight:700">Eski narx: ${fmt(oldPrice)} so'm</div>`:'')
-    +(newPrice?`<div style="font-size:21px;color:#FDE047;font-weight:800;margin-top:${oldPrice?'4px':'0'}">Yangi narx: ${fmt(newPrice)} so'm</div>`:'');
+  const percentOff=(oldPrice&&newPrice&&oldPrice>newPrice)?Math.round((1-newPrice/oldPrice)*100):0;
+  const cornerBadge=percentOff
+    ?`<div style="background:linear-gradient(135deg,#F43F5E,#E11D48);color:#fff;font-size:20px;font-weight:800;letter-spacing:.5px;padding:9px 18px;border-radius:12px;white-space:nowrap;box-shadow:0 8px 18px -6px rgba(0,0,0,.5)">-${percentOff}%</div>`
+    :`<div style="background:linear-gradient(135deg,#FDE047,#F59E0B);color:#78350F;font-size:13px;font-weight:800;letter-spacing:1px;padding:9px 18px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)">🔥 AKSIYA</div>`;
   const modelBlock=model
-    ?`<div style="font-size:21px;color:#111827;font-weight:800">${model}</div>`
-    :`<div style="font-size:13px;color:#9CA3AF;font-weight:600">(chop etilgach qo'lda yoziladi)</div>`;
+    ?`<div style="font-size:25px;color:#fff;font-weight:800;line-height:1.2">${model}</div>`
+    :`<div style="font-size:14px;color:#C7D2FE;font-weight:600">(chop etilgach qo'lda yoziladi)</div>`;
+  const oldPriceBlock=oldPrice?`<div style="font-size:17px;color:#9CA3AF;text-decoration:line-through;font-weight:700">${fmt(oldPrice)} so'm</div>`:'';
+  const priceCard=newPrice
+    ?`<div style="margin-top:22px;background:#fff;border-radius:20px;padding:26px 24px 24px;text-align:center;box-shadow:0 18px 42px -14px rgba(0,0,0,.5)">
+        ${oldPriceBlock}
+        <div style="margin-top:${oldPrice?'4px':'0'};font-size:48px;color:#1E1B4B;font-weight:800;line-height:1.05">${fmt(newPrice)}<span style="font-size:19px;font-weight:700;color:#6B7280;margin-left:6px">so'm</span></div>
+      </div>`
+    :`<div style="margin-top:22px;background:#fff;border-radius:20px;padding:22px;text-align:center;box-shadow:0 18px 42px -14px rgba(0,0,0,.5)">
+        <div style="font-size:15px;color:#9CA3AF;font-weight:700">Narxni kiriting</div>
+      </div>`;
+  const installmentBlock=(muddat!=='0'&&newPrice)
+    ?(()=>{
+        const monthly=muddat==='6'?m6(newPrice):m12(newPrice);
+        return `<div style="margin-top:16px;background:linear-gradient(135deg,#FDE047,#F59E0B);border-radius:16px;padding:15px 20px;display:flex;align-items:baseline;justify-content:center;gap:10px;box-shadow:0 10px 24px -10px rgba(0,0,0,.45)">
+          <span style="font-size:14px;color:#78350F;font-weight:800;letter-spacing:.5px">${muddat} OYGA:</span>
+          <span style="font-size:24px;color:#1E1B0E;font-weight:800">${fmt(monthly)} so'm/oy</span>
+        </div>`;
+      })()
+    :'';
   return `<div style="display:inline-block;width:640px;box-sizing:border-box;padding:30px 28px 36px;font-family:'Inter',Arial,sans-serif;position:relative;
     background:linear-gradient(135deg,#5B21B6 0%,#4C1D95 28%,#1E3A8A 62%,#1D4ED8 100%)">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div style="background:#fff;border-radius:10px;padding:6px 14px;display:inline-block">
         <img src="data:image/png;base64,${LOGO_B64}" style="height:24px;width:auto;display:block">
       </div>
-      <div style="background:linear-gradient(135deg,#FDE047,#F59E0B);color:#78350F;font-size:12px;font-weight:800;letter-spacing:1px;padding:8px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px -6px rgba(0,0,0,.4)">🔥 AKSIYA!</div>
+      ${cornerBadge}
     </div>
-    <div style="display:flex;justify-content:center;margin-top:26px">
-      <div style="width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FEF08A,#FACC15 55%,#EAB308 100%);box-shadow:0 14px 34px -10px rgba(0,0,0,.5),0 0 0 8px rgba(255,255,255,.12);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
-        <div style="font-size:16px;color:#78350F;font-weight:800;letter-spacing:1.5px">${burstLabel}</div>
-        <div style="font-size:44px;color:#1E1B0E;font-weight:800;line-height:1.05;margin-top:2px">${burstValue}</div>
-        <div style="font-size:13px;color:#78350F;font-weight:700;margin-top:2px">${burstUnit}</div>
-      </div>
+    <div style="margin-top:26px;text-align:center">
+      <div style="font-size:11px;color:#C7D2FE;letter-spacing:3px;font-weight:800">MODEL</div>
+      <div style="margin-top:6px">${modelBlock}</div>
     </div>
-    <div style="margin-top:22px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:14px 18px;text-align:center">
-      ${priceRows||'<div style="font-size:14px;color:#C7D2FE;font-weight:700">Narxni kiriting</div>'}
-    </div>
-    <div style="margin-top:18px;background:#fff;border-radius:12px;padding:16px 18px;text-align:center">
-      <div style="font-size:10.5px;color:#6B7280;letter-spacing:2px;font-weight:800;margin-bottom:6px">MODEL NOMI</div>
-      ${modelBlock}
-    </div>
-    <div style="margin-top:22px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+    ${priceCard}
+    ${installmentBlock}
+    <div style="margin-top:24px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
       <span style="font-size:12.5px;color:#E0E7FF;font-weight:700">📞 +998 94 808 00 55</span>
       <span style="font-size:12.5px;color:#E0E7FF;font-weight:700">📷 @ssmart_karshi</span>
     </div>
