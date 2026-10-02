@@ -2806,7 +2806,8 @@ TARIF: <mahsulotni maqtaydigan 3-6 so'zli qisqa jumla, oxirida undov>
 - <qiymat> — <izoh>
 (4 tadan 6 tagacha qator)
 Qoidalar: qiymat qisqa bo'lsin (masalan "8 kg", "1200 ayl/min", "A+++", "6.7\\"", "5000 mAh", "Inverter"), izoh 1-3 so'z (masalan "Yuklama hajmi", "Aylanish tezligi", "Energiya sinfi").
-Xaridor uchun eng muhim xususiyatlarni tanla. Model topilmasa yoki ishonching komil bo'lmasa, faqat TOPILMADI deb yoz.`;
+Xaridor uchun eng muhim xususiyatlarni tanla. Nom biroz noaniq yozilgan bo'lsa ham, eng mos keladigan modelni top.
+Jadval, sarlavha yoki izoh yozma. Faqat bunday mahsulot umuman mavjud bo'lmasa, TOPILMADI deb yoz.`;
 }
 async function igFindSpecs(){
   const name=document.getElementById('igName').value.trim();
@@ -2843,7 +2844,13 @@ async function igFindSpecs(){
       ?"Gemini bepul limiti tugagan (barcha modellar). Bir necha daqiqadan keyin yoki ertaga qayta urinib ko'ring."
       :(lastErr||'javob kelmadi'));
     const r=igParseSpecs(txt);
-    if(!r){st.textContent='⚠ Bu model bo\'yicha ishonchli ma\'lumot topilmadi. Nomini aniqroq yozib ko\'ring.';return}
+    if(!r){
+      console.log('Gemini javobi:',txt);
+      st.textContent=/^\s*TOPILMADI/i.test(txt)
+        ?'⚠ Gemini bu modelni topa olmadi. Brend va modelni to\'liq yozing (masalan: "Artel WF80K112 kir yuvish mashinasi").'
+        :'⚠ Javobdan xususiyatlarni ajratib bo\'lmadi. Gemini javobi: "'+txt.replace(/\s+/g,' ').slice(0,220)+'"';
+      return;
+    }
     if(r.sub)document.getElementById('igSub').value=r.sub;
     document.getElementById('igSpecs').value=r.specs.join('\n');
     renderIg();
@@ -2856,15 +2863,35 @@ async function igFindSpecs(){
   }finally{btn.disabled=false}
 }
 /* Gemini javobini ("TARIF: ..." va "- qiymat — izoh" qatorlari) ajratish */
+/* Gemini har doim ham so'ralgan shaklda yozmaydi: "- 8 kg — Hajm", "Hajm: 8 kg", "1. ...", jadval qatorlari —
+   hammasini "qiymat — izoh" ko'rinishiga keltiramiz (raqamli tomoni qiymat deb olinadi) */
 function igParseSpecs(txt){
-  if(/^\s*TOPILMADI\s*$/i.test(txt))return null;
+  if(/^\s*TOPILMADI\.?\s*$/i.test(txt))return null;
   let sub='';const specs=[];
-  txt.replace(/\*\*/g,'').split('\n').forEach(l=>{
-    l=l.trim();
-    const t=l.match(/^TARIF\s*:\s*(.+)$/i);
-    if(t){sub=t[1].trim();return}
-    const s=l.match(/^[-•*]\s*(.+?)\s+[—–-]\s+(.+)$/);
-    if(s&&specs.length<6)specs.push(s[1].trim()+' — '+s[2].trim().replace(/[.;]$/,''));
+  const clean=s=>s.replace(/\[\d+(\s*,\s*\d+)*\]/g,'').replace(/[*_`]/g,'').trim().replace(/[.;,]$/,'').trim();
+  // v — qiymat bo'lishi kutilgan tomon; faqat izoh tomonida raqam bo'lib, qiymatda bo'lmasa almashtiramiz
+  const add=(v,l)=>{
+    v=clean(v);l=clean(l);if(!v||!l||specs.length>=6)return;
+    if(!/\d/.test(v)&&/\d/.test(l))[v,l]=[l,v];
+    if(v.length>24||/^(xususiyat|qiymat|parametr|nomi)/i.test(l+' '+v))return;
+    const line=v+' — '+l.charAt(0).toUpperCase()+l.slice(1);
+    if(!specs.some(s=>s.toLowerCase()===line.toLowerCase()))specs.push(line);
+  };
+  txt.split('\n').forEach(raw=>{
+    let l=raw.replace(/\*\*/g,'').trim();
+    if(!l)return;
+    const t=l.match(/^(TARIF|TA'RIF|TAʼRIF)\s*:\s*(.+)$/i);
+    if(t){sub=clean(t[2]);return}
+    if(/^\|/.test(l)){                                   // jadval qatori
+      const cells=l.split('|').map(c=>c.trim()).filter(Boolean);
+      if(cells.length>=2&&!/^:?-{2,}/.test(cells[0]))add(cells[cells.length-1],cells[cells.length-2]);
+      return;
+    }
+    l=l.replace(/^([-•*·]|\d+[.)])\s*/,'');
+    let m=l.match(/^(.+?)\s+[—–-]\s+(.+)$/);
+    if(m){add(m[1],m[2]);return}
+    m=l.match(/^([^:]{2,40}):\s*(.+)$/);
+    if(m&&m[2].length<=40)add(m[2],m[1]);
   });
   return specs.length?{sub,specs}:null;
 }
