@@ -1258,7 +1258,11 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <div class="igb-form">
         <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
           <select id="igModelSel" onchange="onIgModelPick()"><option value="">— ro'yxatdan tanlang —</option></select></div>
-        <div class="frow"><label>Mahsulot nomi (birinchi so'z — brend)</label><input id="igName" type="text" placeholder="Masalan: Honor X7e 6/128GB yoki Ziffler Suv kuleri" oninput="renderIg()"></div>
+        <div class="frow"><label>Mahsulot nomi (birinchi so'z — brend)</label><input id="igName" type="text" placeholder="Masalan: Honor X7e 6/128GB yoki Ziffler Suv kuleri" oninput="renderIg()">
+          <div class="igb-btns"><button type="button" class="igb-btn" id="igFindBtn" onclick="igFindSpecs()">🔎 Internetdan ma'lumot topish</button>
+            <button type="button" class="igb-btn" onclick="igResetGeminiKey()" title="Gemini kalitini almashtirish">🔑</button></div>
+          <div class="igb-status" id="igFindStatus"></div>
+        </div>
         <div class="frow"><label>Qisqa ta'rif</label><input id="igSub" type="text" value="Zamonaviy dizayn — ishonchli tanlov!" oninput="renderIg()"></div>
         <div class="frow"><label>Lenta matni (qiyshiq yozuv)</label><input id="igRibbon" type="text" value="Sifat va qulaylik bir joyda!" oninput="renderIg()"></div>
         <div class="igb-row2">
@@ -2764,6 +2768,89 @@ function onIgModelPick(){
     sp.value=[`${m[1]} GB — Operativ xotira`,`${m[2]} ${(m[3]||'GB').toUpperCase()} — Xotira`,...rest].slice(0,6).join('\n');
   }
   renderIg();
+}
+
+/* ---- Internetdan xususiyatlarni topish (Google Gemini + Google qidiruvi) ----
+   Kalit aistudio.google.com dan bepul olinadi. Shu yerga yozilsa hamma qurilmada ishlaydi,
+   bo'sh qolsa — birinchi marta so'raladi va shu brauzerda saqlanadi. */
+const GEMINI_API_KEY='';
+const GEMINI_LS='ssmart_gemini_key';
+const GEMINI_MODELS=['gemini-2.5-flash','gemini-flash-latest'];
+function igGeminiKey(){
+  if(GEMINI_API_KEY)return GEMINI_API_KEY;
+  let k='';try{k=localStorage.getItem(GEMINI_LS)||''}catch(e){}
+  if(!k){
+    k=(prompt("Google Gemini API kalitini kiriting (aistudio.google.com → Get API key).\nBir marta kiritiladi, shu brauzerda saqlanadi.")||'').trim();
+    if(k)try{localStorage.setItem(GEMINI_LS,k)}catch(e){}
+  }
+  return k;
+}
+function igResetGeminiKey(){
+  try{localStorage.removeItem(GEMINI_LS)}catch(e){}
+  if(igGeminiKey())toast('✓ Gemini kaliti saqlandi');
+}
+function igSpecPrompt(name){
+  return `Sen O'zbekistondagi maishiy texnika va elektronika do'koni uchun reklama banneri tayyorlayapsan.
+Mahsulot: "${name}"
+Google'da shu aniq model bo'yicha rasmiy xususiyatlarni qidirib top va FAQAT quyidagi formatda, o'zbek tilida (lotin) javob ber, boshqa hech narsa yozma:
+TARIF: <mahsulotni maqtaydigan 3-6 so'zli qisqa jumla, oxirida undov>
+- <qiymat> — <izoh>
+- <qiymat> — <izoh>
+(4 tadan 6 tagacha qator)
+Qoidalar: qiymat qisqa bo'lsin (masalan "8 kg", "1200 ayl/min", "A+++", "6.7\\"", "5000 mAh", "Inverter"), izoh 1-3 so'z (masalan "Yuklama hajmi", "Aylanish tezligi", "Energiya sinfi").
+Xaridor uchun eng muhim xususiyatlarni tanla. Model topilmasa yoki ishonching komil bo'lmasa, faqat TOPILMADI deb yoz.`;
+}
+async function igFindSpecs(){
+  const name=document.getElementById('igName').value.trim();
+  const st=document.getElementById('igFindStatus');
+  if(!name){toast('⚠ Avval mahsulot nomini yozing');return}
+  const key=igGeminiKey();
+  if(!key){st.textContent='Kalit kiritilmadi.';return}
+  const btn=document.getElementById('igFindBtn');btn.disabled=true;
+  st.textContent='🔎 Internetdan qidirilmoqda... (10-20 soniya)';
+  try{
+    let txt='',lastErr='';
+    for(const model of GEMINI_MODELS){
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{role:'user',parts:[{text:igSpecPrompt(name)}]}],tools:[{google_search:{}}],generationConfig:{temperature:0.2}})
+      });
+      const j=await res.json().catch(()=>({}));
+      if(res.ok){
+        const parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
+        txt=parts.map(p=>p.text||'').join('\n').trim();
+        if(txt)break;
+        lastErr='bo\'sh javob';
+      }else{
+        lastErr=(j.error&&j.error.message)||('HTTP '+res.status);
+        if(res.status===400&&/api key/i.test(lastErr)){try{localStorage.removeItem(GEMINI_LS)}catch(e){}break}
+        if(res.status!==404)break; // model topilmasa keyingisini sinaymiz
+      }
+    }
+    if(!txt)throw new Error(lastErr||'javob kelmadi');
+    const r=igParseSpecs(txt);
+    if(!r){st.textContent='⚠ Bu model bo\'yicha ishonchli ma\'lumot topilmadi. Nomini aniqroq yozib ko\'ring.';return}
+    if(r.sub)document.getElementById('igSub').value=r.sub;
+    document.getElementById('igSpecs').value=r.specs.join('\n');
+    renderIg();
+    st.textContent='✓ Topildi. Tekshirib chiqing — kerak bo\'lsa qo\'lda to\'g\'rilang.';
+  }catch(e){
+    console.error(e);
+    st.textContent='✕ Xatolik: '+(e&&e.message||e);
+  }finally{btn.disabled=false}
+}
+/* Gemini javobini ("TARIF: ..." va "- qiymat — izoh" qatorlari) ajratish */
+function igParseSpecs(txt){
+  if(/^\s*TOPILMADI\s*$/i.test(txt))return null;
+  let sub='';const specs=[];
+  txt.replace(/\*\*/g,'').split('\n').forEach(l=>{
+    l=l.trim();
+    const t=l.match(/^TARIF\s*:\s*(.+)$/i);
+    if(t){sub=t[1].trim();return}
+    const s=l.match(/^[-•*]\s*(.+?)\s+[—–-]\s+(.+)$/);
+    if(s&&specs.length<6)specs.push(s[1].trim()+' — '+s[2].trim().replace(/[.;]$/,''));
+  });
+  return specs.length?{sub,specs}:null;
 }
 
 /* shaffof chetlarni qirqib tashlash (mahsulot ramkani to'liq egallashi uchun) */
