@@ -4,6 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SSMART — Narx Jadvali</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&amp;family=Kaushan+Script&amp;display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -150,12 +151,6 @@ body{
 /* ── TOOLBAR ────────────────────────────── */
 .save-info{margin-left:auto;font-size:11.5px;color:#64748B;font-weight:600;padding:6px 10px;border-radius:999px;background:rgba(148,163,184,.08);white-space:nowrap}
 .save-info.ok{color:#047857;background:rgba(52,211,153,.1)}
-.filial-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:12px 22px 0;max-width:1400px;margin:0 auto}
-.filial-lbl{font-size:10.5px;font-weight:800;letter-spacing:2px;color:#7A8C84}
-.fbtn{padding:8px 18px;border-radius:999px;border:1.5px solid #D8E2DC;background:rgba(148,163,184,.06);color:#64748B;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:all .16s}
-.fbtn:hover{color:#334155;border-color:#B4C5BB}
-.fbtn.active{color:#fff;background:var(--grad-cta);border-color:transparent;box-shadow:0 8px 22px -10px rgba(20,184,166,.95)}
-@media(max-width:720px){.filial-bar{padding:10px 12px 0}}
 .row-tools{display:inline-flex;align-items:center;gap:4px}
 .btn-mv{width:22px;height:22px;padding:0;border-radius:6px;border:1px solid #D8E2DC;background:rgba(148,163,184,.08);color:#64748B;font-size:9px;cursor:pointer;font-family:inherit;line-height:1;transition:all .14s}
 .btn-mv:hover{color:#0B5E51;background:rgba(20,184,166,.18);border-color:rgba(20,184,166,.5)}
@@ -457,6 +452,34 @@ body.admin tr[data-nopricing]{background:rgba(251,191,36,.05)}
 .banner-muddat input{display:none}
 .banner-muddat label:has(input:checked){background:var(--grad-cta);border-color:transparent;color:#fff}
 
+/* ── INSTAGRAM BANNER ───────────────────── */
+.igb-box{width:1000px}
+.igb-wrap{display:flex;gap:22px;align-items:flex-start}
+.igb-form{flex:1;min-width:0}
+.igb-side{flex:none;display:flex;flex-direction:column;align-items:center;gap:10px;position:sticky;top:0}
+.igb-pv{width:351px;height:624px;overflow:hidden;border-radius:14px;box-shadow:0 18px 40px -18px rgba(15,23,42,.55)}
+.igb-pv>div{width:540px;height:960px;transform:scale(.65);transform-origin:top left}
+.igb-row2{display:flex;gap:10px}.igb-row2>.frow{flex:1}
+.igb-themes{display:flex;gap:7px;flex-wrap:wrap}
+.igb-th{border:2px solid transparent;border-radius:10px;padding:7px 11px;font-size:11.5px;font-weight:700;cursor:pointer;color:#fff}
+.igb-th.on{border-color:#0F172A;box-shadow:0 0 0 2px #fff inset}
+.igb-imgbox{border:1.5px dashed var(--line);border-radius:var(--r-md);padding:12px;background:var(--surface-2)}
+.igb-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.igb-btn{border:1px solid var(--line);border-radius:10px;padding:8px 11px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;background:#fff;color:var(--ink)}
+.igb-btn:disabled{opacity:.45;cursor:default}
+.igb-vars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.igb-var{border:2px solid var(--line);border-radius:10px;padding:5px;cursor:pointer;background:#fff;text-align:center;font-size:10.5px;font-weight:700;color:var(--muted)}
+.igb-var.on{border-color:var(--brand);color:var(--ink)}
+.igb-ck{height:84px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:4px;font-size:10px;color:var(--dim);padding:0 4px;
+  background-color:#fff;background-image:linear-gradient(45deg,#E5E7EB 25%,transparent 25%,transparent 75%,#E5E7EB 75%),linear-gradient(45deg,#E5E7EB 25%,transparent 25%,transparent 75%,#E5E7EB 75%);background-size:14px 14px;background-position:0 0,7px 7px}
+.igb-ck img{max-width:100%;max-height:80px}
+.igb-status{font-size:11.5px;color:var(--muted);margin-top:7px;min-height:15px}
+.igbn{position:relative;width:540px;height:960px;overflow:hidden;font-family:Montserrat,Inter,sans-serif;font-feature-settings:normal;font-variant-numeric:normal}
+.igbn *{box-sizing:border-box}
+.igbn .abs{position:absolute}
+@media (max-width:900px){.igb-wrap{flex-direction:column-reverse}.igb-side{position:static;width:100%}
+  .igb-pv{width:297px;height:528px}.igb-pv>div{transform:scale(.55)}}
+
 /* ── TOAST ──────────────────────────────── */
 .toast{
   position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(16px);
@@ -545,7 +568,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   }
 
   /* Keraksiz elementlar */
-  .tabs,.toolbar,.filial-bar,.modal-bg,.png-modal,.paste-modal,#plModal,#copyModal,.toast,.capture-wrap,
+  .tabs,.toolbar,.modal-bg,.png-modal,.paste-modal,#plModal,#copyModal,.toast,.capture-wrap,
   .cmp-img-section,.cmp-text-section,.model-list-section,
   .col-del,.btn-del,.btn-mv,.row-tools,.admin-only,.tbtn,.search-box,.cnt-lbl,.cloud-info,.save-info,
   tr[data-nopricing]{display:none!important}
@@ -692,8 +715,8 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn admin-only" onclick="sortByName()">🔤 Nom bo'yicha saralash</button>
   <button class="tbtn admin-only" onclick="sortByPrice()">💰 Narx bo'yicha saralash</button>
   <button class="tbtn tbtn-png" onclick="openPng()">📷 PNG yuklab olish</button>
-  <button class="tbtn tbtn-paste admin-only" onclick="openBanner()">🖼 Banner yaratish</button>
   <button class="tbtn tbtn-paste admin-only" onclick="openSaleTag()">🏷️ Aksiya yorlig'i</button>
+  <button class="tbtn tbtn-paste admin-only" onclick="openIg()">🖼 Banner</button>
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
@@ -1191,43 +1214,6 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   </div>
 </div>
 
-<!-- BANNER MODAL -->
-<div class="modal-bg" id="bannerModal">
-  <div class="modal banner-box">
-    <h3>🖼 Banner yaratish</h3>
-    <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
-      <select id="bnModelSel" onchange="onBannerModelPick()"><option value="">— ro'yxatdan tanlang —</option></select>
-    </div>
-    <div class="frow"><label>Model nomi</label><input id="bnModel" type="text" placeholder="Masalan: Galaxy A55 8/256GB"></div>
-    <div class="frow"><label>Shior (ixtiyoriy)</label><input id="bnTagline" type="text" placeholder="Masalan: Zamonaviy dizayn — yuqori imkoniyatlar"></div>
-    <div class="frow"><label>Naqt narxi (so'm)</label><input id="bnPrice" type="number" placeholder="Masalan: 6500000"></div>
-    <div class="frow"><label>To'lov muddati</label>
-      <div class="banner-muddat">
-        <label><input type="radio" name="bnMuddat" value="0" checked><span>Faqat naqt</span></label>
-        <label><input type="radio" name="bnMuddat" value="6"><span>6 oylik</span></label>
-        <label><input type="radio" name="bnMuddat" value="12"><span>12 oylik</span></label>
-      </div>
-    </div>
-    <div class="frow"><label>Rasm</label>
-      <div class="banner-img-drop" id="bnImgDrop" onclick="document.getElementById('bnImgFile').click()">
-        <span class="ph" id="bnImgPh">📷 Rasm tanlash uchun bosing</span>
-        <img id="bnImgPreview" style="display:none">
-      </div>
-      <input type="file" id="bnImgFile" accept="image/*" style="display:none" onchange="onBannerImgFile(this)">
-      <button type="button" class="banner-img-remove" id="bnImgRemoveBtn" style="display:none" onclick="removeBannerImg(event)">✕ Rasmni olib tashlash</button>
-    </div>
-    <div class="frow"><label>Xarakteristika (ixtiyoriy)</label>
-      <textarea id="bnSpecs" rows="5" placeholder="Har birini alohida qatorga yozing:&#10;Operativ xotira: 6 GB&#10;Xotira: 128 GB&#10;Kamera: 50 MP&#10;Batareya: 6000 mAh&#10;Ekran: 6.78 HD+"></textarea>
-      <p style="font-size:11px;color:#8DA198;margin-top:5px;line-height:1.5">Har bir qator alohida rasmcha (ikonka) bilan chiqadi — xotira, kamera, batareya, ekran, protsessor kabi so'zlarni ishlatsangiz mos belgi avtomatik tanlanadi.</p>
-    </div>
-    <div class="modal-btns" style="flex-wrap:wrap">
-      <button class="mbtn-ok" id="bnSendBtn" onclick="sendBannerToTelegram()" style="flex:1 1 100%">📤 Telegramga yuborish</button>
-      <button class="mbtn-ok" onclick="downloadBanner()" style="background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ Kompyuterga yuklash</button>
-      <button class="mbtn-no" onclick="closeBanner()">Bekor</button>
-    </div>
-  </div>
-</div>
-
 <!-- AKSIYA (SALE TAG) MODAL -->
 <div class="modal-bg" id="saleModal">
   <div class="modal banner-box">
@@ -1260,6 +1246,56 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
       <button class="mbtn-ok" id="stSendBtn" onclick="sendSaleTagToTelegram()" style="flex:1 1 100%">📤 Telegramga yuborish</button>
       <button class="mbtn-ok" onclick="downloadSaleTag()" style="background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ Chop etish uchun yuklab olish</button>
       <button class="mbtn-no" onclick="closeSaleTag()">Bekor</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTAGRAM BANNER MODAL -->
+<div class="modal-bg" id="igModal">
+  <div class="modal igb-box">
+    <h3>🖼 Banner (story 1080×1920)</h3>
+    <div class="igb-wrap">
+      <div class="igb-form">
+        <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
+          <select id="igModelSel" onchange="onIgModelPick()"><option value="">— ro'yxatdan tanlang —</option></select></div>
+        <div class="frow"><label>Mahsulot nomi (birinchi so'z — brend)</label><input id="igName" type="text" placeholder="Masalan: Honor X7e 6/128GB yoki Ziffler Suv kuleri" oninput="renderIg()"></div>
+        <div class="frow"><label>Qisqa ta'rif</label><input id="igSub" type="text" value="Zamonaviy dizayn — ishonchli tanlov!" oninput="renderIg()"></div>
+        <div class="frow"><label>Lenta matni (qiyshiq yozuv)</label><input id="igRibbon" type="text" value="Sifat va qulaylik bir joyda!" oninput="renderIg()"></div>
+        <div class="igb-row2">
+          <div class="frow"><label>Naqd narx (so'm)</label><input id="igPrice" type="number" oninput="renderIg()"></div>
+          <div class="frow"><label>Muddatli to'lov</label>
+            <select id="igMonths" onchange="renderIg()"><option value="12">12 oy</option><option value="6">6 oy</option><option value="0">Ko'rsatilmasin</option></select></div>
+        </div>
+        <div class="frow"><label>Xususiyatlar (har qatorda: qiymat — izoh, 6 tagacha)</label>
+          <textarea id="igSpecs" rows="5" oninput="renderIg()" placeholder="6 GB — Operativ xotira&#10;128 GB — Xotira&#10;50 MP — Asosiy kamera&#10;6000 mAh — Batareya"></textarea></div>
+        <div class="frow"><label>Rang mavzusi</label><div class="igb-themes" id="igThemes"></div></div>
+        <div class="frow"><label>Mahsulot rasmi</label>
+          <div class="igb-imgbox">
+            <input type="file" id="igProdFile" accept="image/*" onchange="onIgProdFile(this)">
+            <div class="igb-btns">
+              <button type="button" class="igb-btn" id="igBtnA" onclick="igUseA()" disabled>A: o'zicha (fonsiz PNG)</button>
+              <button type="button" class="igb-btn" id="igBtnAI" onclick="igRunAI()" disabled>B1: AI bilan fonni olish</button>
+              <button type="button" class="igb-btn" id="igBtnFast" onclick="igRunFast()" disabled>B2: tez usul (oq fon)</button>
+            </div>
+            <div class="igb-vars">
+              <div class="igb-var" data-k="a" onclick="igChoose('a')"><div class="igb-ck">A natija</div>A: o'zicha</div>
+              <div class="igb-var" data-k="ai" onclick="igChoose('ai')"><div class="igb-ck">B1 natija</div>B1: AI</div>
+              <div class="igb-var" data-k="fast" onclick="igChoose('fast')"><div class="igb-ck">B2 natija</div>B2: tez</div>
+            </div>
+            <div class="igb-status" id="igStatus"></div>
+          </div>
+        </div>
+        <div class="frow"><label>Fon uchun do'kon surati (ixtiyoriy, xiralashtiriladi)</label>
+          <input type="file" id="igBgFile" accept="image/*" onchange="onIgBgFile(this)">
+          <div class="igb-btns"><button type="button" class="igb-btn" onclick="igClearBg()">✕ Fon suratini olib tashlash</button></div>
+        </div>
+      </div>
+      <div class="igb-side">
+        <div class="igb-pv"><div id="igPreview"></div></div>
+        <button class="mbtn-ok" id="igSendBtn" onclick="sendIgToTelegram()" style="width:100%">📤 Telegramga yuborish</button>
+        <button class="mbtn-ok" onclick="downloadIg()" style="width:100%;background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ PNG yuklab olish</button>
+        <button class="mbtn-no" onclick="closeIg()" style="width:100%">Yopish</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1397,8 +1433,8 @@ const K6 = 1.35;
 const K12 = 1.55;
 let KURS = 12300;
 
-let ALLDATA={"QARSHI":{"SAMSUNG":[["Samsung Gusto 3 ver",1476000,"120"],["Samsung Galaxy A07 6/128GB",1750000,"142",[{"shop":"Original","price":1770000,"img":""}]],["Samsung Galaxy M17e 6/128GB",2091000,"170",[{"shop":"Original","price":2045000,"img":""}]],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195",[{"shop":"Original","price":2420000,"img":""}]],["Samsung Galaxy A17 6/128GB",2405000,"196",[{"shop":"Original","price":2410000,"img":""}]],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy A37 SM-A376E/DS 256GB",1,"0"],["Samsung Galaxy A57 8/256GB",5175000,"425",[{"shop":"Original","price":5175000,"img":""}]],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050",[{"shop":"Original","price":13420000,"img":""}]],["7TECH connect U7 8/256GB",2,"300"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215",[{"shop":"Original","price":2650000,"img":""}]],["Redmi Note15 Pro 8/256GB",3430000,"279",[{"shop":"Original","price":4030000,"img":""}]],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384",[{"shop":"Original","price":4760000,"img":""}]],["Redmi Note15 Pro+12/512GB",5462000,"444",[{"shop":"Original","price":5490000,"img":""}]]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232",[{"shop":"Original","price":2930000,"img":""}]],["HONOR X8D 8/128GB",3400000,"330",[{"shop":"Original","price":3595000,"img":""}]],["HONOR X8D 8/256GB",4250000,"346",[{"shop":"Original","price":4360000,"img":""}]],["HONOR 600 Lite 8/256GB",4350000,"354",[{"shop":"Original","price":4455000,"img":""}]],["HONOR X9D 8/256GB",4750000,"386",[{"shop":"Original","price":4880000,"img":""}]],["HONOR X9D 12/256GB",5250000,"427",[{"shop":"Original","price":5370000,"img":""}]],["HONOR 600 5G 8/256GB",6210000,"505",[{"shop":"Original","price":6345000,"img":""}]],["HONOR 600 5G 8/512GB",6700000,"545",[{"shop":"Original","price":6835000,"img":""}]]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251",[{"shop":"Original","price":3095000,"img":""}]],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["IPhone 13 128gb",1,"500"],["IPhone 14 /128gb",2,"580"],["Iphone 15 128GB",7995000,"670",[{"shop":"Original","price":7986000,"img":""}]],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1360",[{"shop":"Original","price":17182000,"img":""}]],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1480",[{"shop":"Original","price":18210500,"img":""}]],["Apple WATCH 11",3,"355"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Apple MacBook Air M2 8/256GB",14500000,"1180"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"]],"PLANSHET":[]},"QAMASHI":{"SAMSUNG":[["Samsung Galaxy A07 6/128GB",1750000,"142"],["Samsung Galaxy A17 6/128GB",2405000,"196"],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195"],["Samsung Galaxy M17e 6/128GB",2091000,"170"],["Samsung Galaxy A57 8/256GB",5175000,"425"],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050"],["Samsung Gusto 3 ver",1476000,"120"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215"],["Redmi Note15 Pro 8/256GB",3430000,"279"],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384"],["Redmi Note15 Pro+12/512GB",5462000,"444"]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232"],["HONOR X8D 8/128GB",3400000,"330"],["HONOR X8D 8/256GB",4250000,"346"],["HONOR X9D 8/256GB",4750000,"386"],["HONOR X9D 12/256GB",5250000,"427"],["HONOR 600 Lite 8/256GB",4350000,"354"],["HONOR 600 5G 8/256GB",6210000,"505"],["HONOR 600 5G 8/512GB",6700000,"545"]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251"],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["Iphone 15 128GB",7995000,"650"],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1407"],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1530"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"],["Apple MacBook Air M2 8/256GB",14500000,"1180"]],"PLANSHET":[]}};
-const FILIALS={QARSHI:'Qarshi',QAMASHI:'Qamashi'};
+let ALLDATA={"QARSHI":{"SAMSUNG":[["Samsung Gusto 3 ver",1476000,"120"],["Samsung Galaxy A07 6/128GB",1750000,"142",[{"shop":"Original","price":1770000,"img":""}]],["Samsung Galaxy M17e 6/128GB",2091000,"170",[{"shop":"Original","price":2045000,"img":""}]],["Samsung Galaxy F17 4/128GB",2200000,"179"],["Samsung Galaxy M17 6/128GB",2400000,"195",[{"shop":"Original","price":2420000,"img":""}]],["Samsung Galaxy A17 6/128GB",2405000,"196",[{"shop":"Original","price":2410000,"img":""}]],["Samsung Galaxy A17 8/256GB",2895000,"235"],["Samsung Galaxy A37 SM-A376E/DS 256GB",1,"0"],["Samsung Galaxy A57 8/256GB",5175000,"425",[{"shop":"Original","price":5175000,"img":""}]],["Samsung Galaxy S26 Ultra 12/256GB",12920000,"1050",[{"shop":"Original","price":13420000,"img":""}]],["7TECH connect U7 8/256GB",2,"300"]],"XIAOMI":[["Xiaomi REDMI A7 Pro 4/128GB",1790000,"146"],["Redmi Note 15 8/256GB",2645000,"215",[{"shop":"Original","price":2650000,"img":""}]],["Redmi Note15 Pro 8/256GB",3430000,"279",[{"shop":"Original","price":4030000,"img":""}]],["Redmi Note15 Pro 12/512GB",4100000,"333"],["Redmi Note15 Pro+ 8/256GB",4720000,"384",[{"shop":"Original","price":4760000,"img":""}]],["Redmi Note15 Pro+12/512GB",5462000,"444",[{"shop":"Original","price":5490000,"img":""}]]],"HONOR":[["HONOR X7D 8/256GB",2854000,"232",[{"shop":"Original","price":2930000,"img":""}]],["HONOR X8D 8/128GB",3400000,"330",[{"shop":"Original","price":3595000,"img":""}]],["HONOR X8D 8/256GB",4250000,"346",[{"shop":"Original","price":4360000,"img":""}]],["HONOR 600 Lite 8/256GB",4350000,"354",[{"shop":"Original","price":4455000,"img":""}]],["HONOR X9D 8/256GB",4750000,"386",[{"shop":"Original","price":4880000,"img":""}]],["HONOR X9D 12/256GB",5250000,"427",[{"shop":"Original","price":5370000,"img":""}]],["HONOR 600 5G 8/256GB",6210000,"505",[{"shop":"Original","price":6345000,"img":""}]],["HONOR 600 5G 8/512GB",6700000,"545",[{"shop":"Original","price":6835000,"img":""}]]],"POCO":[["Poco M6 Pro 8/256GB",2790000,"227"],["Poco M8 8/256GB 5G",3090000,"251",[{"shop":"Original","price":3095000,"img":""}]],["Poco X8 Pro 8/256GB 5G",4580000,"372"]],"APPLE":[["IPhone 13 128gb",1,"500"],["IPhone 14 /128gb",2,"580"],["Iphone 15 128GB",7995000,"670",[{"shop":"Original","price":7986000,"img":""}]],["Iphone 17 Air 256",12100000,"1000"],["Iphone 17 Pro 256GB Silver",17300000,"1360",[{"shop":"Original","price":17182000,"img":""}]],["Iphone 17 Pro Max 256GB Sim+Esim Silver",18520000,"1480",[{"shop":"Original","price":18210500,"img":""}]],["Apple WATCH 11",3,"355"]],"NOUTBUK":[["Lenovo IdeaPad Slim 3 i3/8/256GB",5200000,"425"],["HP 15 Ryzen5/8/512GB",6800000,"555"],["Asus Vivobook Go 15 i5/8/512GB",7900000,"645"],["Acer Aspire 3 i5/16/512GB",8500000,"690"],["Apple MacBook Air M2 8/256GB",14500000,"1180"],["Lenovo Legion 5 i7/16/512GB RTX4050",15200000,"1235"]],"PLANSHET":[]}};
+const FILIALS={QARSHI:'Qarshi'};
 let FILIAL='QARSHI';
 let data=ALLDATA[FILIAL];
 const BRANDS=['SAMSUNG','XIAOMI','HONOR','POCO','APPLE','NOUTBUK','PLANSHET'];
@@ -1745,36 +1781,6 @@ function confirmKurs(){
 }
 
 
-/* ===== FILIALLAR ===== */
-function switchFilial(f){
-  if(!FILIALS[f]||f===FILIAL)return;
-  FILIAL=f;
-  data=ALLDATA[f];
-  syncFilialUI();
-  render();
-  toast('📍 '+FILIALS[f]+' filiali');
-}
-function syncFilialUI(){
-  document.querySelectorAll('.fbtn').forEach(b=>{
-    b.classList.toggle('active',b.dataset.filial===FILIAL);
-  });
-  const k=document.getElementById('kafolatTxt');
-  if(k)k.textContent=FILIALS[FILIAL]+' · 1 Yil Kafolat · UZS';
-  const cb=document.getElementById('copyBranchBtn');
-  if(cb)cb.style.display=(FILIAL==='QARSHI')?'none':'';
-}
-function copyFromQarshi(){
-  if(FILIAL==='QARSHI'){toast('⚠ Siz Qarshi filialidasiz');return}
-  const cnt=BRANDS.reduce((s,b)=>s+ALLDATA.QARSHI[b].length,0);
-  if(!cnt){toast('⚠ Qarshi ro\u2019yxati bo\u2019sh');return}
-  if(!confirm(FILIALS[FILIAL]+' ro\u2019yxati o\u2019chirilib, Qarshidagi '+cnt+' ta model nusxalanadi. Davom etilsinmi?'))return;
-  BRANDS.forEach(b=>{
-    ALLDATA[FILIAL][b]=ALLDATA.QARSHI[b].map(r=>[r[0],r[1],r[2]]);
-  });
-  data=ALLDATA[FILIAL];
-  render();
-  toast('✓ '+cnt+' ta model nusxalandi');
-}
 /* ===== MATN QILIB NUSXALASH ===== */
 function buildTextList(){
   const scopeSel=document.getElementById('copyScope');
@@ -2290,8 +2296,7 @@ function doPng(brand){
   toast('⏳ PNG tayyorlanmoqda...');
   downloadSnapshot(brand,brand.toLowerCase());
 }
-/* ================= BANNER YARATISH ================= */
-let bannerImgData=null;
+/* ================= UMUMIY YORDAMCHILAR ================= */
 let saleImgData=null;
 function populateModelSelect(selId){
   const sel=document.getElementById(selId);
@@ -2309,50 +2314,6 @@ function populateModelSelect(selId){
     sel.appendChild(og);
   });
 }
-function openBanner(){
-  populateModelSelect('bnModelSel');
-  document.getElementById('bnModelSel').value='';
-  document.getElementById('bnModel').value='';
-  document.getElementById('bnTagline').value='';
-  document.getElementById('bnPrice').value='';
-  document.getElementById('bnSpecs').value='';
-  const r0=document.querySelector('input[name="bnMuddat"][value="0"]');
-  if(r0)r0.checked=true;
-  removeBannerImg();
-  document.getElementById('bannerModal').classList.add('open');
-}
-function closeBanner(){document.getElementById('bannerModal').classList.remove('open')}
-function onBannerModelPick(){
-  const v=document.getElementById('bnModelSel').value;
-  if(!v)return;
-  const [b,idx]=v.split('|');
-  const row=data[b][+idx];
-  if(!row)return;
-  document.getElementById('bnModel').value=row[0];
-  document.getElementById('bnPrice').value=row[1];
-}
-function onBannerImgFile(input){
-  const file=input.files&&input.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    bannerImgData=e.target.result;
-    const img=document.getElementById('bnImgPreview');
-    img.src=bannerImgData;img.style.display='block';
-    document.getElementById('bnImgPh').style.display='none';
-    document.getElementById('bnImgRemoveBtn').style.display='inline-block';
-  };
-  reader.readAsDataURL(file);
-}
-function removeBannerImg(e){
-  if(e)e.stopPropagation();
-  bannerImgData=null;
-  const img=document.getElementById('bnImgPreview');
-  img.src='';img.style.display='none';
-  document.getElementById('bnImgPh').style.display='';
-  document.getElementById('bnImgRemoveBtn').style.display='none';
-  document.getElementById('bnImgFile').value='';
-}
 function bannerSpecIcon(line){
   const t=line.toLowerCase();
   if(t.indexOf('ram')!==-1||t.indexOf('operativ')!==-1)return '🧠';
@@ -2365,110 +2326,6 @@ function bannerSpecIcon(line){
   return '✔️';
 }
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function buildBannerHtml(){
-  const model=escHtml(document.getElementById('bnModel').value.trim()||'Model nomi');
-  const tagline=escHtml(document.getElementById('bnTagline').value.trim());
-  const price=+document.getElementById('bnPrice').value||0;
-  const muddatEl=document.querySelector('input[name="bnMuddat"]:checked');
-  const muddat=muddatEl?muddatEl.value:'0';
-  const specs=document.getElementById('bnSpecs').value.trim();
-  const specsLines=specs?specs.split('\n').map(s=>escHtml(s.trim())).filter(Boolean):[];
-
-  const specsGrid=specsLines.length?`<div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;text-align:left">
-    ${specsLines.map(l=>`<div style="flex:1 1 45%;min-width:180px;display:flex;align-items:center;gap:10px;background:#F8FAF9;border:1px solid #E3ECE7;border-radius:12px;padding:10px 14px;box-sizing:border-box">
-      <span style="font-size:20px;line-height:1">${bannerSpecIcon(l)}</span>
-      <span style="font-size:12.5px;color:#334155;font-weight:600">${l}</span>
-    </div>`).join('')}
-  </div>`:'';
-
-  let priceBlock;
-  if(muddat==='0'||!price){
-    priceBlock=`<div style="margin-top:22px;background:#14201B;border-radius:14px;padding:14px 20px;text-align:center">
-      <div style="font-size:11px;color:#E4B65C;font-weight:800;letter-spacing:1.5px">🪙 NAQTGA</div>
-      <div style="font-size:24px;color:#fff;font-weight:800;margin-top:3px">${fmt(price)} so'm</div>
-    </div>`;
-  }else{
-    const monthly=muddat==='6'?m6(price):m12(price);
-    priceBlock=`<div style="margin-top:22px;display:flex;gap:10px">
-      <div style="flex:1;background:#14201B;border-radius:14px;padding:14px 12px;text-align:center">
-        <div style="font-size:10.5px;color:#E4B65C;font-weight:800;letter-spacing:1.2px">🪙 NAQTGA</div>
-        <div style="font-size:19px;color:#fff;font-weight:800;margin-top:3px">${fmt(price)} so'm</div>
-      </div>
-      <div style="flex:1;background:linear-gradient(135deg,#0EA5E9,#0369A1);border-radius:14px;padding:14px 12px;text-align:center">
-        <div style="font-size:10.5px;color:#E0F2FE;font-weight:800;letter-spacing:1.2px">📅 MUDDATLI TO'LOV</div>
-        <div style="font-size:16px;color:#fff;font-weight:800;margin-top:3px">${fmt(monthly)} so'm/oy · ${muddat} oy</div>
-      </div>
-    </div>`;
-  }
-
-  const imgBlock=bannerImgData
-    ?`<img src="${bannerImgData}" style="max-width:100%;max-height:320px;object-fit:contain;display:block;margin:0 auto">`
-    :`<div style="height:220px;display:flex;align-items:center;justify-content:center;color:#B4C5BB;font-size:13px;background:#F3F7F5;border-radius:16px">Rasm qo'shilmagan</div>`;
-
-  const taglineBlock=tagline?`<div style="margin-top:6px;font-size:13px;color:#5C7268;font-weight:600">${tagline}</div>`:'';
-
-  return `<div style="display:inline-block;width:640px;background:#FFFFFF;font-family:'Inter',Arial,sans-serif">
-    <div style="background:linear-gradient(120deg,#FFFFFF 0%,#E9F7F3 20%,#E1EFFE 42%,#EFE3FB 66%,#FBF1D8 100%);padding:20px 24px;display:flex;align-items:center;justify-content:space-between">
-      <img src="data:image/png;base64,${LOGO_B64}" style="height:36px;width:auto;object-fit:contain;display:block">
-      <div style="background:linear-gradient(135deg,#F59E0B,#D97706);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.6px;padding:6px 14px;border-radius:999px;white-space:nowrap">SIFATLI VA ISHONCHLI</div>
-    </div>
-    <div style="height:3px;background:linear-gradient(90deg,#6366F1,#14B8A6,#2DD4BF,#FBBF24,#F59E0B)"></div>
-    <div style="padding:26px 24px 30px;text-align:center">
-      <div style="font-size:24px;font-weight:800;color:#14201B;letter-spacing:.3px">${model}</div>
-      ${taglineBlock}
-      <div style="margin-top:18px">${imgBlock}</div>
-      ${specsGrid}
-      ${priceBlock}
-    </div>
-    <div style="background:linear-gradient(90deg,#082F2B,#0A4A3F 40%,#0E5A4C 65%,#1E3A8A 100%);padding:14px 24px">
-      <div style="display:flex;justify-content:center;gap:22px;margin-bottom:10px">
-        <span style="font-size:11px;color:#B9CCC5;font-weight:700">🛡 Sifat kafolati</span>
-        <span style="font-size:11px;color:#B9CCC5;font-weight:700">✅ Ishonchli</span>
-        <span style="font-size:11px;color:#B9CCC5;font-weight:700">💳 Qulay narx</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;color:#B9CCC5;font-weight:600">${FILIALS[FILIAL]} · t.me/ssmart_uz</span>
-        <span style="font-size:11px;color:#5EEAD4;font-weight:800;letter-spacing:1px">1 YIL KAFOLAT</span>
-      </div>
-    </div>
-  </div>`;
-}
-async function renderBannerCanvas(){
-  const html=buildBannerHtml();
-  const wrap=document.getElementById('captureWrap');
-  wrap.innerHTML=html;
-  await new Promise(r=>setTimeout(r,80));
-  const imgs=wrap.querySelectorAll('img');
-  await Promise.all(Array.from(imgs).map(img=>{
-    if(img.complete)return img.decode?img.decode().catch(()=>{}):Promise.resolve();
-    return new Promise(res=>{img.onload=res;img.onerror=res;});
-  }));
-  if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
-  const canvas=await html2canvas(wrap.firstChild,{scale:3,useCORS:true,backgroundColor:'#FFFFFF',logging:false,imageTimeout:0});
-  wrap.innerHTML='';
-  return canvas;
-}
-async function downloadBanner(){
-  const model=document.getElementById('bnModel').value.trim();
-  if(!model){toast('⚠ Model nomini kiriting');return}
-  toast('⏳ Banner tayyorlanmoqda...');
-  try{
-    const canvas=await renderBannerCanvas();
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
-    if(!blob)throw new Error('Banner tayyorlanmadi');
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    const d=new Date();
-    a.download='ssmart_banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'_'+d.getDate()+'-'+(d.getMonth()+1)+'-'+d.getFullYear()+'.png';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-    URL.revokeObjectURL(a.href);
-    closeBanner();
-    toast('✓ Banner saqlandi!');
-  }catch(e){
-    console.error(e);
-    toast('✕ Banner yaratishda xatolik');
-  }
-}
 /* ================= TELEGRAMGA YUBORISH ================= */
 /* Bot tokeni va chat_id shu yerdan o'zgartiriladi (sinov guruhi: "ss") */
 const TG_BOT_TOKEN='8870278764:AAEPPUr6TIuQXg9zrSMiY0CNVL7frexH4s4';
@@ -2488,7 +2345,6 @@ const TG_DEFAULT_CAPTION=`Narxlari soatiga kuniga o’zgarishi mumkin ‼️
 
 📌 Manzillarimiz:
  • Qarshi, Yoshlar markazi
- • Qamashi, Amir Temur ko‘chasi (sobiq Lelin)
 
 
 Instagram 🌐 | Telegram ✅ | Youtube 📹 | Ssmart group 📱`;
@@ -2499,14 +2355,14 @@ const TG_DEFAULT_ENTITIES=[
   {offset:88,length:2,type:'custom_emoji',custom_emoji_id:'5453965363286925977'},
   {offset:131,length:13,type:'phone_number'},
   {offset:146,length:2,type:'custom_emoji',custom_emoji_id:'5397782960512444700'},
-  {offset:239,length:9,type:'text_link',url:'https://www.instagram.com/ssmart_karshi?igsh=MWJidGY5a2JpY2pybw=='},
-  {offset:249,length:2,type:'custom_emoji',custom_emoji_id:'5339466285409377607'},
-  {offset:254,length:8,type:'text_link',url:'https://t.me/ssmart_karshi'},
-  {offset:263,length:1,type:'custom_emoji',custom_emoji_id:'5335018876839141938'},
-  {offset:267,length:7,type:'text_link',url:'http://www.youtube.com/@ssmart_karshi'},
-  {offset:275,length:2,type:'custom_emoji',custom_emoji_id:'5334885900356688822'},
-  {offset:280,length:12,type:'text_link',url:'https://t.me/ssmart_group'},
-  {offset:293,length:2,type:'custom_emoji',custom_emoji_id:'5332524123610430820'}
+  {offset:193,length:9,type:'text_link',url:'https://www.instagram.com/ssmart_karshi?igsh=MWJidGY5a2JpY2pybw=='},
+  {offset:203,length:2,type:'custom_emoji',custom_emoji_id:'5339466285409377607'},
+  {offset:208,length:8,type:'text_link',url:'https://t.me/ssmart_karshi'},
+  {offset:217,length:1,type:'custom_emoji',custom_emoji_id:'5335018876839141938'},
+  {offset:221,length:7,type:'text_link',url:'http://www.youtube.com/@ssmart_karshi'},
+  {offset:229,length:2,type:'custom_emoji',custom_emoji_id:'5334885900356688822'},
+  {offset:234,length:12,type:'text_link',url:'https://t.me/ssmart_group'},
+  {offset:247,length:2,type:'custom_emoji',custom_emoji_id:'5332524123610430820'}
 ];
 function buildTgCaption(extra){
   if(!extra)return {caption:TG_DEFAULT_CAPTION,entities:TG_DEFAULT_ENTITIES};
@@ -2602,32 +2458,6 @@ async function onTelegramBtnClick(){
   }finally{
     btn.disabled=false;
     btn.textContent=prevText;
-  }
-}
-async function sendBannerToTelegram(){
-  const model=document.getElementById('bnModel').value.trim();
-  if(!model){toast('⚠ Model nomini kiriting');return}
-  const btn=document.getElementById('bnSendBtn');
-  const prevText=btn?btn.textContent:null;
-  if(btn){btn.disabled=true;btn.textContent='⏳ Tayyorlanmoqda...';}
-  try{
-    const canvas=await renderBannerCanvas();
-    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
-    if(!blob)throw new Error('Banner tayyorlanmadi');
-    if(btn)btn.textContent='📤 Yuborilmoqda...';
-    const fd=new FormData();
-    fd.append('chat_id',TG_CHAT_ID);
-    fd.append('photo',blob,'banner_'+model.replace(/[^a-z0-9]+/gi,'_')+'.png');
-    const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendPhoto`,{method:'POST',body:fd});
-    const j=await res.json();
-    if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
-    closeBanner();
-    toast('✓ Banner Telegramga yuborildi');
-  }catch(e){
-    console.error(e);
-    toast('✕ Telegramga yuborishda xatolik');
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent=prevText;}
   }
 }
 /* ================= AKSIYA (CHOP ETISH UCHUN) YORLIG'I ================= */
@@ -2807,6 +2637,385 @@ async function sendSaleTagToTelegram(){
     if(btn){btn.disabled=false;btn.textContent=prevText;}
   }
 }
+/* ================= INSTAGRAM BANNER (STORY 1080x1920) ================= */
+const IG_THEMES={
+  navy:{title:"To'q ko'k",sw:'#102A72',
+    bg:'radial-gradient(circle at 70% 42%,rgba(64,110,230,.55) 0%,rgba(16,42,114,0) 52%),linear-gradient(165deg,#0A1A4A 0%,#11307E 55%,#06102E 100%)',
+    overlay:'linear-gradient(180deg,rgba(8,20,60,.80),rgba(8,20,60,.55) 45%,rgba(6,16,46,.92))',
+    text:'#FFFFFF',sub:'#C7D2FE',brand:'#FFD60A',logoWhite:true,
+    ribbonBg:'linear-gradient(135deg,#FFE14D,#FFC300)',ribbonText:'#0A1A4A',
+    iconBg:'rgba(255,255,255,.10)',iconBd:'rgba(255,255,255,.28)',icon:'#FFD60A',specVal:'#FFFFFF',specLbl:'#B9C6F0',
+    naqdBg:'linear-gradient(135deg,#FFE14D,#FFC300)',naqdText:'#0A1A4A',naqdLblBg:'#E11D2E',naqdLblText:'#fff',
+    b2Bg:'linear-gradient(135deg,#F0283E,#B5121B)',b2Text:'#FFFFFF',
+    podium:'rgba(120,160,255,.35)',footBg:'rgba(0,0,0,.38)',footText:'#E0E7FF',footIcon:'#FFD60A'},
+  light:{title:"Oq / to'q sariq",sw:'#F97316',
+    bg:'radial-gradient(circle at 65% 45%,#FFFFFF 0%,rgba(255,255,255,0) 55%),linear-gradient(170deg,#F8FAFC 0%,#E7ECF3 60%,#D9E0EA 100%)',
+    overlay:'linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,.55) 45%,rgba(240,244,250,.9))',
+    text:'#0F172A',sub:'#475569',brand:'#0F172A',logoWhite:false,
+    ribbonBg:'linear-gradient(135deg,#FFB020,#FF7A00)',ribbonText:'#2B1300',
+    iconBg:'#FFFFFF',iconBd:'#E2E8F0',icon:'#0F172A',specVal:'#0F172A',specLbl:'#64748B',
+    naqdBg:'linear-gradient(135deg,#1E293B,#0B1220)',naqdText:'#FFFFFF',naqdLblBg:'#FFB020',naqdLblText:'#1E293B',
+    b2Bg:'linear-gradient(135deg,#FF8A00,#F05A00)',b2Text:'#FFFFFF',
+    podium:'rgba(15,23,42,.18)',footBg:'#0F172A',footText:'#E2E8F0',footIcon:'#FFB020'},
+  red:{title:'Oq / qizil',sw:'#E11D2E',
+    bg:'linear-gradient(160deg,#FFFFFF 0%,#FFF5F5 55%,#FFE4E6 100%)',
+    overlay:'linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.6) 45%,rgba(255,240,242,.92))',
+    text:'#111827',sub:'#6B7280',brand:'#E11D2E',logoWhite:false,
+    ribbonBg:'linear-gradient(135deg,#E11D2E,#B91C1C)',ribbonText:'#FFFFFF',
+    iconBg:'#FFFFFF',iconBd:'#FECDD3',icon:'#E11D2E',specVal:'#111827',specLbl:'#6B7280',
+    naqdBg:'linear-gradient(135deg,#F0283E,#B5121B)',naqdText:'#FFFFFF',naqdLblBg:'#111827',naqdLblText:'#fff',
+    b2Bg:'#FFFFFF',b2Text:'#B5121B',b2Bd:'3px solid #E11D2E',
+    podium:'rgba(225,29,46,.18)',footBg:'#B5121B',footText:'#FFE4E6',footIcon:'#FFFFFF'},
+  purple:{title:'SSMART binafsha',sw:'#6D28D9',
+    bg:'radial-gradient(circle at 70% 42%,rgba(168,85,247,.55) 0%,rgba(91,33,182,0) 55%),linear-gradient(160deg,#2E1065 0%,#5B21B6 55%,#1E0B4B 100%)',
+    overlay:'linear-gradient(180deg,rgba(46,16,101,.82),rgba(76,29,149,.55) 45%,rgba(30,11,75,.92))',
+    text:'#FFFFFF',sub:'#DDD6FE',brand:'#FACC15',logoWhite:true,
+    ribbonBg:'linear-gradient(135deg,#FDE047,#FACC15)',ribbonText:'#3B0764',
+    iconBg:'rgba(255,255,255,.12)',iconBd:'rgba(255,255,255,.3)',icon:'#FDE047',specVal:'#FFFFFF',specLbl:'#DDD6FE',
+    naqdBg:'linear-gradient(135deg,#FDE047,#FACC15)',naqdText:'#3B0764',naqdLblBg:'#3B0764',naqdLblText:'#fff',
+    b2Bg:'#FFFFFF',b2Text:'#5B21B6',
+    podium:'rgba(216,180,254,.35)',footBg:'rgba(0,0,0,.35)',footText:'#EDE9FE',footIcon:'#FDE047'}
+};
+let igTheme='navy';
+const IG_IC={
+  chip:'<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>',
+  store:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  cam:'<path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/>',
+  bat:'<rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 10v4M10 10v4"/>',
+  scr:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  snow:'<path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7"/>',
+  drop:'<path d="M12 2s7 7.5 7 12a7 7 0 0 1-14 0c0-4.5 7-12 7-12z"/>',
+  vol:'<path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/>',
+  shield:'<path d="M12 2 4 5v6c0 5 3.5 9.5 8 11 4.5-1.5 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/>',
+  ok:'<circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/>',
+  card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
+  cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6.2"/>',
+  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'
+};
+/* html2canvas "currentColor"ni bilmaydi, shuning uchun rang SVG ichiga yoziladi */
+function igSvg(name,color,size){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IG_IC[name]||IG_IC.ok}</svg>`;
+}
+function igIconFor(t){
+  t=t.toLowerCase();
+  if(/operativ|\bram\b/.test(t))return 'chip';
+  if(/protsessor|core|ryzen|cpu|chip/.test(t))return 'chip';
+  if(/kamera|\bmp\b/.test(t))return 'cam';
+  if(/mah|batare|akkumul/.test(t))return 'bat';
+  if(/xotira|\brom\b|ssd|hdd|\bgb\b|\btb\b/.test(t))return 'store';
+  if(/ekran|displ|dyuym|"|\bhz\b|oled|amoled/.test(t))return 'scr';
+  if(/sovut|frost|muzla|sovuq/.test(t))return 'snow';
+  if(/suv|issiq/.test(t))return 'drop';
+  if(/litr|hajm|\bkg\b|\bl\b/.test(t))return 'vol';
+  if(/\bvt\b|\bw\b|quvvat|energ|inverter/.test(t))return 'bolt';
+  if(/kafolat|ishonch|chidam|mustahkam/.test(t))return 'shield';
+  return 'ok';
+}
+const IG_LOGO='data:image/png;base64,'+LOGO_B64;
+const IG_LOGO_RATIO=1810/690;
+let igLogoWhite=null;
+function igMakeWhiteLogo(){
+  if(igLogoWhite)return Promise.resolve();
+  return igLoadImg(IG_LOGO).then(im=>{
+    const c=document.createElement('canvas');c.width=im.width;c.height=im.height;
+    const x=c.getContext('2d');x.drawImage(im,0,0);x.globalCompositeOperation='source-in';x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);
+    igLogoWhite=c.toDataURL('image/png');
+  });
+}
+
+let igOrig=null;                         // yuklangan asl rasm
+const igVars={a:null,ai:null,fast:null};  // {src,w,h}
+let igChosen=null,igBg=null,igBgLib=null;
+
+function igReadFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(f)})}
+function igLoadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+function igSetStatus(t){document.getElementById('igStatus').textContent=t}
+
+function openIg(){
+  populateModelSelect('igModelSel');
+  const box=document.getElementById('igThemes');
+  if(!box.children.length){
+    Object.entries(IG_THEMES).forEach(([k,t])=>{
+      const b=document.createElement('div');b.className='igb-th'+(k===igTheme?' on':'');b.style.background=t.sw;b.textContent=t.title;
+      b.onclick=()=>{igTheme=k;box.querySelectorAll('.igb-th').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderIg();};
+      box.appendChild(b);
+    });
+  }
+  document.getElementById('igModal').classList.add('open');
+  igMakeWhiteLogo().then(renderIg);
+  renderIg();
+}
+function closeIg(){document.getElementById('igModal').classList.remove('open')}
+function onIgModelPick(){
+  const v=document.getElementById('igModelSel').value;
+  if(!v)return;
+  const [b,idx]=v.split('|');
+  const row=data[b][+idx];
+  if(!row)return;
+  document.getElementById('igName').value=row[0];
+  document.getElementById('igPrice').value=row[1];
+  // "6/128GB" bo'lsa, xotirani xususiyatlarga qo'yish
+  const m=row[0].match(/(\d+)\s*\/\s*(\d+)\s*(GB|TB)?/i);
+  if(m){
+    const sp=document.getElementById('igSpecs');
+    const rest=sp.value.split('\n').filter(l=>l.trim()&&!/operativ xotira|^\s*\d+\s*(gb|tb)\s*—\s*xotira/i.test(l));
+    sp.value=[`${m[1]} GB — Operativ xotira`,`${m[2]} ${(m[3]||'GB').toUpperCase()} — Xotira`,...rest].slice(0,6).join('\n');
+  }
+  renderIg();
+}
+
+/* shaffof chetlarni qirqib tashlash (mahsulot ramkani to'liq egallashi uchun) */
+async function igTrim(src){
+  const im=await igLoadImg(src);
+  const k=Math.min(1,1400/Math.max(im.width,im.height));
+  const w=Math.round(im.width*k),h=Math.round(im.height*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data;let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y++)for(let xx=0;xx<w;xx++){if(d[(y*w+xx)*4+3]>12){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(y<y0)y0=y;if(y>y1)y1=y;}}
+  if(x1<0)return {src:c.toDataURL('image/png'),w,h};
+  const p=4;x0=Math.max(0,x0-p);y0=Math.max(0,y0-p);x1=Math.min(w-1,x1+p);y1=Math.min(h-1,y1+p);
+  const cw=x1-x0+1,ch=y1-y0+1;const o=document.createElement('canvas');o.width=cw;o.height=ch;
+  o.getContext('2d').drawImage(c,x0,y0,cw,ch,0,0,cw,ch);
+  return {src:o.toDataURL('image/png'),w:cw,h:ch};
+}
+async function onIgProdFile(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;
+  igOrig=await igReadFile(f);
+  igVars.a=igVars.ai=igVars.fast=null;igChosen=null;
+  ['igBtnA','igBtnAI','igBtnFast'].forEach(id=>document.getElementById(id).disabled=false);
+  document.querySelectorAll('.igb-var .igb-ck').forEach((el,i)=>el.textContent=['A natija','B1 natija','B2 natija'][i]);
+  await igUseA();
+  igSetStatus('A tayyor. Fonni olib tashlash uchun B1 yoki B2 ni bosing.');
+}
+async function igUseA(){if(!igOrig)return;igVars.a=await igTrim(igOrig);igChoose('a');}
+
+/* B2: chetdagi rangga o'xshash fonni chetdan ichkariga "to'kib" olib tashlash */
+async function igRunFast(){
+  if(!igOrig)return;igSetStatus('Tez usul ishlayapti...');
+  const im=await igLoadImg(igOrig);
+  const k=Math.min(1,1400/Math.max(im.width,im.height));
+  const w=Math.round(im.width*k),h=Math.round(im.height*k);
+  const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);
+  const id=x.getImageData(0,0,w,h),d=id.data;
+  let r=0,g=0,b=0,n=0;
+  const add=i=>{r+=d[i];g+=d[i+1];b+=d[i+2];n++};
+  for(let xx=0;xx<w;xx++){add(xx*4);add(((h-1)*w+xx)*4)}
+  for(let y=0;y<h;y++){add(y*w*4);add((y*w+w-1)*4)}
+  r/=n;g/=n;b/=n;
+  const tol=48,dist=i=>Math.sqrt((d[i]-r)**2+(d[i+1]-g)**2+(d[i+2]-b)**2);
+  const seen=new Uint8Array(w*h),st=[];
+  const push=p=>{if(!seen[p]&&dist(p*4)<tol){seen[p]=1;st.push(p)}};
+  for(let xx=0;xx<w;xx++){push(xx);push((h-1)*w+xx)}
+  for(let y=0;y<h;y++){push(y*w);push(y*w+w-1)}
+  while(st.length){const p=st.pop(),px=p%w,py=(p/w)|0;
+    if(px>0)push(p-1);if(px<w-1)push(p+1);if(py>0)push(p-w);if(py<h-1)push(p+w);}
+  for(let p=0;p<w*h;p++){
+    if(seen[p]){d[p*4+3]=0;continue}
+    const px=p%w,py=(p/w)|0;
+    if((px>0&&seen[p-1])||(px<w-1&&seen[p+1])||(py>0&&seen[p-w])||(py<h-1&&seen[p+w])){
+      const dd=dist(p*4);if(dd<tol*1.8)d[p*4+3]=Math.round(255*Math.min(1,(dd-tol)/(tol*.8)+.25));
+    }
+  }
+  x.putImageData(id,0,0);
+  igVars.fast=await igTrim(c.toDataURL('image/png'));
+  igChoose('fast');igSetStatus("B2 tayyor. Fon bir xil (oq) bo'lsa yaxshi chiqadi.");
+}
+
+/* B1: brauzer ichida AI model (@imgly/background-removal), birinchi marta ~40 MB yuklanadi */
+async function igRunAI(){
+  if(!igOrig)return;
+  const btn=document.getElementById('igBtnAI');btn.disabled=true;
+  igSetStatus('AI model yuklanmoqda... (birinchi marta ~40 MB, keyin tezlashadi)');
+  try{
+    if(!igBgLib){
+      const urls=['https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm','https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm'];
+      let err;for(const u of urls){try{igBgLib=await import(u);break}catch(e){err=e}}
+      if(!igBgLib)throw err;
+    }
+    const blob=await (await fetch(igOrig)).blob();
+    const out=await igBgLib.removeBackground(blob,{progress:(key,cur,tot)=>{
+      if(tot)igSetStatus(`AI: ${key.includes('fetch')?'model yuklanmoqda':'ishlov'} ${Math.round(cur/tot*100)}%`);}});
+    igVars.ai=await igTrim(await igReadFile(out));
+    igChoose('ai');igSetStatus('B1 (AI) tayyor.');
+  }catch(e){
+    console.error(e);igSetStatus('AI ishlamadi: '+(e&&e.message||e)+". B2 tez usulni sinab ko'ring.");
+  }finally{btn.disabled=false}
+}
+function igChoose(k){
+  if(!igVars[k])return;igChosen=k;
+  document.querySelectorAll('.igb-var').forEach(el=>{
+    const v=igVars[el.dataset.k];el.classList.toggle('on',el.dataset.k===igChosen);
+    if(v)el.querySelector('.igb-ck').innerHTML=`<img src="${v.src}">`;
+  });
+  renderIg();
+}
+
+/* fon surati: banner o'lchamiga kesib, xiralashtirish (html2canvas CSS filter'ni chizmaydi) */
+async function onIgBgFile(inp){
+  const f=inp.files&&inp.files[0];if(!f)return;
+  const im=await igLoadImg(await igReadFile(f));
+  const W=540,H=960,c=document.createElement('canvas');c.width=W*2;c.height=H*2;const x=c.getContext('2d');
+  const k=Math.max(c.width/im.width,c.height/im.height),w=im.width*k,h=im.height*k;
+  x.filter='blur(14px)';x.drawImage(im,(c.width-w)/2-40,(c.height-h)/2-40,w+80,h+80);
+  igBg=c.toDataURL('image/jpeg',.9);renderIg();
+}
+function igClearBg(){igBg=null;document.getElementById('igBgFile').value='';renderIg();}
+
+function igSplitName(n){
+  n=n.trim().replace(/\s*\d+\s*\/\s*\d+\s*(GB|TB)?\b/i,'').trim();
+  const sp=n.indexOf(' ');
+  if(sp<0)return {brand:'',model:n};
+  return {brand:n.slice(0,sp),model:n.slice(sp+1)};
+}
+function igPlaceholder(){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="210" height="400" viewBox="0 0 210 400">
+    <defs><linearGradient id="igph" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CBD5E1"/><stop offset="1" stop-color="#94A3B8"/></linearGradient></defs>
+    <rect x="5" y="5" width="200" height="390" rx="34" fill="url(#igph)" stroke="#64748B" stroke-width="3"/>
+    <circle cx="62" cy="70" r="30" fill="#1F2937"/><circle cx="62" cy="140" r="30" fill="#1F2937"/>
+    <text x="105" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#334155" text-anchor="middle">rasm yuklang</text></svg>`;
+}
+function igPriceFs(l){return l<=9?44:l<=10?40:36}
+function buildIgHtml(){
+  const T=IG_THEMES[igTheme];
+  const nm=igSplitName(document.getElementById('igName').value);
+  const sub=escHtml(document.getElementById('igSub').value.trim());
+  const rib=escHtml(document.getElementById('igRibbon').value.trim());
+  const price=+document.getElementById('igPrice').value||0;
+  const months=+document.getElementById('igMonths').value;
+  const monthly=months===12?m12(price):months===6?m6(price):0;
+  const specs=document.getElementById('igSpecs').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,6).map(l=>{
+    const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/);return {v:escHtml(m[0]||''),l:escHtml(m.slice(1).join(' ')||''),ic:igIconFor(l)};});
+
+  const model=escHtml(nm.model),brand=escHtml(nm.brand.toUpperCase());
+  const ml=nm.model.length;
+  const mfs=ml<=6?82:ml<=9?66:ml<=13?52:ml<=18?42:34;
+
+  // html2canvas object-fit'ni bilmaydi — o'lcham qo'lda hisoblanadi
+  const boxW=specs.length?318:440,boxH=430;
+  let prodHtml;
+  const v=igChosen&&igVars[igChosen];
+  if(v){const k=Math.min(boxW/v.w,boxH/v.h);const w=Math.round(v.w*k),h=Math.round(v.h*k);
+    prodHtml=`<img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2)}px;bottom:0;width:${w}px;height:${h}px">`;}
+  else prodHtml=`<div style="position:absolute;left:${Math.round((boxW-210)/2)}px;bottom:10px">${igPlaceholder()}</div>`;
+
+  const priceStr=fmt(price);const pfs=igPriceFs(priceStr.length);
+  const mStr=fmt(monthly);const mfs2=mStr.length<=7?30:27;
+
+  const logo=T.logoWhite&&igLogoWhite?igLogoWhite:IG_LOGO;
+  const bgLayer=igBg
+    ?`<img src="${igBg}" class="abs" style="left:0;top:0;width:540px;height:960px"><div class="abs" style="left:0;top:0;width:540px;height:960px;background:${T.overlay}"></div>`
+    :`<div class="abs" style="left:0;top:0;width:540px;height:960px;background:${T.bg}"></div>`;
+
+  const specHtml=specs.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <div style="width:44px;height:44px;flex:none;border-radius:12px;background:${T.iconBg};border:1.5px solid ${T.iconBd};display:flex;align-items:center;justify-content:center">${igSvg(s.ic,T.icon,22)}</div>
+      <div style="line-height:1.1;min-width:0">
+        <div style="font-size:16px;font-weight:800;color:${T.specVal};white-space:nowrap">${s.v}</div>
+        <div style="font-size:10.5px;font-weight:600;color:${T.specLbl};margin-top:2px">${s.l}</div>
+      </div>
+    </div>`).join('');
+
+  const foot=[['shield','Sifat kafolati'],['card','Pasport / plastik bilan'],['cart','Oson va qulay xarid']].map(([i,t])=>`
+    <div style="display:flex;align-items:center;gap:6px">${igSvg(i,T.footIcon,17)}<span style="font-size:10.5px;font-weight:700;color:${T.footText};line-height:1.1;max-width:84px">${t}</span></div>`)
+    .join(`<div style="width:1px;height:22px;background:${T.footText};opacity:.3"></div>`);
+
+  const b2=monthly?`
+    <div class="abs" style="right:22px;top:770px;width:206px;height:112px;border-radius:20px;background:${T.b2Bg};${T.b2Bd?'border:'+T.b2Bd+';':''}color:${T.b2Text};text-align:center;padding-top:12px">
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.6px">${igSvg('cal',T.b2Text,15)}MUDDATLI TO'LOV</div>
+      <div style="font-size:${mfs2}px;font-weight:900;line-height:1.15;margin-top:6px;white-space:nowrap">${mStr}<span style="font-size:13px;font-weight:800"> so'm</span></div>
+      <div style="display:inline-block;margin-top:4px;font-size:12px;font-weight:800;padding:2px 12px;border-radius:999px;border:1.5px solid ${T.b2Text}">${months} oy</div>
+    </div>`:'';
+  const naqdW=monthly?262:496;
+
+  // eslatma: box-shadow ishlatilmaydi — html2canvas uni yumaloq burchakda qora dog' qilib chizadi
+  return `<div class="igbn">
+    ${bgLayer}
+    <div class="abs" style="left:-120px;top:-140px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
+    <div class="abs" style="left:26px;top:24px"><img src="${logo}" style="height:40px;width:${Math.round(40*IG_LOGO_RATIO)}px;display:block"></div>
+    <div class="abs" style="right:26px;top:30px;font-size:11px;font-weight:700;color:${T.sub};text-align:right;line-height:1.3">Sizning ishonchli<br>do'koningiz</div>
+    <div class="abs" style="left:26px;top:96px;right:26px">
+      ${brand?`<div style="font-size:26px;font-weight:900;letter-spacing:3px;color:${T.brand}">${brand}</div>`:''}
+      <div style="font-size:${mfs}px;font-weight:900;color:${T.text};line-height:1;letter-spacing:-1px;margin-top:2px">${model}</div>
+      ${sub?`<div style="font-size:15px;font-weight:600;color:${T.sub};margin-top:10px;max-width:300px;line-height:1.3">${sub}</div>`:''}
+    </div>
+    <div class="abs" style="left:${specs.length?20:50}px;top:300px;width:${boxW}px;height:${boxH}px">
+      <div class="abs" style="left:${boxW*.08}px;bottom:-26px;width:${boxW*.84}px;height:60px;border-radius:50%;background:radial-gradient(ellipse,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
+      ${prodHtml}
+    </div>
+    ${specs.length?`<div class="abs" style="right:18px;top:${Math.max(300,515-specs.length*29)}px;width:178px">${specHtml}</div>`:''}
+    ${rib?`<div class="abs" style="right:-8px;top:${brand?262:240}px;transform:rotate(-6deg);background:${T.ribbonBg};color:${T.ribbonText};padding:9px 26px 9px 18px;border-radius:10px 0 0 10px;max-width:260px">
+      <div style="font-family:'Kaushan Script',cursive;font-size:19px;line-height:1.15">${rib}</div></div>`:''}
+    <div class="abs" style="left:22px;top:770px;width:${naqdW}px;height:112px;border-radius:20px;background:${T.naqdBg};color:${T.naqdText};padding:24px 0 0 18px">
+      <div class="abs" style="left:14px;top:-13px;background:${T.naqdLblBg};color:${T.naqdLblText};font-size:13px;font-weight:900;letter-spacing:1px;padding:5px 14px;border-radius:8px;transform:rotate(-3deg)">NAQTGA</div>
+      <div style="font-size:${pfs}px;font-weight:900;letter-spacing:-1px;line-height:1.1;white-space:nowrap">${priceStr}</div><div style="font-size:14px;font-weight:800;margin-top:2px">so'm</div>
+    </div>
+    ${b2}
+    <div class="abs" style="left:0;top:906px;width:540px;height:54px;background:${T.footBg};display:flex;align-items:center;justify-content:space-between;padding:0 22px">
+      <div style="display:flex;align-items:center;gap:12px">${foot}</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:${T.footText}">${igSvg('phone',T.footIcon,14)}94 808 00 55</div>
+    </div>
+  </div>`;
+}
+function renderIg(){document.getElementById('igPreview').innerHTML=buildIgHtml();}
+async function renderIgCanvas(){
+  await igMakeWhiteLogo().catch(()=>{});
+  const wrap=document.getElementById('captureWrap');
+  wrap.innerHTML=buildIgHtml();
+  const imgs=wrap.querySelectorAll('img');
+  await Promise.all(Array.from(imgs).map(img=>img.complete?(img.decode?img.decode().catch(()=>{}):0):new Promise(res=>{img.onload=res;img.onerror=res;})));
+  if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
+  try{
+    return await html2canvas(wrap.firstChild,{scale:2,useCORS:true,backgroundColor:null,logging:false,imageTimeout:0});
+  }finally{wrap.innerHTML='';}
+}
+function igFileName(){
+  const n=document.getElementById('igName').value.trim()||'banner';
+  return 'ssmart_banner_'+n.replace(/[^a-z0-9]+/gi,'_')+'.png';
+}
+async function downloadIg(){
+  if(!(+document.getElementById('igPrice').value)){toast('⚠ Narxni kiriting');return}
+  toast('⏳ Banner tayyorlanmoqda...');
+  try{
+    const canvas=await renderIgCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Banner tayyorlanmadi');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=igFileName();
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    toast('✓ Banner saqlandi!');
+  }catch(e){
+    console.error(e);
+    toast('✕ Banner yaratishda xatolik');
+  }
+}
+async function sendIgToTelegram(){
+  if(!(+document.getElementById('igPrice').value)){toast('⚠ Narxni kiriting');return}
+  const btn=document.getElementById('igSendBtn');
+  const prevText=btn.textContent;
+  btn.disabled=true;btn.textContent='⏳ Tayyorlanmoqda...';
+  try{
+    const canvas=await renderIgCanvas();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+    if(!blob)throw new Error('Banner tayyorlanmadi');
+    btn.textContent='📤 Yuborilmoqda...';
+    // sendDocument — Telegram rasmni siqmasligi uchun (Instagramga sifatli joylash)
+    const fd=new FormData();
+    fd.append('chat_id',TG_CHAT_ID);
+    fd.append('document',blob,igFileName());
+    const res=await fetch(`https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument`,{method:'POST',body:fd});
+    const j=await res.json();
+    if(!j.ok)throw new Error(j.description||'Telegramga yuborib bo’lmadi');
+    toast('✓ Banner Telegramga yuborildi');
+  }catch(e){
+    console.error(e);
+    toast('✕ Telegramga yuborishda xatolik');
+  }finally{
+    btn.disabled=false;btn.textContent=prevText;
+  }
+}
 /* Bot ("samsung", "noutbuk" va h.k. deb yozganda avtomatik javob berishi) uchun
    har brend rasmini alohida yuborib, Telegram qaytargan file_id'larni bulutga saqlaydi */
 async function updateTgCache(){
@@ -2871,7 +3080,6 @@ document.getElementById('copyModal').addEventListener('click',function(e){if(e.t
 document.getElementById('pngModal').addEventListener('click',function(e){if(e.target===this)closePng()});
 document.getElementById('clearAllModal').addEventListener('click',function(e){if(e.target===this)closeClearAll()});
 document.getElementById('kursModal').addEventListener('click',function(e){if(e.target===this)closeKurs()});
-document.getElementById('bannerModal').addEventListener('click',function(e){if(e.target===this)closeBanner()});
 document.getElementById('saleModal').addEventListener('click',function(e){if(e.target===this)closeSaleTag()});
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
 const d=new Date();
@@ -2879,7 +3087,6 @@ document.getElementById('dateDisp').textContent=String(d.getDate()).padStart(2,'
 lsReady=true;
 applyAdmin();
 loadSaved();
-syncFilialUI();
 document.getElementById('kursDisp').textContent=fmt(KURS);
 render();
 initCloud();
