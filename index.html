@@ -2775,7 +2775,9 @@ function onIgModelPick(){
    bo'sh qolsa — birinchi marta so'raladi va shu brauzerda saqlanadi. */
 const GEMINI_API_KEY='';
 const GEMINI_LS='ssmart_gemini_key';
-const GEMINI_MODELS=['gemini-2.5-flash','gemini-flash-latest'];
+/* Bepul kalitlarda ba'zi modellar yoki Google qidiruvi uchun limit 0 bo'lishi mumkin —
+   shuning uchun navbat bilan sinaladi; qidiruv bilan bo'lmasa, oxirida qidiruvsiz (model bilimidan) */
+const GEMINI_MODELS=['gemini-2.5-flash','gemini-flash-latest','gemini-2.5-flash-lite','gemini-flash-lite-latest'];
 function igGeminiKey(){
   if(GEMINI_API_KEY)return GEMINI_API_KEY;
   let k='';try{k=localStorage.getItem(GEMINI_LS)||''}catch(e){}
@@ -2789,10 +2791,10 @@ function igResetGeminiKey(){
   try{localStorage.removeItem(GEMINI_LS)}catch(e){}
   if(igGeminiKey())toast('✓ Gemini kaliti saqlandi');
 }
-function igSpecPrompt(name){
+function igSpecPrompt(name,withSearch){
   return `Sen O'zbekistondagi maishiy texnika va elektronika do'koni uchun reklama banneri tayyorlayapsan.
 Mahsulot: "${name}"
-Google'da shu aniq model bo'yicha rasmiy xususiyatlarni qidirib top va FAQAT quyidagi formatda, o'zbek tilida (lotin) javob ber, boshqa hech narsa yozma:
+${withSearch?"Google'da shu aniq model bo'yicha rasmiy xususiyatlarni qidirib top":"Shu aniq model bo'yicha rasmiy xususiyatlarni bilganingcha yoz"} va FAQAT quyidagi formatda, o'zbek tilida (lotin) javob ber, boshqa hech narsa yozma:
 TARIF: <mahsulotni maqtaydigan 3-6 so'zli qisqa jumla, oxirida undov>
 - <qiymat> — <izoh>
 - <qiymat> — <izoh>
@@ -2809,31 +2811,39 @@ async function igFindSpecs(){
   const btn=document.getElementById('igFindBtn');btn.disabled=true;
   st.textContent='🔎 Internetdan qidirilmoqda... (10-20 soniya)';
   try{
-    let txt='',lastErr='';
-    for(const model of GEMINI_MODELS){
+    let txt='',lastErr='',usedSearch=true;
+    const attempts=[...GEMINI_MODELS.map(m=>[m,true]),...GEMINI_MODELS.map(m=>[m,false])];
+    for(const [model,withSearch] of attempts){
+      st.textContent=withSearch?`🔎 Internetdan qidirilmoqda (${model})...`:`🔎 Qidiruvsiz urinib ko'rilmoqda (${model})...`;
+      const body={contents:[{role:'user',parts:[{text:igSpecPrompt(name,withSearch)}]}],generationConfig:{temperature:0.2}};
+      if(withSearch)body.tools=[{google_search:{}}];
       const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`,{
-        method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{role:'user',parts:[{text:igSpecPrompt(name)}]}],tools:[{google_search:{}}],generationConfig:{temperature:0.2}})
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
       });
       const j=await res.json().catch(()=>({}));
       if(res.ok){
         const parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
         txt=parts.map(p=>p.text||'').join('\n').trim();
-        if(txt)break;
+        if(txt){usedSearch=withSearch;break}
         lastErr='bo\'sh javob';
       }else{
         lastErr=(j.error&&j.error.message)||('HTTP '+res.status);
+        // kalit noto'g'ri bo'lsa boshqa model ham yordam bermaydi
         if(res.status===400&&/api key/i.test(lastErr)){try{localStorage.removeItem(GEMINI_LS)}catch(e){}break}
-        if(res.status!==404)break; // model topilmasa keyingisini sinaymiz
+        if(res.status===403)break;
       }
     }
-    if(!txt)throw new Error(lastErr||'javob kelmadi');
+    if(!txt)throw new Error(/quota|exhausted/i.test(lastErr)
+      ?"Gemini bepul limiti tugagan (barcha modellar). Bir necha daqiqadan keyin yoki ertaga qayta urinib ko'ring."
+      :(lastErr||'javob kelmadi'));
     const r=igParseSpecs(txt);
     if(!r){st.textContent='⚠ Bu model bo\'yicha ishonchli ma\'lumot topilmadi. Nomini aniqroq yozib ko\'ring.';return}
     if(r.sub)document.getElementById('igSub').value=r.sub;
     document.getElementById('igSpecs').value=r.specs.join('\n');
     renderIg();
-    st.textContent='✓ Topildi. Tekshirib chiqing — kerak bo\'lsa qo\'lda to\'g\'rilang.';
+    st.textContent=usedSearch
+      ?'✓ Topildi. Tekshirib chiqing — kerak bo\'lsa qo\'lda to\'g\'rilang.'
+      :'⚠ Internet qidiruvi limiti tugagani uchun AI o\'z bilimidan yozdi — raqamlarni albatta tekshiring.';
   }catch(e){
     console.error(e);
     st.textContent='✕ Xatolik: '+(e&&e.message||e);
