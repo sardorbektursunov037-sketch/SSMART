@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SSMART — Narx Jadvali</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&amp;family=Kaushan+Script&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&amp;family=Kaushan+Script&amp;family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
@@ -1273,6 +1273,12 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
         <div class="frow"><label>Xususiyatlar (har qatorda: qiymat — izoh, 6 tagacha)</label>
           <textarea id="igSpecs" rows="5" oninput="renderIg()" placeholder="6 GB — Operativ xotira&#10;128 GB — Xotira&#10;50 MP — Asosiy kamera&#10;6000 mAh — Batareya"></textarea></div>
         <div class="frow"><label>Rang mavzusi</label><div class="igb-themes" id="igThemes"></div></div>
+        <div class="frow"><label>Yozuv uslubi</label>
+          <select id="igFont" onchange="renderIg()">
+            <option value="modern">Zamonaviy (toza, Apple uslubida)</option>
+            <option value="poster">Plakat (baland, qalin harflar)</option>
+            <option value="classic">Klassik (avvalgi ko'rinish)</option>
+          </select></div>
         <div class="frow"><label>Mahsulot rasmi</label>
           <div class="igb-imgbox">
             <input type="file" id="igProdFile" accept="image/*" onchange="onIgProdFile(this)">
@@ -2974,8 +2980,30 @@ function igPlaceholder(){
     <text x="105" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#334155" text-anchor="middle">rasm yuklang</text></svg>`;
 }
 function igPriceFs(l){return l<=9?44:l<=10?40:36}
+/* Yozuv uslublari: k — shrift kengligiga qarab o'lcham koeffitsiyenti (Oswald tor, shuning uchun kattaroq) */
+const IG_FONTS={
+  modern:{base:"Inter,sans-serif",title:"Inter,sans-serif",tW:800,tLs:-2,tUp:false,k:1,
+    brandW:700,brandLs:5,brandFs:17,bar:true,
+    rib:"Inter,sans-serif",ribW:800,ribStyle:'italic',ribUp:true,ribFs:13,ribLs:.3,
+    price:"Inter,sans-serif",pW:800,pLs:-1.5,pK:1},
+  poster:{base:"Inter,sans-serif",title:"Oswald,sans-serif",tW:700,tLs:.5,tUp:false,k:1.22,
+    brandW:500,brandLs:6,brandFs:22,bar:false,
+    rib:"Oswald,sans-serif",ribW:600,ribStyle:'normal',ribUp:true,ribFs:17,ribLs:.6,
+    price:"Oswald,sans-serif",pW:700,pLs:0,pK:1.15},
+  classic:{base:"Montserrat,Inter,sans-serif",title:"Montserrat,sans-serif",tW:900,tLs:-1,tUp:false,k:1,
+    brandW:900,brandLs:3,brandFs:26,bar:false,
+    rib:"'Kaushan Script',cursive",ribW:400,ribStyle:'normal',ribUp:false,ribFs:19,ribLs:0,
+    price:"Montserrat,sans-serif",pW:900,pLs:-1,pK:1}
+};
+/* "Pro", "Plus", "Max" kabi oxirgi so'zni rangli belgi qilib ajratish */
+function igModelHtml(model,T,F,fs){
+  const m=model.match(/^(.*\S)\s+(Pro\+?|Plus|Max|Ultra|Lite|Mini|Neo|Prime|5G|FE)$/i);
+  if(!m)return escHtml(model);
+  return `${escHtml(m[1])} <span style="display:inline-block;vertical-align:middle;font-size:${Math.round(fs*.36)}px;letter-spacing:.5px;font-weight:800;font-family:Inter,sans-serif;text-transform:uppercase;background:${T.ribbonBg};color:${T.ribbonText};padding:6px 12px;border-radius:999px;margin-top:-${Math.round(fs*.12)}px">${escHtml(m[2])}</span>`;
+}
 function buildIgHtml(){
   const T=IG_THEMES[igTheme];
+  const F=IG_FONTS[(document.getElementById('igFont')||{}).value]||IG_FONTS.modern;
   const nm=igSplitName(document.getElementById('igName').value);
   const sub=escHtml(document.getElementById('igSub').value.trim());
   const rib=escHtml(document.getElementById('igRibbon').value.trim());
@@ -2985,9 +3013,9 @@ function buildIgHtml(){
   const specs=document.getElementById('igSpecs').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,6).map(l=>{
     const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/);return {v:escHtml(m[0]||''),l:escHtml(m.slice(1).join(' ')||''),ic:igIconFor(l)};});
 
-  const model=escHtml(nm.model),brand=escHtml(nm.brand.toUpperCase());
+  const brand=escHtml(nm.brand.toUpperCase());
   const ml=nm.model.length;
-  const mfs=ml<=6?82:ml<=9?66:ml<=13?52:ml<=18?42:34;
+  const mfs=Math.round((ml<=6?82:ml<=9?66:ml<=13?52:ml<=18?42:34)*F.k);
 
   // html2canvas object-fit'ni bilmaydi — o'lcham qo'lda hisoblanadi
   const boxW=specs.length?318:440,boxH=430;
@@ -2997,8 +3025,8 @@ function buildIgHtml(){
     prodHtml=`<img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2)}px;bottom:0;width:${w}px;height:${h}px">`;}
   else prodHtml=`<div style="position:absolute;left:${Math.round((boxW-210)/2)}px;bottom:10px">${igPlaceholder()}</div>`;
 
-  const priceStr=fmt(price);const pfs=igPriceFs(priceStr.length);
-  const mStr=fmt(monthly);const mfs2=mStr.length<=7?30:27;
+  const priceStr=fmt(price);const pfs=Math.round(igPriceFs(priceStr.length)*F.pK);
+  const mStr=fmt(monthly);const mfs2=Math.round((mStr.length<=7?30:27)*F.pK);
 
   const logo=T.logoWhite&&igLogoWhite?igLogoWhite:IG_LOGO;
   const bgLayer=igBg
@@ -3021,20 +3049,20 @@ function buildIgHtml(){
   const b2=monthly?`
     <div class="abs" style="right:22px;top:770px;width:206px;height:112px;border-radius:20px;background:${T.b2Bg};${T.b2Bd?'border:'+T.b2Bd+';':''}color:${T.b2Text};text-align:center;padding-top:12px">
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.6px">${igSvg('cal',T.b2Text,15)}MUDDATLI TO'LOV</div>
-      <div style="font-size:${mfs2}px;font-weight:900;line-height:1.15;margin-top:6px;white-space:nowrap">${mStr}<span style="font-size:13px;font-weight:800"> so'm</span></div>
+      <div style="font-family:${F.price};font-size:${mfs2}px;font-weight:${F.pW};letter-spacing:${F.pLs}px;line-height:1.15;margin-top:6px;white-space:nowrap">${mStr}<span style="font-family:Inter,sans-serif;font-size:13px;font-weight:800;letter-spacing:0;margin-left:5px">so'm</span></div>
       <div style="display:inline-block;margin-top:4px;font-size:12px;font-weight:800;padding:2px 12px;border-radius:999px;border:1.5px solid ${T.b2Text}">${months} oy</div>
     </div>`:'';
   const naqdW=monthly?262:496;
 
   // eslatma: box-shadow ishlatilmaydi — html2canvas uni yumaloq burchakda qora dog' qilib chizadi
-  return `<div class="igbn">
+  return `<div class="igbn" style="font-family:${F.base}">
     ${bgLayer}
     <div class="abs" style="left:-120px;top:-140px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
     <div class="abs" style="left:26px;top:24px"><img src="${logo}" style="height:40px;width:${Math.round(40*IG_LOGO_RATIO)}px;display:block"></div>
     <div class="abs" style="right:26px;top:30px;font-size:11px;font-weight:700;color:${T.sub};text-align:right;line-height:1.3">Sizning ishonchli<br>do'koningiz</div>
     <div class="abs" style="left:26px;top:96px;right:26px">
-      ${brand?`<div style="font-size:26px;font-weight:900;letter-spacing:3px;color:${T.brand}">${brand}</div>`:''}
-      <div style="font-size:${mfs}px;font-weight:900;color:${T.text};line-height:1;letter-spacing:-1px;margin-top:2px">${model}</div>
+      ${brand?`<div style="font-family:${F.title};font-size:${F.brandFs}px;font-weight:${F.brandW};letter-spacing:${F.brandLs}px;color:${T.brand};display:flex;align-items:center;gap:10px">${F.bar?`<span style="display:inline-block;width:26px;height:4px;border-radius:2px;background:${T.brand}"></span>`:''}${brand}</div>`:''}
+      <div style="font-family:${F.title};font-size:${mfs}px;font-weight:${F.tW};color:${T.text};line-height:1.02;letter-spacing:${F.tLs}px;margin-top:6px;${F.tUp?'text-transform:uppercase;':''}">${igModelHtml(nm.model,T,F,mfs)}</div>
       ${sub?`<div style="font-size:15px;font-weight:600;color:${T.sub};margin-top:10px;max-width:300px;line-height:1.3">${sub}</div>`:''}
     </div>
     <div class="abs" style="left:${specs.length?20:50}px;top:300px;width:${boxW}px;height:${boxH}px">
@@ -3042,11 +3070,11 @@ function buildIgHtml(){
       ${prodHtml}
     </div>
     ${specs.length?`<div class="abs" style="right:18px;top:${Math.max(300,515-specs.length*29)}px;width:178px">${specHtml}</div>`:''}
-    ${rib?`<div class="abs" style="right:-8px;top:${brand?262:240}px;transform:rotate(-6deg);background:${T.ribbonBg};color:${T.ribbonText};padding:9px 26px 9px 18px;border-radius:10px 0 0 10px;max-width:260px">
-      <div style="font-family:'Kaushan Script',cursive;font-size:19px;line-height:1.15">${rib}</div></div>`:''}
+    ${rib?`<div class="abs" style="right:-8px;top:${brand?262:240}px;transform:rotate(-6deg);background:${T.ribbonBg};color:${T.ribbonText};padding:9px 26px 9px 18px;border-radius:10px 0 0 10px;max-width:330px">
+      <div style="font-family:${F.rib};font-weight:${F.ribW};font-style:${F.ribStyle};font-size:${F.ribFs}px;letter-spacing:${F.ribLs}px;line-height:1.2;${F.ribUp?'text-transform:uppercase;':''}">${rib}</div></div>`:''}
     <div class="abs" style="left:22px;top:770px;width:${naqdW}px;height:112px;border-radius:20px;background:${T.naqdBg};color:${T.naqdText};padding:24px 0 0 18px">
       <div class="abs" style="left:14px;top:-13px;background:${T.naqdLblBg};color:${T.naqdLblText};font-size:13px;font-weight:900;letter-spacing:1px;padding:5px 14px;border-radius:8px;transform:rotate(-3deg)">NAQTGA</div>
-      <div style="font-size:${pfs}px;font-weight:900;letter-spacing:-1px;line-height:1.1;white-space:nowrap">${priceStr}</div><div style="font-size:14px;font-weight:800;margin-top:2px">so'm</div>
+      <div style="font-family:${F.price};font-size:${pfs}px;font-weight:${F.pW};letter-spacing:${F.pLs}px;line-height:1.1;white-space:nowrap">${priceStr}</div><div style="font-size:14px;font-weight:800;margin-top:2px">so'm</div>
     </div>
     ${b2}
     <div class="abs" style="left:0;top:906px;width:540px;height:54px;background:${T.footBg};display:flex;align-items:center;justify-content:space-between;padding:0 22px">
