@@ -1299,9 +1299,9 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
             <div class="igb-status" id="igStatus"></div>
           </div>
         </div>
-        <div class="frow"><label>Fon uchun do'kon surati (ixtiyoriy, xiralashtiriladi)</label>
+        <div class="frow"><label>Fon uchun do'kon surati (doimiy surat turadi; boshqasini tanlasangiz, xiralashtirib qo'yiladi)</label>
           <input type="file" id="igBgFile" accept="image/*" onchange="onIgBgFile(this)">
-          <div class="igb-btns"><button type="button" class="igb-btn" onclick="igClearBg()">✕ Fon suratini olib tashlash</button></div>
+          <div class="igb-btns"><button type="button" class="igb-btn" onclick="igClearBg()">↺ Doimiy do'kon suratiga qaytarish</button></div>
         </div>
       </div>
       <div class="igb-side">
@@ -2742,6 +2742,14 @@ function igMakeWhiteLogo(){
 let igOrig=null;                         // yuklangan asl rasm
 const igVars={a:null,ai:null,fast:null};  // {src,w,h}
 let igChosen=null,igBg=null,igBgLib=null;
+/* Doimiy fon: do'kon surati (store-bg.jpg — 1080x1920, oldindan xiralashtirilgan).
+   Boshqa surat tanlanmaguncha banner foni shu bo'ladi */
+let igBgDefault=null;
+function igLoadDefaultBg(){
+  if(igBgDefault)return Promise.resolve();
+  return fetch('store-bg.jpg').then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.blob()}).then(igReadFile)
+    .then(d=>{igBgDefault=d;if(!igBg)igBg=d}).catch(e=>console.error('store-bg.jpg yuklanmadi',e));
+}
 
 function igReadFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsDataURL(f)})}
 function igLoadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
@@ -2759,6 +2767,7 @@ function openIg(){
   }
   document.getElementById('igModal').classList.add('open');
   igMakeWhiteLogo().then(renderIg);
+  igLoadDefaultBg().then(renderIg);
   renderIg();
 }
 function closeIg(){document.getElementById('igModal').classList.remove('open')}
@@ -2995,7 +3004,7 @@ async function onIgBgFile(inp){
   x.filter='blur(14px)';x.drawImage(im,(c.width-w)/2-40,(c.height-h)/2-40,w+80,h+80);
   igBg=c.toDataURL('image/jpeg',.9);renderIg();
 }
-function igClearBg(){igBg=null;document.getElementById('igBgFile').value='';renderIg();}
+function igClearBg(){igBg=igBgDefault;document.getElementById('igBgFile').value='';renderIg();}
 
 function igSplitName(n){
   n=n.trim().replace(/\s*\d+\s*\/\s*\d+\s*(GB|TB)?\b/i,'').trim();
@@ -3117,6 +3126,7 @@ function buildIgHtml(){
 function renderIg(){document.getElementById('igPreview').innerHTML=buildIgHtml();}
 async function renderIgCanvas(){
   await igMakeWhiteLogo().catch(()=>{});
+  await igLoadDefaultBg();
   const wrap=document.getElementById('captureWrap');
   wrap.innerHTML=buildIgHtml();
   const imgs=wrap.querySelectorAll('img');
