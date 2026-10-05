@@ -1260,19 +1260,24 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
     <h3>🖼 Banner (story 1080×1920)</h3>
     <div class="igb-wrap">
       <div class="igb-form">
-        <div class="frow"><label>Model tanlang (ixtiyoriy)</label>
-          <select id="igModelSel" onchange="onIgModelPick()"><option value="">— ro'yxatdan tanlang —</option></select></div>
-        <div class="frow"><label>Mahsulot nomi (birinchi so'z — brend)</label><input id="igName" type="text" placeholder="Masalan: Honor X7e 6/128GB yoki Ziffler Suv kuleri" oninput="renderIg()">
+        <div class="igb-row2">
+          <div class="frow"><label>Mahsulot turi</label>
+            <select id="igType" onchange="onIgTypePick()"></select></div>
+          <div class="frow"><label>Praysdan tanlash (ixtiyoriy)</label>
+            <select id="igModelSel" onchange="onIgModelPick()"><option value="">— ro'yxatdan tanlang —</option></select></div>
+        </div>
+        <div class="frow"><label>Mahsulot nomi — praysda yo'q tovarni ham shu yerga yozing (birinchi so'z — brend)</label><input id="igName" type="text" placeholder="Masalan: Honor X7e 6/128GB yoki Artel WF80K112" oninput="renderIg()">
           <div class="igb-btns"><button type="button" class="igb-btn" id="igFindBtn" onclick="igFindSpecs()">🔎 Internetdan ma'lumot topish</button>
             <button type="button" class="igb-btn" onclick="igResetGeminiKey()" title="Gemini kalitini almashtirish">🔑</button></div>
           <div class="igb-status" id="igFindStatus"></div>
         </div>
         <div class="frow"><label>Qisqa ta'rif</label><input id="igSub" type="text" value="Zamonaviy dizayn — ishonchli tanlov!" oninput="renderIg()"></div>
         <div class="frow"><label>Lenta matni (qiyshiq yozuv)</label><input id="igRibbon" type="text" value="Sifat va qulaylik bir joyda!" oninput="renderIg()"></div>
+        <div class="frow"><label>Naqd narx (so'm)</label><input id="igPrice" type="number" oninput="renderIg()"></div>
         <div class="igb-row2">
-          <div class="frow"><label>Naqd narx (so'm)</label><input id="igPrice" type="number" oninput="renderIg()"></div>
           <div class="frow"><label>Muddatli to'lov</label>
             <select id="igMonths" onchange="renderIg()"><option value="12">12 oy</option><option value="6">6 oy</option><option value="0">Ko'rsatilmasin</option></select></div>
+          <div class="frow"><label>Oylik to'lov (bo'sh qolsa — avtomatik)</label><input id="igMonthly" type="number" placeholder="avtomatik" oninput="renderIg()"></div>
         </div>
         <div class="frow"><label>Xususiyatlar (har qatorda: qiymat — izoh, 6 tagacha)</label>
           <textarea id="igSpecs" rows="5" oninput="renderIg()" placeholder="6 GB — Operativ xotira&#10;128 GB — Xotira&#10;50 MP — Asosiy kamera&#10;6000 mAh — Batareya"></textarea></div>
@@ -1282,6 +1287,12 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
             <option value="modern">Zamonaviy (toza, Apple uslubida)</option>
             <option value="poster">Plakat (baland, qalin harflar)</option>
             <option value="classic">Klassik (avvalgi ko'rinish)</option>
+          </select></div>
+        <div class="frow"><label>Joylashuv</label>
+          <select id="igLayout" onchange="renderIg()">
+            <option value="auto">Avtomatik (rasm shakliga qarab)</option>
+            <option value="tall">Tik mahsulot — xususiyatlar yon tomonda</option>
+            <option value="wide">Yotiq mahsulot (TV, plita, konditsioner) — xususiyatlar pastda</option>
           </select></div>
         <div class="frow"><label>Mahsulot rasmi</label>
           <div class="igb-imgbox">
@@ -2706,25 +2717,65 @@ const IG_IC={
   card:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/>',
   cart:'<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h11L21 7H6.2"/>',
   cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>'
+  phone:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+  tv:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  wind:'<path d="M3 8h10a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h7a2.5 2.5 0 1 1-2.5 2.5"/>',
+  temp:'<path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/>',
+  ruler:'<rect x="2" y="8" width="20" height="8" rx="1.5"/><path d="M6 8v3M10 8v4M14 8v3M18 8v4"/>',
+  timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/>',
+  sound:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  wifi:'<path d="M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1"/>',
+  flame:'<path d="M12 22a7 7 0 0 0 7-7c0-3-2-5.500-3.500-7.500-.5 2-1.500 3-2.500 3.500C13 8 12 4.500 9 2c.5 3.500-4 7-4 13a7 7 0 0 0 7 7z"/>',
+  gear:'<circle cx="12" cy="12" r="3.200"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.900 4.900 7 7M17 17l2.100 2.100M4.900 19.100 7 17M17 7l2.100-2.100"/>'
 };
+/* Mahsulot turlari: lb — bannerda brend yonida chiqadigan yozuv (bo'sh bo'lsa chiqmaydi),
+   ex — "Xususiyatlar" maydonidagi namuna, ph — rasm yuklanmaganda ko'rinadigan shakl */
+const IG_TYPES={
+  telefon:{t:'Telefon',lb:'',ph:'phone',ex:['6 GB — Operativ xotira','128 GB — Xotira','50 MP — Asosiy kamera','6000 mAh — Batareya']},
+  planshet:{t:'Planshet',lb:'Planshet',ph:'phone',ex:['8 GB — Operativ xotira','128 GB — Xotira','11" — Ekran','8000 mAh — Batareya']},
+  noutbuk:{t:'Noutbuk',lb:'Noutbuk',ex:['Core i5-1335U — Protsessor','16 GB — Operativ xotira','512 GB SSD — Xotira','15.6" FHD — Ekran']},
+  tv:{t:'Televizor',lb:'Televizor',ex:['55" — Ekran o\'lchami','4K UHD — Tasvir sifati','Smart TV — Wi-Fi bilan','60 Hz — Yangilanish chastotasi']},
+  muzlatgich:{t:'Muzlatgich',lb:'Muzlatgich',ex:['320 L — Umumiy hajm','No Frost — Sovutish tizimi','A+ — Energiya sinfi','Inverter — Kompressor']},
+  kir:{t:'Kir yuvish mashinasi',lb:'Kir yuvish mashinasi',ex:['8 kg — Yuklama hajmi','1200 ayl/min — Aylanish tezligi','A+++ — Energiya sinfi','15 ta — Yuvish dasturi']},
+  kond:{t:'Konditsioner',lb:'Konditsioner',ex:['12 000 BTU — Sovutish quvvati','35 m² — Xona maydoni','Inverter — Kompressor','A++ — Energiya sinfi']},
+  chang:{t:'Changyutgich',lb:'Changyutgich',ex:['2000 Vt — Quvvat','3 L — Chang idishi','HEPA — Filtr','5 m — Sim uzunligi']},
+  plita:{t:'Gaz plita',lb:'Gaz plita',ex:['4 ta — Konforka','60 L — Duxovka hajmi','60×60 sm — O\'lchami','Gaz nazorati — Xavfsizlik']},
+  pech:{t:'Mikroto\'lqinli pech',lb:'Mikroto\'lqinli pech',ex:['20 L — Hajm','700 Vt — Quvvat','5 ta — Quvvat rejimi','30 daq — Taymer']},
+  kuler:{t:'Suv kuleri',lb:'Suv kuleri',ex:['Issiq / sovuq — Suv','Kompressorli — Sovutish','550 Vt — Isitish quvvati','Shkafli — Pastki qism']},
+  mayda:{t:'Kichik maishiy texnika',lb:'',ex:['2200 Vt — Quvvat','1.7 L — Hajm','Zanglamas po\'lat — Korpus','1 yil — Kafolat']},
+  boshqa:{t:'Boshqa mahsulot',lb:'',ex:['Qiymat — Izoh','1 yil — Kafolat']}
+};
+function igType(){return IG_TYPES[(document.getElementById('igType')||{}).value]||IG_TYPES.telefon}
+function onIgTypePick(){
+  document.getElementById('igSpecs').placeholder=igType().ex.join('\n');
+  renderIg();
+}
 /* html2canvas "currentColor"ni bilmaydi, shuning uchun rang SVG ichiga yoziladi */
 function igSvg(name,color,size){
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IG_IC[name]||IG_IC.ok}</svg>`;
 }
-function igIconFor(t){
+/* bigScr — katta ekranli mahsulot (TV, noutbuk): ekran belgisi telefon emas, televizor bo'ladi */
+function igIconFor(t,bigScr){
   t=t.toLowerCase();
   if(/operativ|\bram\b/.test(t))return 'chip';
   if(/protsessor|core|ryzen|cpu|chip/.test(t))return 'chip';
   if(/kamera|\bmp\b/.test(t))return 'cam';
   if(/mah|batare|akkumul/.test(t))return 'bat';
   if(/xotira|\brom\b|ssd|hdd|\bgb\b|\btb\b/.test(t))return 'store';
-  if(/ekran|displ|dyuym|"|\bhz\b|oled|amoled/.test(t))return 'scr';
+  if(/wi-?fi|smart|bluetooth|android|internet/.test(t))return 'wifi';
+  if(/ekran|displ|dyuym|"|\bhz\b|oled|amoled|tasvir|\b4k\b|uhd|fhd/.test(t))return bigScr?'tv':'scr';
+  if(/shovqin|\bdb\b|ovoz|dinamik/.test(t))return 'sound';
+  if(/btu|shamol|havo|xona|m²|\bm2\b|filtr|so'rish/.test(t))return 'wind';
   if(/sovut|frost|muzla|sovuq/.test(t))return 'snow';
+  if(/gaz|konforka|olov|duxovka|gorelka/.test(t))return 'flame';
+  if(/harorat|°|isit|\bbug'/.test(t))return 'temp';
+  if(/taymer|\bdaq\b|daqiqa|soat\b|vaqt/.test(t))return 'timer';
   if(/suv|issiq/.test(t))return 'drop';
-  if(/litr|hajm|\bkg\b|\bl\b/.test(t))return 'vol';
-  if(/\bvt\b|\bw\b|quvvat|energ|inverter|aylan|ayl\/min|rpm/.test(t))return 'bolt';
-  if(/kafolat|ishonch|chidam|mustahkam/.test(t))return 'shield';
+  if(/o'lcham|\bsm\b|\bmm\b|uzunlig|balandlig|kenglig|\bm\b/.test(t))return 'ruler';
+  if(/litr|hajm|\bkg\b|\bl\b|yuklama|vazn/.test(t))return 'vol';
+  if(/\bvt\b|\bkvt\b|\bw\b|quvvat|energ|inverter|aylan|ayl\/min|rpm|motor|kompressor/.test(t))return 'bolt';
+  if(/dastur|rejim|funksiya|tezlik/.test(t))return 'gear';
+  if(/kafolat|ishonch|chidam|mustahkam|xavfsiz/.test(t))return 'shield';
   return 'ok';
 }
 const IG_LOGO='data:image/png;base64,'+LOGO_B64;
@@ -2757,6 +2808,11 @@ function igSetStatus(t){document.getElementById('igStatus').textContent=t}
 
 function openIg(){
   populateModelSelect('igModelSel');
+  const ts=document.getElementById('igType');
+  if(!ts.options.length){
+    Object.entries(IG_TYPES).forEach(([k,t])=>ts.add(new Option(t.t,k)));
+    onIgTypePick();
+  }
   const box=document.getElementById('igThemes');
   if(!box.children.length){
     Object.entries(IG_THEMES).forEach(([k,t])=>{
@@ -2779,6 +2835,8 @@ function onIgModelPick(){
   if(!row)return;
   document.getElementById('igName').value=row[0];
   document.getElementById('igPrice').value=row[1];
+  document.getElementById('igType').value=b==='NOUTBUK'?'noutbuk':b==='PLANSHET'?'planshet':'telefon';
+  onIgTypePick();
   // "6/128GB" bo'lsa, xotirani xususiyatlarga qo'yish
   const m=row[0].match(/(\d+)\s*\/\s*(\d+)\s*(GB|TB)?/i);
   if(m){
@@ -2811,8 +2869,9 @@ function igResetGeminiKey(){
   if(igGeminiKey())toast('✓ Gemini kaliti saqlandi');
 }
 function igSpecPrompt(name,withSearch){
+  const lb=igType().lb;
   return `Sen O'zbekistondagi maishiy texnika va elektronika do'koni uchun reklama banneri tayyorlayapsan.
-Mahsulot: "${name}"
+Mahsulot: "${name}"${lb?` (turi: ${lb})`:''}
 ${withSearch?"Google'da shu aniq model bo'yicha rasmiy xususiyatlarni qidirib top":"Shu aniq model bo'yicha rasmiy xususiyatlarni bilganingcha yoz"} va FAQAT quyidagi formatda, o'zbek tilida (lotin) javob ber, boshqa hech narsa yozma:
 TARIF: <mahsulotni maqtaydigan 3-6 so'zli qisqa jumla, oxirida undov>
 - <qiymat> — <izoh>
@@ -3012,7 +3071,11 @@ function igSplitName(n){
   if(sp<0)return {brand:'',model:n};
   return {brand:n.slice(0,sp),model:n.slice(sp+1)};
 }
-function igPlaceholder(){
+function igPlaceholder(kind){
+  if(kind!=='phone')return `<svg xmlns="http://www.w3.org/2000/svg" width="260" height="300" viewBox="0 0 260 300">
+    <rect x="5" y="5" width="250" height="290" rx="26" fill="#CBD5E1" fill-opacity=".55" stroke="#64748B" stroke-width="3" stroke-dasharray="12 9"/>
+    <path d="M92 150l38-22 38 22v42l-38 22-38-22zM92 150l38 22 38-22M130 172v42" fill="none" stroke="#475569" stroke-width="5" stroke-linejoin="round"/>
+    <text x="130" y="252" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#334155" text-anchor="middle">rasm yuklang</text></svg>`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="210" height="400" viewBox="0 0 210 400">
     <defs><linearGradient id="igph" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#CBD5E1"/><stop offset="1" stop-color="#94A3B8"/></linearGradient></defs>
     <rect x="5" y="5" width="200" height="390" rx="34" fill="url(#igph)" stroke="#64748B" stroke-width="3"/>
@@ -3049,21 +3112,32 @@ function buildIgHtml(){
   const rib=escHtml(document.getElementById('igRibbon').value.trim());
   const price=+document.getElementById('igPrice').value||0;
   const months=+document.getElementById('igMonths').value;
-  const monthly=months===12?m12(price):months===6?m6(price):0;
+  // oylik to'lov: qo'lda kiritilgan bo'lsa o'sha, bo'lmasa prays koeffitsiyenti bo'yicha
+  const monthly=months?(+document.getElementById('igMonthly').value||(months===12?m12(price):m6(price))):0;
+  const TY=igType();
+  const bigScr=TY===IG_TYPES.tv||TY===IG_TYPES.noutbuk;
   const specs=document.getElementById('igSpecs').value.split('\n').map(s=>s.trim()).filter(Boolean).slice(0,6).map(l=>{
-    const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/);return {v:escHtml(m[0]||''),l:escHtml(m.slice(1).join(' ')||''),ic:igIconFor(l)};});
+    const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/);return {v:escHtml(m[0]||''),l:escHtml(m.slice(1).join(' ')||''),ic:igIconFor(l,bigScr)};});
 
   const brand=escHtml(nm.brand.toUpperCase());
+  // tur yozuvi: nomning o'zida yozilgan bo'lsa takrorlanmaydi
+  const typeLb=TY.lb&&!document.getElementById('igName').value.toLowerCase().includes(TY.lb.toLowerCase())?escHtml(TY.lb):'';
   const ml=nm.model.length;
-  const mfs=Math.round((ml<=6?82:ml<=9?66:ml<=13?52:ml<=18?42:34)*F.k);
+  const mfs=Math.round((ml<=6?82:ml<=9?66:ml<=13?52:ml<=18?42:ml<=26?34:ml<=36?28:24)*F.k);
 
   // html2canvas object-fit'ni bilmaydi — o'lcham qo'lda hisoblanadi
-  const boxW=specs.length?318:440,boxH=430;
-  let prodHtml;
   const v=igChosen&&igVars[igChosen];
+  // yotiq mahsulot (TV, plita...): rasm butun kenglikda, xususiyatlar pastda 2 ustun bo'lib turadi
+  const lay=(document.getElementById('igLayout')||{}).value||'auto';
+  const wide=lay==='wide'||(lay==='auto'&&!!v&&v.w/v.h>=1.2);
+  const rows=Math.ceil(specs.length/2);
+  const boxW=wide?496:specs.length?318:440,boxH=wide?432-(rows?rows*56+28:0):430;
+  const boxL=wide?22:specs.length?20:50,boxT=wide?318:300;
+  let prodHtml;
   if(v){const k=Math.min(boxW/v.w,boxH/v.h);const w=Math.round(v.w*k),h=Math.round(v.h*k);
     prodHtml=`<img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2)}px;bottom:0;width:${w}px;height:${h}px">`;}
-  else prodHtml=`<div style="position:absolute;left:${Math.round((boxW-210)/2)}px;bottom:10px">${igPlaceholder()}</div>`;
+  else{const phW=TY.ph==='phone'?210:260,phH=TY.ph==='phone'?400:300,k=Math.min(1,(boxH-10)/phH);
+    prodHtml=`<div style="position:absolute;left:${Math.round((boxW-phW*k)/2)}px;bottom:10px;width:${Math.round(phW*k)}px;height:${Math.round(phH*k)}px"><div style="width:${phW}px;height:${phH}px;transform:scale(${k});transform-origin:top left">${igPlaceholder(TY.ph)}</div></div>`;}
 
   const priceStr=fmt(price);const pfs=Math.round(igPriceFs(priceStr.length)*F.pK);
   const mStr=fmt(monthly);const mfs2=Math.round((mStr.length<=7?30:27)*F.pK);
@@ -3073,14 +3147,17 @@ function buildIgHtml(){
     ?`<img src="${igBg}" class="abs" style="left:0;top:0;width:540px;height:960px"><div class="abs" style="left:0;top:0;width:540px;height:960px;background:${T.overlay}"></div>`
     :`<div class="abs" style="left:0;top:0;width:540px;height:960px;background:${T.bg}"></div>`;
 
-  const specHtml=specs.map(s=>`
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+  const specCell=(s,st)=>`
+    <div style="display:flex;align-items:center;gap:10px;${st}">
       <div style="width:44px;height:44px;flex:none;border-radius:12px;background:${T.iconBg};border:1.5px solid ${T.iconBd};display:flex;align-items:center;justify-content:center">${igSvg(s.ic,T.icon,22)}</div>
       <div style="line-height:1.1;min-width:0">
         <div style="font-size:16px;font-weight:800;color:${T.specVal};white-space:nowrap">${s.v}</div>
         <div style="font-size:10.5px;font-weight:600;color:${T.specLbl};margin-top:2px">${s.l}</div>
       </div>
-    </div>`).join('');
+    </div>`;
+  const specBlock=!specs.length?'':wide
+    ?specs.map((s,i)=>specCell(s,`position:absolute;left:${22+(i%2)*256}px;top:${boxT+boxH+28+(i>>1)*56}px;width:240px`)).join('')
+    :`<div class="abs" style="right:18px;top:${Math.max(300,515-specs.length*29)}px;width:178px">${specs.map(s=>specCell(s,'margin-bottom:12px')).join('')}</div>`;
 
   const foot=[['shield','Sifat kafolati'],['card','Pasport / plastik bilan'],['cart','Oson va qulay xarid']].map(([i,t])=>`
     <div style="display:flex;align-items:center;gap:6px">${igSvg(i,T.footIcon,17)}<span style="font-size:10.5px;font-weight:700;color:${T.footText};line-height:1.1;max-width:84px">${t}</span></div>`)
@@ -3101,16 +3178,16 @@ function buildIgHtml(){
     <div class="abs" style="left:26px;top:24px"><img src="${logo}" style="height:40px;width:${Math.round(40*IG_LOGO_RATIO)}px;display:block"></div>
     <div class="abs" style="right:26px;top:30px;font-size:11px;font-weight:700;color:${T.sub};text-align:right;line-height:1.3">Sizning ishonchli<br>do'koningiz</div>
     <div class="abs" style="left:26px;top:96px;right:26px">
-      ${brand?`<div style="font-family:${F.title};font-size:${F.brandFs}px;font-weight:${F.brandW};letter-spacing:${F.brandLs}px;color:${T.brand};display:flex;align-items:center;gap:10px">${F.bar?`<span style="display:inline-block;width:26px;height:4px;border-radius:2px;background:${T.brand}"></span>`:''}${brand}</div>`:''}
+      ${brand||typeLb?`<div style="font-family:${F.title};font-size:${F.brandFs}px;font-weight:${F.brandW};letter-spacing:${F.brandLs}px;color:${T.brand};display:flex;align-items:center;gap:10px">${F.bar?`<span style="display:inline-block;width:26px;height:4px;border-radius:2px;background:${T.brand}"></span>`:''}${brand}${typeLb?`<span style="font-family:Inter,sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap;color:${T.sub}">${brand?'· ':''}${typeLb}</span>`:''}</div>`:''}
       <div style="font-family:${F.title};font-size:${mfs}px;font-weight:${F.tW};color:${T.text};line-height:1.02;letter-spacing:${F.tLs}px;margin-top:6px;${F.tUp?'text-transform:uppercase;':''}">${igModelHtml(nm.model,T,F,mfs)}</div>
       ${sub?`<div style="font-size:15px;font-weight:600;color:${T.sub};margin-top:10px;max-width:300px;line-height:1.3">${sub}</div>`:''}
     </div>
-    <div class="abs" style="left:${specs.length?20:50}px;top:300px;width:${boxW}px;height:${boxH}px">
+    <div class="abs" style="left:${boxL}px;top:${boxT}px;width:${boxW}px;height:${boxH}px">
       <div class="abs" style="left:${boxW*.08}px;bottom:-26px;width:${boxW*.84}px;height:60px;border-radius:50%;background:radial-gradient(ellipse,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
       ${prodHtml}
     </div>
-    ${specs.length?`<div class="abs" style="right:18px;top:${Math.max(300,515-specs.length*29)}px;width:178px">${specHtml}</div>`:''}
-    ${rib?`<div class="abs" style="right:-8px;top:${brand?262:240}px;transform:rotate(-6deg);background:${T.ribbonBg};color:${T.ribbonText};padding:9px 26px 9px 18px;border-radius:10px 0 0 10px;max-width:330px">
+    ${specBlock}
+    ${rib?`<div class="abs" style="right:-8px;top:${brand||typeLb?262:240}px;transform:rotate(-6deg);background:${T.ribbonBg};color:${T.ribbonText};padding:9px 26px 9px 18px;border-radius:10px 0 0 10px;max-width:330px">
       <div style="font-family:${F.rib};font-weight:${F.ribW};font-style:${F.ribStyle};font-size:${F.ribFs}px;letter-spacing:${F.ribLs}px;line-height:1.2;${F.ribUp?'text-transform:uppercase;':''}">${rib}</div></div>`:''}
     <div class="abs" style="left:22px;top:770px;width:${naqdW}px;height:112px;border-radius:20px;background:${T.naqdBg};color:${T.naqdText};padding:24px 0 0 18px">
       <div class="abs" style="left:14px;top:-13px;background:${T.naqdLblBg};color:${T.naqdLblText};font-size:13px;font-weight:900;letter-spacing:1px;padding:5px 14px;border-radius:8px;transform:rotate(-3deg)">NAQTGA</div>
