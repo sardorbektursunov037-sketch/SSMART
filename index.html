@@ -1257,9 +1257,16 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
 <!-- INSTAGRAM BANNER MODAL -->
 <div class="modal-bg" id="igModal">
   <div class="modal igb-box">
-    <h3>🖼 Banner (story 1080×1920)</h3>
+    <h3>🖼 Banner</h3>
     <div class="igb-wrap">
       <div class="igb-form">
+        <div class="frow"><label>Format</label>
+          <select id="igFormat" onchange="renderIg()">
+            <option value="story">Story 9:16 (1080×1920) — xususiyatlar bilan</option>
+            <option value="post">Post 4:5 (1080×1350) — kanal uchun, aksiya sarlavhasi bilan</option>
+          </select></div>
+        <div class="frow"><label>Aksiya sarlavhasi — faqat postda (kichik qator | KATTA SO'Z | yorliq). Bo'sh qolsa — aksiyasiz</label>
+          <input id="igPromo" type="text" placeholder="Muddatli to'lov | BOZOR | narxida" oninput="renderIg()"></div>
         <div class="igb-row2">
           <div class="frow"><label>Mahsulot turi</label>
             <select id="igType" onchange="onIgTypePick()"></select></div>
@@ -3252,12 +3259,115 @@ function buildIgHtml(){
     </div>
   </div>`;
 }
-function renderIg(){document.getElementById('igPreview').innerHTML=buildIgHtml();}
+/*<POST-TPL>*/
+/* ================= POST BANNER (4:5, 1080x1350) — kanal uchun kunlik post =================
+   Sayt (index.html) va bot (ssmart-bot/src/page.html) da AYNAN BIR XIL nusxa — o'zgartirsangiz ikkalasini yangilang.
+   o: {name,typeLb,sub,price,months,monthly,promo[3],specs[],theme,bigScr,ph,img:{src,w,h,pad,round},logo,bg}
+   promo — aksiya sarlavhasi: [kichik qator, katta so'z, yorliq]; bo'sh bo'lsa aksiyasiz ko'rinish (brend + model) chiqadi */
+function buildPostHtml(o){
+  const T=IG_THEMES[o.theme]||IG_THEMES.navy,W=540,H=675;
+  const nm=igSplitName(o.name||''),brand=escHtml(nm.brand.toUpperCase()),model=nm.model;
+  const price=+o.price||0,months=+o.months||0;
+  const monthly=months?(+o.monthly||(months===12?m12(price):m6(price))):0;
+  const promo=[0,1,2].map(i=>escHtml(String((o.promo||[])[i]||'').trim()));
+  const hasPromo=promo.some(Boolean);
+  const specs=(o.specs||[]).map(s=>String(s).trim()).filter(Boolean).slice(0,4).map(l=>{
+    const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/);return {v:escHtml(m[0]||''),l:escHtml(m.slice(1).join(' ')||''),ic:igIconFor(l,o.bigScr)};});
+  const v=o.img;
+  const bgLayer=o.bg
+    ?`<img src="${o.bg}" class="abs" style="left:0;top:-150px;width:540px;height:960px"><div class="abs" style="left:0;top:0;width:${W}px;height:${H}px;background:${T.overlay}"></div>`
+    :`<div class="abs" style="left:0;top:0;width:${W}px;height:${H}px;background:${T.bg}"></div>`;
+
+  let head,zoneTop;
+  if(hasPromo){
+    const ml=model.length,tfs=ml<=10?42:ml<=16?34:ml<=24?26:21,bl=promo[1].length;
+    head=`<div class="abs" style="left:0;top:62px;width:${W}px;text-align:center">
+      ${promo[0]?`<div style="font-size:19px;font-weight:600;color:${T.text}">${promo[0]}</div>`:''}
+      ${promo[1]?`<div style="margin-top:4px"><span style="display:inline-block;background:#fff;color:#111827;font-size:${bl<=7?54:bl<=11?42:32}px;font-weight:900;letter-spacing:-1px;line-height:1.1;padding:2px 22px 4px;transform:rotate(-4deg)">${promo[1]}</span></div>`:''}
+      ${promo[2]?`<div style="margin-top:-8px;padding-left:150px"><span style="display:inline-block;background:${T.ribbonBg};color:${T.ribbonText};font-size:26px;font-weight:800;line-height:1.15;padding:1px 16px 4px;transform:rotate(-4deg)">${promo[2]}</span></div>`:''}
+    </div>
+    <div class="abs" style="left:16px;top:198px;width:${W-32}px;text-align:center;font-size:${tfs}px;font-weight:800;letter-spacing:.5px;line-height:1.05;text-transform:uppercase;color:${T.text}">${escHtml(model)}</div>`;
+    zoneTop=252;
+  }else{
+    const ml=model.length,mfs=ml<=6?74:ml<=9?60:ml<=13?48:ml<=18?38:ml<=26?30:24;
+    head=`<div class="abs" style="left:16px;top:66px;width:${W-32}px;text-align:center">
+      ${brand||o.typeLb?`<div style="font-size:15px;font-weight:700;letter-spacing:5px;color:${T.brand}">${brand}${o.typeLb?`<span style="font-size:11px;letter-spacing:1.5px;color:${T.sub}">${brand?' · ':''}${escHtml(o.typeLb).toUpperCase()}</span>`:''}</div>`:''}
+      <div style="font-size:${mfs}px;font-weight:800;letter-spacing:-1.5px;line-height:1.04;color:${T.text};margin-top:4px">${escHtml(model)}</div>
+      ${o.sub?`<div style="font-size:14px;font-weight:600;color:${T.sub};margin-top:8px">${escHtml(o.sub)}</div>`:''}
+    </div>`;
+    zoneTop=216;
+  }
+
+  // tik mahsulot (telefon, muzlatgich) chapda turadi, o'ngda xususiyatlar va narx; yotiq mahsulot butun kenglikda
+  const zoneBot=590,zoneH=zoneBot-zoneTop;
+  const tall=v?v.w/v.h<.85:o.ph==='phone';
+  const boxW=tall?250:470,boxH=tall?zoneH:zoneH-34,boxL=tall?22:35;
+  let prod='';
+  if(v){const k=Math.min(boxW/v.w,boxH/v.h),w=Math.round(v.w*k),h=Math.round(v.h*k),pd=(v.pad||0)*k,lift=Math.round((boxH-h)*.5);
+    const gr=Math.round(Math.max(w,h)*.7);
+    // soya: saytda rasmning o'ziga chizilgan (pad), botda CSS filter bilan (headless Chrome chizadi)
+    prod=`<div class="abs" style="left:${Math.round(boxW/2-gr)}px;bottom:${Math.round(lift+h/2-gr)}px;width:${gr*2}px;height:${gr*2}px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,${T.logoWhite?.22:.85}) 0%,rgba(255,255,255,0) 68%)"></div>
+      <img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2-pd)}px;bottom:${Math.round(lift-pd)}px;width:${Math.round(w+pd*2)}px;height:${Math.round(h+pd*2)}px;${v.pad?'':'filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));'}${v.round?'border-radius:18px;':''}">`;}
+
+  const pStr=fmt(price);
+  const sticker=(l,t)=>`<div class="abs" style="left:${l}px;top:${t}px;width:226px">
+    <div style="background:#fff;color:#0F172A;border-radius:12px;padding:8px 14px 9px">
+      <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#64748B">NAQD NARXI</div>
+      <div style="font-size:${pStr.length<=9?34:pStr.length<=10?31:27}px;font-weight:800;letter-spacing:-1px;line-height:1.08;white-space:nowrap">${pStr}</div>
+      <div style="font-size:12px;font-weight:700;text-align:right;margin-top:-2px">so'm</div>
+    </div>
+    ${monthly?`<div style="text-align:right;margin-top:-6px;padding-right:8px"><span style="display:inline-block;background:${T.ribbonBg};color:${T.ribbonText};font-size:13px;font-weight:800;padding:4px 12px;border-radius:7px;white-space:nowrap">${months} oyga · ${fmt(monthly)} so'mdan</span></div>`:''}
+  </div>`;
+  const specHtml=tall?specs.map((s,i)=>`
+    <div class="abs" style="left:292px;top:${zoneTop+12+i*50}px;width:226px;display:flex;align-items:center;gap:9px">
+      <div style="width:38px;height:38px;flex:none;border-radius:10px;background:${T.iconBg};border:1.5px solid ${T.iconBd};display:flex;align-items:center;justify-content:center">${igSvg(s.ic,T.icon,19)}</div>
+      <div style="line-height:1.1;min-width:0">
+        <div style="font-size:15px;font-weight:800;color:${T.specVal};white-space:nowrap">${s.v}</div>
+        <div style="font-size:10px;font-weight:600;color:${T.specLbl};margin-top:2px">${s.l}</div>
+      </div>
+    </div>`).join(''):'';
+
+  return `<div class="igbn" style="height:${H}px;font-family:Inter,sans-serif">
+    ${bgLayer}
+    <div class="abs" style="left:0;top:18px;width:${W}px;text-align:center"><img src="${o.logo}" style="height:34px;width:${Math.round(34*IG_LOGO_RATIO)}px;display:inline-block"></div>
+    ${head}
+    <div class="abs" style="left:${boxL}px;top:${zoneTop}px;width:${boxW}px;height:${boxH}px">${prod}</div>
+    ${specHtml}
+    ${sticker(tall?292:20,zoneBot-(monthly?104:84))}
+    <div class="abs" style="left:0;top:607px;width:${W}px;height:68px;background:${T.footBg};display:flex;align-items:center;justify-content:space-between;padding:0 22px">
+      <div style="min-width:0">
+        <div style="font-size:17px;font-weight:800;letter-spacing:2px;color:${T.footIcon};line-height:1.15">${brand||'SSMART'}</div>
+        <div style="font-size:11px;font-weight:600;color:${T.footText};white-space:nowrap;overflow:hidden;max-width:330px">${escHtml((o.name||'').trim())}</div>
+      </div>
+      <div style="text-align:right;flex:none">
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;font-size:14px;font-weight:800;color:${T.footText}">${igSvg('phone',T.footIcon,15)}94 808 00 55</div>
+        <div style="font-size:10px;font-weight:600;color:${T.footText};opacity:.75;margin-top:2px">Qarshi · Qamashi</div>
+      </div>
+    </div>
+  </div>`;
+}
+/*</POST-TPL>*/
+function igIsPost(){return (document.getElementById('igFormat')||{}).value==='post'}
+function igPostData(){
+  const T=IG_THEMES[igTheme],TY=igType(),g=id=>document.getElementById(id).value.trim();
+  const name=g('igName');
+  return {name,typeLb:TY.lb&&!name.toLowerCase().includes(TY.lb.toLowerCase())?TY.lb:'',sub:g('igSub'),
+    price:+g('igPrice')||0,months:+g('igMonths'),monthly:+g('igMonthly')||0,promo:g('igPromo').split('|'),
+    specs:g('igSpecs').split('\n'),theme:igTheme,bigScr:TY===IG_TYPES.tv||TY===IG_TYPES.noutbuk,ph:TY.ph,
+    img:igChosen&&igVars[igChosen]||null,logo:T.logoWhite&&igLogoWhite?igLogoWhite:IG_LOGO,bg:igBg};
+}
+function igHtml(){return igIsPost()?buildPostHtml(igPostData()):buildIgHtml()}
+function renderIg(){
+  const pv=document.getElementById('igPreview');
+  pv.innerHTML=igHtml();
+  // post (4:5) story (9:16) dan past — ko'rish oynasi balandligi shunga moslanadi
+  pv.parentNode.style.aspectRatio=igIsPost()?'540/675':'540/960';pv.parentNode.style.height='auto';
+}
 async function renderIgCanvas(){
   await igMakeWhiteLogo().catch(()=>{});
   await igLoadDefaultBg();
   const wrap=document.getElementById('captureWrap');
-  wrap.innerHTML=buildIgHtml();
+  wrap.innerHTML=igHtml();
   const imgs=wrap.querySelectorAll('img');
   await Promise.all(Array.from(imgs).map(img=>img.complete?(img.decode?img.decode().catch(()=>{}):0):new Promise(res=>{img.onload=res;img.onerror=res;})));
   if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
