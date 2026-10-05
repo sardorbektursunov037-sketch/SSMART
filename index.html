@@ -2974,9 +2974,15 @@ async function igTrim(src){
   const k=Math.min(1,1400/Math.max(im.width,im.height));
   const w=Math.round(im.width*k),h=Math.round(im.height*k);
   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);
-  const d=x.getImageData(0,0,w,h).data;let x0=w,y0=h,x1=-1,y1=-1;
-  for(let y=0;y<h;y++)for(let xx=0;xx<w;xx++){if(d[(y*w+xx)*4+3]>12){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(y<y0)y0=y;if(y>y1)y1=y;}}
-  if(x1<0)return {src:c.toDataURL('image/png'),w,h};
+  // fon kesilgandan keyin qoladigan xira soya va mayda dog'lar hisobga olinmaydi — aks holda mahsulot
+  // ramkada kichik va bir chetga surilgan bo'lib chiqadi: qator/ustunda yetarlicha zich piksel bo'lsagina olinadi
+  const d=x.getImageData(0,0,w,h).data,rc=new Uint32Array(h),cc=new Uint32Array(w);
+  for(let y=0;y<h;y++)for(let xx=0;xx<w;xx++){if(d[(y*w+xx)*4+3]>40){rc[y]++;cc[xx]++;}}
+  const rMin=Math.max(2,w*.002),cMin=Math.max(2,h*.002);
+  let x0=0,y0=0,x1=w-1,y1=h-1;
+  while(x0<w&&cc[x0]<cMin)x0++;while(x1>=x0&&cc[x1]<cMin)x1--;
+  while(y0<h&&rc[y0]<rMin)y0++;while(y1>=y0&&rc[y1]<rMin)y1--;
+  if(x1<x0||y1<y0)return {src:c.toDataURL('image/png'),w,h};
   const p=4;x0=Math.max(0,x0-p);y0=Math.max(0,y0-p);x1=Math.min(w-1,x1+p);y1=Math.min(h-1,y1+p);
   const cw=x1-x0+1,ch=y1-y0+1;const o=document.createElement('canvas');o.width=cw;o.height=ch;
   o.getContext('2d').drawImage(c,x0,y0,cw,ch,0,0,cw,ch);
@@ -3131,11 +3137,13 @@ function buildIgHtml(){
   const lay=(document.getElementById('igLayout')||{}).value||'auto';
   const wide=lay==='wide'||(lay==='auto'&&!!v&&v.w/v.h>=1.2);
   const rows=Math.ceil(specs.length/2);
-  const boxW=wide?496:specs.length?318:440,boxH=wide?432-(rows?rows*56+28:0):430;
-  const boxL=wide?22:specs.length?20:50,boxT=wide?318:300;
-  let prodHtml;
+  const boxW=wide?496:specs.length?306:440,boxH=wide?432-(rows?rows*56+28:0):430;
+  const boxL=wide?22:specs.length?24:50,boxT=wide?318:300;
+  let prodHtml,podW=boxW*.84,lift=0;
   if(v){const k=Math.min(boxW/v.w,boxH/v.h);const w=Math.round(v.w*k),h=Math.round(v.h*k);
-    prodHtml=`<img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2)}px;bottom:0;width:${w}px;height:${h}px">`;}
+    // past bo'yli mahsulot tagga yopishib qolmasligi uchun bo'sh joyning bir qismiga ko'tariladi; soya mahsulot enida
+    lift=Math.round((boxH-h)*.45);podW=Math.max(140,w*.92);
+    prodHtml=`<img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2)}px;bottom:${lift}px;width:${w}px;height:${h}px">`;}
   else{const phW=TY.ph==='phone'?210:260,phH=TY.ph==='phone'?400:300,k=Math.min(1,(boxH-10)/phH);
     prodHtml=`<div style="position:absolute;left:${Math.round((boxW-phW*k)/2)}px;bottom:10px;width:${Math.round(phW*k)}px;height:${Math.round(phH*k)}px"><div style="width:${phW}px;height:${phH}px;transform:scale(${k});transform-origin:top left">${igPlaceholder(TY.ph)}</div></div>`;}
 
@@ -3183,7 +3191,7 @@ function buildIgHtml(){
       ${sub?`<div style="font-size:15px;font-weight:600;color:${T.sub};margin-top:10px;max-width:300px;line-height:1.3">${sub}</div>`:''}
     </div>
     <div class="abs" style="left:${boxL}px;top:${boxT}px;width:${boxW}px;height:${boxH}px">
-      <div class="abs" style="left:${boxW*.08}px;bottom:-26px;width:${boxW*.84}px;height:60px;border-radius:50%;background:radial-gradient(ellipse,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
+      <div class="abs" style="left:${Math.round((boxW-podW)/2)}px;bottom:${lift-26}px;width:${Math.round(podW)}px;height:60px;border-radius:50%;background:radial-gradient(ellipse,${T.podium} 0%,rgba(0,0,0,0) 70%)"></div>
       ${prodHtml}
     </div>
     ${specBlock}
