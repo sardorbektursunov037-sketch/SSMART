@@ -3312,16 +3312,17 @@ function buildPostHtml(o){
   const chipsHtml=chips.length?rows.map((r,i)=>`<div class="abs" style="left:0;top:${590-chipsH+8+i*32}px;width:${W}px;text-align:center;white-space:nowrap">${r.map(c=>
     `<span style="display:inline-block;margin:0 3px;padding:5px 11px 5px 8px;border-radius:999px;background:${T.iconBg};border:1.5px solid ${T.iconBd};font-size:11.5px;font-weight:700;line-height:15px;color:${T.specVal};white-space:nowrap"><span style="display:inline-block;vertical-align:top;margin-right:5px;width:15px;height:15px">${igSvg(c.ic,T.icon,15)}</span>${c.t}</span>`).join('')}</div>`).join(''):'';
 
-  // mahsulot o'rtada, iloji boricha katta; narx yorlig'i uning pastki chetiga chiqib turadi (tik mahsulotda o'ngda, yotiqda chapda)
+  // mahsulot o'rtada, iloji boricha katta; narx yorlig'i uning pastki chap chetiga chiqib turadi
   const zoneBot=590-chipsH,zoneH=zoneBot-zoneTop;
   const tall=v?v.w/v.h<.85:o.ph==='phone';
-  const boxW=tall?330:470,boxH=tall?zoneH-6:zoneH-34,boxL=tall?60:35;
+  const boxW=tall?330:470,boxH=tall?zoneH-6:zoneH-34,boxL=tall?110:35;
   const stH=monthly?104:84;
   let prod='',stTop=zoneBot-stH;
   if(v){const k=Math.min(boxW/v.w,boxH/v.h),w=Math.round(v.w*k),h=Math.round(v.h*k),pd=(v.pad||0)*k,lift=Math.round((boxH-h)*.5);
     const gr=Math.round(Math.max(w,h)*.7);
-    // yotiq mahsulotda (TV) yorliq oyoqchalarni yopib qo'ymasligi uchun mahsulotning pastki chetidan balandroq turadi
-    if(!tall)stTop=Math.max(zoneTop+10,Math.round(zoneTop+boxH-lift-h*.13)-stH);
+    // narx yorlig'i hamma mahsulotda bir joyda: chap tomonda, mahsulotning pastki chetidan biroz balandda
+    // (oyoqchalar yopilmasin). Tik mahsulot yorliq uni to'sib qo'ymasligi uchun o'ngroqqa surilgan
+    stTop=Math.max(zoneTop+10,Math.round(zoneTop+boxH-lift-h*.13)-stH);
     // soya: saytda rasmning o'ziga chizilgan (pad), botda CSS filter bilan (headless Chrome chizadi)
     prod=`<div class="abs" style="left:${Math.round(boxW/2-gr)}px;bottom:${Math.round(lift+h/2-gr)}px;width:${gr*2}px;height:${gr*2}px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,${T.logoWhite?.22:.85}) 0%,rgba(255,255,255,0) 68%)"></div>
       <img src="${v.src}" style="position:absolute;left:${Math.round((boxW-w)/2-pd)}px;bottom:${Math.round(lift-pd)}px;width:${Math.round(w+pd*2)}px;height:${Math.round(h+pd*2)}px;${v.pad?'':'filter:drop-shadow(0 10px 14px rgba(0,0,0,.45));'}${v.round?'border-radius:18px;':''}">`;}
@@ -3340,7 +3341,7 @@ function buildPostHtml(o){
     <div class="abs" style="left:0;top:18px;width:${W}px;text-align:center"><img src="${o.logo}" style="height:34px;width:${Math.round(34*IG_LOGO_RATIO)}px;display:inline-block"></div>
     ${head}
     <div class="abs" style="left:${boxL}px;top:${zoneTop}px;width:${boxW}px;height:${boxH}px">${prod}</div>
-    ${sticker(tall?296:14,stTop)}
+    ${sticker(14,stTop)}
     ${chipsHtml}
     <div class="abs" style="left:0;top:607px;width:${W}px;height:68px;background:${T.footBg}"></div>
     <div class="abs" style="left:0;top:619px;width:${W}px;text-align:center">
