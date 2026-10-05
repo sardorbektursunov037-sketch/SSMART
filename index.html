@@ -3265,7 +3265,7 @@ function buildIgHtml(){
    o: {name,typeLb,sub,price,months,monthly,promo[3],specs[],theme,bigScr,ph,img:{src,w,h,pad,round},logo,bg}
    promo — aksiya sarlavhasi: [kichik qator, katta so'z, yorliq]; bo'sh bo'lsa aksiyasiz ko'rinish (brend + model) chiqadi.
    Ko'rinish idea.uz kanalidagi postlarga o'xshatilgan: sarlavha, o'rtada katta mahsulot, narx yorlig'i, pastda brend va model;
-   xususiyatlar ro'yxati postda chiqmaydi (u story formatida) */
+   xususiyatlar mahsulot tagida kichik yorliqlar bo'lib chiqadi */
 function buildPostHtml(o){
   const T=IG_THEMES[o.theme]||IG_THEMES.navy,W=540,H=675;
   const nm=igSplitName(o.name||''),brand=escHtml(nm.brand.toUpperCase()),model=nm.model;
@@ -3298,8 +3298,22 @@ function buildPostHtml(o){
     zoneTop=216;
   }
 
+  // xususiyatlar: mahsulot tagida 1–2 qator kichik yorliq bo'lib turadi (6 tagacha; ikki qatorga sig'maganlari chiqmaydi).
+  // html2canvas uchun qatorlar qo'lda taqsimlanadi: yorliq eni harflar soniga qarab chamalanadi
+  const chips=(o.specs||[]).map(s=>String(s).trim()).filter(Boolean).slice(0,6).map(l=>{
+    const m=l.split(/\s+[—–\-|]\s+|\s*\|\s*/),t=m[0]+(m.length>1?' · '+m.slice(1).join(' '):'');
+    return {t:escHtml(t),w:Math.round(t.length*6.1)+36,ic:igIconFor(l,o.bigScr)};});
+  const rows=[[]];let rw=0;
+  for(const c of chips){
+    if(rw+c.w>504&&rows[rows.length-1].length){if(rows.length===2)break;rows.push([]);rw=0}
+    rows[rows.length-1].push(c);rw+=c.w+6;
+  }
+  const chipsH=chips.length?rows.length*32+6:0;
+  const chipsHtml=chips.length?rows.map((r,i)=>`<div class="abs" style="left:0;top:${590-chipsH+8+i*32}px;width:${W}px;text-align:center;white-space:nowrap">${r.map(c=>
+    `<span style="display:inline-block;margin:0 3px;padding:5px 11px 5px 8px;border-radius:999px;background:${T.iconBg};border:1.5px solid ${T.iconBd};font-size:11.5px;font-weight:700;line-height:15px;color:${T.specVal};white-space:nowrap"><span style="display:inline-block;vertical-align:top;margin-right:5px;width:15px;height:15px">${igSvg(c.ic,T.icon,15)}</span>${c.t}</span>`).join('')}</div>`).join(''):'';
+
   // mahsulot o'rtada, iloji boricha katta; narx yorlig'i uning pastki chetiga chiqib turadi (tik mahsulotda o'ngda, yotiqda chapda)
-  const zoneBot=590,zoneH=zoneBot-zoneTop;
+  const zoneBot=590-chipsH,zoneH=zoneBot-zoneTop;
   const tall=v?v.w/v.h<.85:o.ph==='phone';
   const boxW=tall?330:470,boxH=tall?zoneH-6:zoneH-34,boxL=tall?60:35;
   const stH=monthly?104:84;
@@ -3327,6 +3341,7 @@ function buildPostHtml(o){
     ${head}
     <div class="abs" style="left:${boxL}px;top:${zoneTop}px;width:${boxW}px;height:${boxH}px">${prod}</div>
     ${sticker(tall?296:14,stTop)}
+    ${chipsHtml}
     <div class="abs" style="left:0;top:607px;width:${W}px;height:68px;background:${T.footBg}"></div>
     <div class="abs" style="left:0;top:619px;width:${W}px;text-align:center">
       <div style="font-size:19px;font-weight:800;letter-spacing:3px;color:${T.footIcon};line-height:1.15">${brand||'SSMART'}</div>
