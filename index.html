@@ -478,6 +478,19 @@ body.admin tr[data-nopricing]{background:rgba(251,191,36,.05)}
   background-color:#fff;background-image:linear-gradient(45deg,#E5E7EB 25%,transparent 25%,transparent 75%,#E5E7EB 75%),linear-gradient(45deg,#E5E7EB 25%,transparent 25%,transparent 75%,#E5E7EB 75%);background-size:14px 14px;background-position:0 0,7px 7px}
 .igb-ck img{max-width:100%;max-height:80px}
 .igb-status{font-size:11.5px;color:var(--muted);margin-top:7px;min-height:15px}
+.mb-list{max-height:290px;overflow:auto;border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--surface-2)}
+.mb-grp{position:sticky;top:0;z-index:1;padding:6px 12px;font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border-bottom:1px solid var(--line)}
+.mb-row{display:flex;align-items:center;gap:10px;padding:5px 12px;cursor:pointer;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink)}
+.mb-row.on{background:#fff;font-weight:700}
+.mb-row input{flex:none;width:16px;height:16px;accent-color:var(--brand);pointer-events:none}
+.mb-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mb-pr{flex:none;font-size:12px;color:var(--muted);font-weight:600}
+.mb-th{flex:none;width:58px;height:40px;border:1.5px dashed var(--line);border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted)}
+.mb-th img{max-width:100%;max-height:100%;border-radius:6px}
+.mb-empty{padding:18px;text-align:center;font-size:12.5px;color:var(--muted)}
+.mb-out{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.mb-card{font-size:11px;font-weight:700;color:var(--ink);text-align:center}
+.mb-card img{width:100%;display:block;border-radius:10px;margin-bottom:4px;box-shadow:0 10px 24px -14px rgba(15,23,42,.55)}
 .igbn{position:relative;width:540px;height:960px;overflow:hidden;font-family:Montserrat,Inter,sans-serif;font-feature-settings:normal;font-variant-numeric:normal}
 .igbn *{box-sizing:border-box}
 .igbn .abs{position:absolute}
@@ -721,6 +734,7 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
   <button class="tbtn tbtn-png" onclick="openPng()">📷 PNG yuklab olish</button>
   <button class="tbtn tbtn-paste admin-only" onclick="openSaleTag()">🏷️ Aksiya yorlig'i</button>
   <button class="tbtn tbtn-paste admin-only" onclick="openIg()">🖼 Banner</button>
+  <button class="tbtn tbtn-paste admin-only" onclick="openMb()">🗂 Ko'p banner (sinov)</button>
   <button class="tbtn tbtn-paste" onclick="openCopy()">📋 Matn qilib nusxalash</button>
   <button class="tbtn tbtn-kurs admin-only" onclick="openKurs()">💱 Kurs: <span id="kursDisp">12 300</span></button>
   <input class="search-box admin-only" type="text" id="tgCaption" placeholder="Izoh (ixtiyoriy)" style="width:170px">
@@ -1328,6 +1342,37 @@ body:not(.admin):not(.admin-noutbuk) .footer-note.edit-hint{display:none}
         <button class="mbtn-ok" onclick="downloadIg()" style="width:100%;background:var(--surface-2);color:var(--ink);box-shadow:none">⬇ PNG yuklab olish</button>
         <button class="mbtn-no" onclick="closeIg()" style="width:100%">Yopish</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- KO'P BANNER MODAL (sinov) -->
+<div class="modal-bg" id="mbModal">
+  <div class="modal igb-box">
+    <h3>🗂 Ko'p banner — bir nechta modelga post (4:5) yasab, albom qilib yuborish</h3>
+    <div class="frow"><label>Mahsulot rasmlari — bir nechtasini birdan tanlang (fayl nomi modelga o'xshasa o'zi topadi, bo'lmasa belgilangan modellarga tartib bilan qo'yiladi)</label>
+      <input type="file" id="mbFiles" accept="image/*" multiple onchange="onMbFiles(this)">
+      <input type="file" id="mbOne" accept="image/*" style="display:none" onchange="onMbOne(this)"></div>
+    <div class="frow"><label>Aksiya sarlavhasi (kichik qator | KATTA SO'Z | yorliq). Bo'sh qolsa — aksiyasiz</label>
+      <input id="mbPromo" type="text" placeholder="Muddatli to'lov | BOZOR | narxida"></div>
+    <div class="igb-row2">
+      <div class="frow"><label>Muddatli to'lov</label>
+        <select id="mbMonths"><option value="12">12 oy</option><option value="6">6 oy</option><option value="0">Ko'rsatilmasin</option></select></div>
+      <div class="frow"><label>Rang mavzusi</label><select id="mbTheme"></select></div>
+    </div>
+    <div class="frow" style="margin-bottom:7px"><label>Modellar — qatorni bosib belgilang, o'ngdagi katakni bosib rasmini qo'ying yoki almashtiring</label>
+      <input id="mbSearch" type="text" placeholder="🔍  Model qidirish..." oninput="mbRenderList()"></div>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12.5px;color:#334155;cursor:pointer">
+      <input type="checkbox" id="mbOnlyOn" onchange="mbRenderList()"> Faqat belgilanganlar <span id="mbCnt" style="color:var(--muted)"></span>
+    </label>
+    <div class="mb-list" id="mbList"></div>
+    <div class="igb-status" id="mbStatus"></div>
+    <div class="mb-out" id="mbOut"></div>
+    <div class="modal-btns">
+      <button class="mbtn-ok" id="mbBuildBtn" onclick="mbBuild()">🖼 Bannerlarni tayyorlash</button>
+      <button class="mbtn-ok" id="mbSendBtn" onclick="mbSend()" disabled>📤 Telegramga albom qilib yuborish</button>
+      <button class="mbtn-no" id="mbDlBtn" onclick="mbDownload()" disabled>⬇ Hammasini yuklab olish</button>
+      <button class="mbtn-no" onclick="closeMb()">Yopish</button>
     </div>
   </div>
 </div>
@@ -3042,7 +3087,11 @@ async function igUseA(){if(!igOrig)return;igVars.a=await igTrim(igOrig);igChoose
 /* B2: chetdagi rangga o'xshash fonni chetdan ichkariga "to'kib" olib tashlash */
 async function igRunFast(){
   if(!igOrig)return;igSetStatus('Tez usul ishlayapti...');
-  const im=await igLoadImg(igOrig);
+  igVars.fast=await igFastCut(igOrig);
+  igChoose('fast');igSetStatus("B2 tayyor. Fon bir xil (oq) bo'lsa yaxshi chiqadi.");
+}
+async function igFastCut(src){
+  const im=await igLoadImg(src);
   const k=Math.min(1,1400/Math.max(im.width,im.height));
   const w=Math.round(im.width*k),h=Math.round(im.height*k);
   const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.drawImage(im,0,0,w,h);
@@ -3076,8 +3125,7 @@ async function igRunFast(){
     }
   }
   x.putImageData(id,0,0);
-  igVars.fast=await igTrim(c.toDataURL('image/png'));
-  igChoose('fast');igSetStatus("B2 tayyor. Fon bir xil (oq) bo'lsa yaxshi chiqadi.");
+  return igTrim(c.toDataURL('image/png'));
 }
 
 /* B1: brauzer ichida AI model (@imgly/background-removal), birinchi marta ~40 MB yuklanadi */
@@ -3086,19 +3134,22 @@ async function igRunAI(){
   const btn=document.getElementById('igBtnAI');btn.disabled=true;
   igSetStatus('AI model yuklanmoqda... (birinchi marta ~40 MB, keyin tezlashadi)');
   try{
-    if(!igBgLib){
-      const urls=['https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm','https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm'];
-      let err;for(const u of urls){try{igBgLib=await import(u);break}catch(e){err=e}}
-      if(!igBgLib)throw err;
-    }
-    const blob=await (await fetch(igOrig)).blob();
-    const out=await igBgLib.removeBackground(blob,{progress:(key,cur,tot)=>{
-      if(tot)igSetStatus(`AI: ${key.includes('fetch')?'model yuklanmoqda':'ishlov'} ${Math.round(cur/tot*100)}%`);}});
-    igVars.ai=await igTrim(await igReadFile(out));
+    igVars.ai=await igAiCut(igOrig,igSetStatus);
     igChoose('ai');igSetStatus('B1 (AI) tayyor.');
   }catch(e){
     console.error(e);igSetStatus('AI ishlamadi: '+(e&&e.message||e)+". B2 tez usulni sinab ko'ring.");
   }finally{btn.disabled=false}
+}
+async function igAiCut(src,onProg){
+  if(!igBgLib){
+    const urls=['https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm','https://cdn.jsdelivr.net/npm/@imgly/background-removal/+esm'];
+    let err;for(const u of urls){try{igBgLib=await import(u);break}catch(e){err=e}}
+    if(!igBgLib)throw err;
+  }
+  const blob=await (await fetch(src)).blob();
+  const out=await igBgLib.removeBackground(blob,{progress:(key,cur,tot)=>{
+    if(tot&&onProg)onProg(`AI: ${key.includes('fetch')?'model yuklanmoqda':'ishlov'} ${Math.round(cur/tot*100)}%`);}});
+  return igTrim(await igReadFile(out));
 }
 function igChoose(k){
   if(!igVars[k])return;igChosen=k;
@@ -3371,8 +3422,11 @@ function renderIg(){
 async function renderIgCanvas(){
   await igMakeWhiteLogo().catch(()=>{});
   await igLoadDefaultBg();
+  return igRenderHtml(igHtml());
+}
+async function igRenderHtml(html){
   const wrap=document.getElementById('captureWrap');
-  wrap.innerHTML=igHtml();
+  wrap.innerHTML=html;
   const imgs=wrap.querySelectorAll('img');
   await Promise.all(Array.from(imgs).map(img=>img.complete?(img.decode?img.decode().catch(()=>{}):0):new Promise(res=>{img.onload=res;img.onerror=res;})));
   if(document.fonts&&document.fonts.ready)await document.fonts.ready.catch(()=>{});
@@ -3424,6 +3478,149 @@ async function sendIgToTelegram(){
     toast('✕ Telegramga yuborishda xatolik');
   }finally{
     btn.disabled=false;btn.textContent=prevText;
+  }
+}
+/* ================= KO'P BANNER (sinov) =================
+   Praysdan bir nechta model belgilanadi, har biriga rasm qo'yiladi — hammasiga post (4:5) banner
+   yasalib, Telegramga albom qilib yuboriladi. Fon olib tashlash va shablon — bitta bannerdagi bilan bir xil */
+let mbRows=[],mbResults=[],mbPickIdx=-1,mbBusy=false;
+function mbSetStatus(t){document.getElementById('mbStatus').textContent=t}
+function openMb(){
+  // oyna qayta ochilganda avval qo'yilgan rasmlar saqlanib qoladi
+  const old={};mbRows.forEach(r=>old[r.b+'|'+r.name]=r);
+  mbRows=[];
+  BRANDS.forEach(b=>data[b].forEach(row=>{
+    if(!row[1])return;
+    const o=old[b+'|'+row[0]]||{};
+    mbRows.push({b,name:row[0],price:row[1],on:!!o.on,orig:o.orig||null,img:o.img||null});
+  }));
+  const ts=document.getElementById('mbTheme');
+  if(!ts.options.length){Object.entries(IG_THEMES).forEach(([k,t])=>ts.add(new Option(t.title,k)));ts.value=igTheme}
+  mbRenderList();
+  document.getElementById('mbModal').classList.add('open');
+  igMakeWhiteLogo().catch(()=>{});igLoadDefaultBg();
+}
+function closeMb(){document.getElementById('mbModal').classList.remove('open')}
+function mbRenderList(){
+  const q=document.getElementById('mbSearch').value.trim().toLowerCase();
+  const onlyOn=document.getElementById('mbOnlyOn').checked;
+  let h='',last='';
+  mbRows.forEach((r,i)=>{
+    if((q&&!r.name.toLowerCase().includes(q))||(onlyOn&&!r.on))return;
+    if(r.b!==last){last=r.b;h+=`<div class="mb-grp">${brandLabel[r.b]}</div>`}
+    h+=`<div class="mb-row${r.on?' on':''}" onclick="mbToggle(${i})"><input type="checkbox"${r.on?' checked':''}><span class="mb-nm">${escHtml(r.name)}</span><span class="mb-pr">${fmt(r.price)}</span><span class="mb-th" onclick="event.stopPropagation();mbPick(${i})" title="Rasm tanlash">${r.orig?`<img src="${r.orig}">`:'+ rasm'}</span></div>`;
+  });
+  document.getElementById('mbList').innerHTML=h||'<div class="mb-empty">Model topilmadi</div>';
+  const on=mbRows.filter(r=>r.on);
+  document.getElementById('mbCnt').textContent=on.length?`— ${on.length} ta belgilangan, ${on.filter(r=>r.orig).length} tasida rasm bor`:'';
+}
+function mbToggle(i){if(mbBusy)return;mbRows[i].on=!mbRows[i].on;mbRenderList()}
+function mbPick(i){if(mbBusy)return;mbPickIdx=i;document.getElementById('mbOne').click()}
+async function onMbOne(inp){
+  const f=inp.files&&inp.files[0],r=mbRows[mbPickIdx];inp.value='';
+  if(!f||!r)return;
+  r.orig=await igReadFile(f);r.img=null;r.on=true;
+  mbRenderList();
+}
+async function onMbFiles(inp){
+  const files=Array.from(inp.files||[]);inp.value='';
+  if(!files.length)return;
+  const rest=[];let named=0;
+  for(const f of files){
+    const src=await igReadFile(f);
+    // fayl nomi bo'yicha: hali rasmi yo'q modellar ichidan eng o'xshashi
+    const free=mbRows.filter(r=>!r.orig).map(r=>({row:r,tokens:plTokenize(r.name),meta:plMeta(r.name)}));
+    const m=plBestMatch(f.name.replace(/\.[^.]+$/,''),free);
+    if(m&&m.score>=.45){m.row.orig=src;m.row.img=null;m.row.on=true;named++}
+    else rest.push(src);
+  }
+  // nomidan topilmaganlari — belgilangan, rasmi yo'q modellarga tartib bilan
+  const empty=mbRows.filter(r=>r.on&&!r.orig);
+  let placed=0;
+  while(rest.length&&placed<empty.length){empty[placed].orig=rest.shift();empty[placed].img=null;placed++}
+  mbRenderList();
+  mbSetStatus(`${named} ta rasm nomi bo'yicha, ${placed} tasi tartib bo'yicha qo'yildi`+
+    (rest.length?`; ${rest.length} ta rasm ortib qoldi — avval modellarni belgilang yoki rasmni model qatoridagi katakka qo'ying.`:'. Ro\'yxatda to\'g\'ri tushganini tekshiring.'));
+}
+/* Rasm tashlangandagi kabi: fon shaffof bo'lsa o'zicha, bir xil rangda bo'lsa tez usul, oddiy surat bo'lsa AI */
+async function mbCut(src,onProg){
+  const kind=await igBgKind(src);
+  if(kind==='alpha')return igTrim(src);
+  if(kind==='flat')return igFastCut(src);
+  try{return await igAiCut(src,onProg)}catch(e){console.error(e);return igTrim(src)}
+}
+function mbPostData(r){
+  const theme=document.getElementById('mbTheme').value,T=IG_THEMES[theme];
+  const tk=r.b==='NOUTBUK'?'noutbuk':r.b==='PLANSHET'?'planshet':'telefon',TY=IG_TYPES[tk];
+  const m=r.name.match(/(\d+)\s*\/\s*(\d+)\s*(GB|TB)?/i);
+  return {name:r.name,typeLb:TY.lb&&!r.name.toLowerCase().includes(TY.lb.toLowerCase())?TY.lb:'',sub:'',
+    price:r.price,months:+document.getElementById('mbMonths').value,monthly:0,
+    promo:document.getElementById('mbPromo').value.trim().split('|'),
+    specs:m?[`${m[1]} GB — Operativ xotira`,`${m[2]} ${(m[3]||'GB').toUpperCase()} — Xotira`]:[],
+    theme,bigScr:tk==='noutbuk',ph:TY.ph,img:r.img,logo:T.logoWhite&&igLogoWhite?igLogoWhite:IG_LOGO,bg:igBgDefault};
+}
+function mbSetBusy(b){
+  mbBusy=b;
+  document.getElementById('mbBuildBtn').disabled=b;
+  document.getElementById('mbSendBtn').disabled=b||!mbResults.length;
+  document.getElementById('mbDlBtn').disabled=b||!mbResults.length;
+}
+function mbRenderOut(){
+  document.getElementById('mbOut').innerHTML=mbResults.map(r=>`<div class="mb-card"><img src="${r.url}">${escHtml(r.title)}</div>`).join('');
+}
+async function mbBuild(){
+  if(mbBusy)return;
+  const rows=mbRows.filter(r=>r.on&&r.orig),skip=mbRows.filter(r=>r.on&&!r.orig).length;
+  if(!rows.length){toast('⚠ Modellarni belgilab, rasmini qo\'ying');return}
+  mbResults.forEach(r=>URL.revokeObjectURL(r.url));mbResults=[];mbRenderOut();
+  mbSetBusy(true);
+  let fail=0;
+  try{
+    await igMakeWhiteLogo().catch(()=>{});
+    await igLoadDefaultBg();
+    for(let i=0;i<rows.length;i++){
+      const r=rows[i],pre=`${i+1}/${rows.length} — ${r.name}: `;
+      try{
+        mbSetStatus(pre+'rasm tayyorlanmoqda...');
+        if(!r.img)r.img=await mbCut(r.orig,t=>mbSetStatus(pre+t));
+        mbSetStatus(pre+'banner chizilmoqda...');
+        const canvas=await igRenderHtml(buildPostHtml(mbPostData(r)));
+        const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+        if(!blob)throw new Error('Banner tayyorlanmadi');
+        mbResults.push({name:'ssmart_post_'+r.name.replace(/[^a-z0-9]+/gi,'_')+'.png',title:r.name,price:r.price,blob,url:URL.createObjectURL(blob)});
+        mbRenderOut();
+      }catch(e){console.error(e);fail++}
+    }
+    mbSetStatus(`✓ ${mbResults.length} ta banner tayyor.`+(fail?` ${fail} tasida xatolik chiqdi.`:'')+(skip?` ${skip} ta model rasmsiz — o'tkazib yuborildi.`:''));
+  }finally{mbSetBusy(false)}
+}
+async function mbSend(){
+  if(mbBusy||!mbResults.length)return;
+  mbSetBusy(true);
+  try{
+    // izohga modellar ro'yxati qo'shiladi; Telegram cheklovi (1024 belgi)dan oshsa — faqat doimiy matn
+    let cap=buildTgCaption(mbResults.map(r=>r.title+' — '+fmt(r.price)+" so'm").join('\n'));
+    if(cap.caption.length>1024)cap=buildTgCaption('');
+    // albomga 10 tagacha rasm sig'adi — ko'p bo'lsa bir nechta albom bo'lib ketadi, izoh birinchisida
+    for(let i=0;i<mbResults.length;i+=10){
+      mbSetStatus(`📤 Yuborilmoqda... ${Math.min(i+10,mbResults.length)}/${mbResults.length}`);
+      if(i)await new Promise(r=>setTimeout(r,1200));
+      await sendToTelegram(mbResults.slice(i,i+10),i?'':cap.caption,i?null:cap.entities);
+    }
+    mbSetStatus(`✓ ${mbResults.length} ta banner Telegramga yuborildi.`);
+    toast('✓ Telegramga yuborildi');
+  }catch(e){
+    console.error(e);
+    mbSetStatus('✕ Telegramga yuborishda xatolik: '+(e&&e.message||e));
+    toast('✕ Telegramga yuborishda xatolik');
+  }finally{mbSetBusy(false)}
+}
+async function mbDownload(){
+  for(const r of mbResults){
+    const a=document.createElement('a');
+    a.href=r.url;a.download=r.name;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    await new Promise(res=>setTimeout(res,350));
   }
 }
 /* Bot ("samsung", "noutbuk" va h.k. deb yozganda avtomatik javob berishi) uchun
